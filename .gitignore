@@ -39,6 +39,11 @@ MANIFEST
 *.manifest
 *.spec
 
+# ML related files
+ML/datasets/
+ML/models/
+ML/temp_frame.jpg
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
