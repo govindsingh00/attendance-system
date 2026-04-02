@@ -213,3 +213,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
+# ML Module
+ML/datasets/
+ML/models/
+ML/temp_frame.jpg
