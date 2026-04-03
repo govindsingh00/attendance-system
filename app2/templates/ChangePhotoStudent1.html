@@ -1,20 +1,137 @@
 {% extends "AdminDash.html" %}
 {% load static %}
-{% block m1 %}
 
-<h1>Upload Photo</h1>
-{% if data %}
-{% for d in data %}
-<form method="post" action="http://127.0.0.1:8000/studentchngephoto1/" enctype="multipart/form-data">
-    {% csrf_token %}
-    <p>OLD PROFILE PHOTO
-        <input src="../media/{{d.photo}}" type="image" width="100" height="100" />
-        <input type="hidden"  name="IMG1" value="{{d.photo}}" />
-        <input type="hidden"  name="E1" value="{{d.email}}" />
-    </p>
-    <p>Select NEW Photo <input type="file" name="F1" /> </p>
-    <button type="submit">Upload</button>
-</form>
-{% endfor %}
-{% endif %}
+{% block m1 %}
+<style>
+    /* Profile Section Styling */
+    .profile-update-wrapper {
+        padding: 50px 20px;
+        background-color: #f8fafc;
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .profile-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+        border-top: 6px solid #1a73e8; /* Admin Blue Theme */
+    }
+
+    .profile-card h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 30px;
+        font-size: 1.6rem;
+    }
+
+    /* Current Image Preview */
+    .avatar-preview {
+        position: relative;
+        margin-bottom: 35px;
+    }
+
+    .old-photo-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #f1f5f9;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .old-photo-circle:hover {
+        transform: scale(1.03);
+    }
+
+    .label-badge {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        margin-bottom: 12px;
+    }
+
+    /* Modern File Input */
+    .upload-box {
+        background: #f9fafb;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 25px 15px;
+        margin-bottom: 30px;
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .upload-box:hover {
+        border-color: #1a73e8;
+        background: #f1f5f9;
+    }
+
+    .file-input {
+        font-size: 0.9rem;
+        color: #475569;
+        width: 100%;
+    }
+
+    /* Action Button */
+    .btn-save {
+        background: #1a73e8;
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+    }
+
+    .btn-save:hover {
+        background: #1557b0;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(26, 115, 232, 0.3);
+    }
+</style>
+
+<div class="profile-update-wrapper">
+    <div class="profile-card">
+        <h2>Update Student Photo</h2>
+
+        {% if data %}
+        {% for d in data %}
+        <form method="post" action="http://127.0.0.1:8000/studentchngephoto1/" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="avatar-preview">
+                <span class="label-badge">Current Profile</span>
+                <img src="../media/{{d.photo}}" class="old-photo-circle" alt="Old Student Photo">
+                
+                <input type="hidden" name="IMG1" value="{{d.photo}}" />
+                <input type="hidden" name="E1" value="{{d.email}}" />
+            </div>
+
+            <div class="upload-box">
+                <span class="label-badge">Select New Photo</span>
+                <input type="file" name="F1" class="file-input" required />
+            </div>
+
+            <button type="submit" class="btn-save">
+                <i class="fas fa-upload me-2"></i> Confirm & Update
+            </button>
+        </form>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

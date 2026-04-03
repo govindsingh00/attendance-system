@@ -1,10 +1,130 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
 {% block m1 %}
-<h1>Upload Photo</h1>
-<form method="post" action="http://127.0.0.1:8000/uploadphoto/" enctype="multipart/form-data">
-    {% csrf_token %}
-    <p>Select New Photo <input type="file" name="F1" /> </p>
-    <button type="submit">Upload</button>
-</form>
+<style>
+    /* Main Layout */
+    .upload-container {
+        padding: 60px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+    }
+
+    /* Upload Card */
+    .upload-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    .upload-icon {
+        font-size: 3.5rem;
+        color: #1a73e8;
+        margin-bottom: 20px;
+        display: inline-block;
+        background: #f0f7ff;
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        border-radius: 50%;
+    }
+
+    .upload-card h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+    }
+
+    .upload-card p {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 30px;
+    }
+
+    /* Custom File Input Styling */
+    .file-input-wrapper {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .custom-file-input {
+        width: 100%;
+        padding: 15px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 15px;
+        background: #f8fafc;
+        color: #475569;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .custom-file-input:hover {
+        border-color: #1a73e8;
+        background: #f0f7ff;
+    }
+
+    /* Upload Button */
+    .btn-upload-submit {
+        background: #1a73e8;
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+    }
+
+    .btn-upload-submit:hover {
+        background: #1557b0;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(26, 115, 232, 0.3);
+    }
+
+    /* File format hint */
+    .hint {
+        display: block;
+        margin-top: 15px;
+        font-size: 0.8rem;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="upload-container">
+    <div class="upload-card">
+        <div class="upload-icon">📸</div>
+        <h2>Upload Profile Photo</h2>
+        <p>Choose a professional photo to update the profile appearance.</p>
+
+        <form method="post" action="http://127.0.0.1:8000/uploadphoto/" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="file-input-wrapper">
+                <input type="file" name="F1" class="custom-file-input" required />
+                <span class="hint">Supported formats: JPG, PNG, JPEG</span>
+            </div>
+
+            <button type="submit" class="btn-upload-submit">
+                🚀 Start Uploading
+            </button>
+        </form>
+
+        <div style="margin-top: 20px;">
+            <a href="javascript:history.back()" style="color: #64748b; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+                ← Cancel & Go Back
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

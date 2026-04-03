@@ -1,71 +1,162 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
 {% block m1 %}
 <style>
-.card-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px; /* Space between cards */
-    justify-content: center; /* Center the cards */
-    margin: 20px; /* Margin around the container */
-}
+    /* Page background and container */
+    .admin-display-section {
+        padding: 30px;
+        background: #f4f7f9;
+        border-radius: 20px;
+    }
 
-.card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Ensures child elements are clipped */
-    width: 18rem; /* Fixed width for consistency */
-    transition: transform 0.2s; /* Animation for hover effect */
-}
+    .admin-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+        justify-content: center;
+    }
 
-.card:hover {
-    transform: translateY(-5px); /* Slight lift on hover */
-}
+    /* Modern Admin Card Design */
+    .admin-card {
+        background: #ffffff;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+        border: 1px solid #edf2f7;
+        position: relative;
+        overflow: hidden;
+    }
 
-.card-img-top {
-    width: 100%; /* Make the image responsive */
-    height: 100%; /* Fixed height to maintain uniformity */
-    object-fit: cover; /* Ensures the image covers the area */
-}
+    .admin-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+        border-color: #1a73e8;
+    }
 
-.card-body {
-    padding: 15px; /* Padding inside the card */
-}
+    /* Profile Image Styling */
+    .profile-wrapper {
+        width: 110px;
+        height: 110px;
+        margin: 0 auto 15px;
+        position: relative;
+    }
 
-.card-title {
-    font-size: 1.5rem; /* Font size for the title */
-    margin-bottom: 10px; /* Space below the title */
-}
+    .admin-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        background: #f0f0f0;
+    }
 
-.card-text {
-    font-size: 1rem; /* Font size for text */
-    color: #555; /* Text color for better readability */
-}
+    .status-dot {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        width: 15px;
+        height: 15px;
+        background: #10b981; /* Green status */
+        border: 3px solid #fff;
+        border-radius: 50%;
+    }
+
+    /* Text Styling */
+    .admin-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 5px;
+    }
+
+    .admin-role {
+        font-size: 0.85rem;
+        color: #1a73e8;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .admin-details {
+        text-align: left;
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: #4b5563;
+    }
+
+    .detail-item {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .detail-item strong {
+        color: #1a1a2e;
+        min-width: 65px;
+    }
+
+    /* Message Styling */
+    .no-data-msg {
+        text-align: center;
+        padding: 50px;
+        color: #6b7280;
+    }
 </style>
-{% if data %}
-<div class="row">
-    {% for d in data %}
-        <div class="card m-4" style="width: 18rem;">
-            {% if photo %}
-                {% for pic in photo %}
-                    {% if pic.email == d.email %}
-                        <img class="card-img-top" src="../media/{{ pic.photo }}" alt="Card image cap">
+
+<div class="admin-display-section">
+    <h2 class="mb-4" style="font-weight: 800; color: #1a1a2e;">System Administrators</h2>
+    
+    {% if data %}
+    <div class="admin-grid">
+        {% for d in data %}
+            <div class="admin-card">
+                <div class="profile-wrapper">
+                    {% if photo %}
+                        {% for pic in photo %}
+                            {% if pic.email == d.email %}
+                                <img class="admin-avatar" src="../media/{{ pic.photo }}" alt="Admin">
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="admin-avatar d-flex align-items-center justify-content-center text-muted">No Pic</div>
                     {% endif %}
-                {% endfor %}
-            {% endif %}
-            <div class="card-body">
-                <h5 class="card-title">{{ d.name }}</h5>
-                <p class="card-text">
-                    Address: {{ d.address }} <br/>
-                    Email: {{ d.email }} <br/>
-                    Contact: {{ d.contact }}
-                </p>
+                    <div class="status-dot"></div>
+                </div>
+
+                <span class="admin-name">{{ d.name }}</span>
+                <span class="admin-role">Administrator</span>
+
+                <div class="admin-details">
+                    <div class="detail-item">
+                        <strong>Email:</strong> <span>{{ d.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Contact:</strong> <span>{{ d.contact }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Location:</strong> <span>{{ d.address }}</span>
+                    </div>
+                </div>
             </div>
-        </div>
-    {% endfor %}
-{% elif msg %}
-    <h3>{{ msg }}</h3>
-{% endif %}
+        {% endfor %}
     </div>
+    {% elif msg %}
+    <div class="no-data-msg">
+        <div style="font-size: 4rem;">📂</div>
+        <h3>{{ msg }}</h3>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

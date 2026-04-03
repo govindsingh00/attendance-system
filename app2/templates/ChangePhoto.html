@@ -1,18 +1,125 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
 {% block m1 %}
-<h1>Update Photo</h1>
-{% if data %}
-{% for d in data %}
-<form method="post" action="http://127.0.0.1:8000/chngephoto1/" enctype="multipart/form-data">
-    {% csrf_token %}
-    <p>OLD PROFILE PHOTO
-        <input src="http://127.0.0.1:8000/media/{{d.photo}}" type="image" width="100" height="100" />
-        <input type="hidden" width="100" height="100" name="IMG1" value="{{d.photo}}" />
-    </p>
-    <p>Select NEW Photo <input type="file" name="F1" /> </p>
-    <button type="submit">Upload</button>
-</form>
-{% endfor %}
-{% endif %}
+<style>
+    /* Main Container */
+    .update-photo-section {
+        padding: 40px 20px;
+        background: #f8fafc;
+        display: flex;
+        justify-content: center;
+        min-height: 80vh;
+    }
+
+    .photo-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    .photo-card h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 30px;
+    }
+
+    /* Old Photo Styling */
+    .current-photo-box {
+        margin-bottom: 30px;
+    }
+
+    .old-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%; /* Circular look */
+        object-fit: cover;
+        border: 5px solid #f1f5f9;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .label-text {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    /* Custom File Input */
+    .file-upload-box {
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+    }
+
+    .file-upload-box:hover {
+        border-color: #1e293b;
+        background: #f1f5f9;
+    }
+
+    input[type="file"] {
+        font-size: 0.9rem;
+        color: #475569;
+    }
+
+    /* Submit Button */
+    .upload-btn {
+        background: #1e293b;
+        color: #ffffff;
+        border: none;
+        padding: 12px 40px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .upload-btn:hover {
+        background: #334155;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(30, 41, 59, 0.2);
+    }
+
+</style>
+
+<div class="update-photo-section">
+    <div class="photo-card">
+        <h2>Update Profile Photo</h2>
+
+        {% if data %}
+        {% for d in data %}
+        <form method="post" action="http://127.0.0.1:8000/chngephoto1/" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="current-photo-box">
+                <span class="label-text">Old Profile Photo</span>
+                <img src="http://127.0.0.1:8000/media/{{d.photo}}" class="old-img" alt="Current Photo">
+                <input type="hidden" name="IMG1" value="{{d.photo}}" />
+            </div>
+
+            <div class="file-upload-box">
+                <span class="label-text">Select New Photo</span>
+                <input type="file" name="F1" class="form-control-file" required />
+            </div>
+
+            <button type="submit" class="upload-btn">
+                Confirm & Upload
+            </button>
+        </form>
+        {% endfor %}
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

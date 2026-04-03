@@ -1,68 +1,202 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
 {% block m1 %}
+<style>
+    /* Profile Container */
+    .profile-wrapper {
+        padding: 40px 20px;
+        background-color: #f8fafc;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 25px;
+        justify-content: center;
+    }
 
-<!-- ✅ PHOTO SECTION -->
-{% if data1 %}
-    {% for d in data1 %}
-        <img src="../media/{{d.photo}}" width="100" height="100"
-             style="border-radius:50%;width:150px;height:150px;" />
+    /* Left Card: Photo & Quick Actions */
+    .photo-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        text-align: center;
+        flex: 1;
+        min-width: 300px;
+        max-width: 350px;
+    }
 
-        <form method="post" action="http://127.0.0.1:8000/chngephoto/">
-            {% csrf_token %}
-            <input type="hidden" name="C1" value="{{d.photo}}" />
-            <button>Change Photo</button>
-        </form>
+    .teacher-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid #f1f5f9;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
 
-        <form method="post" action="http://127.0.0.1:8000/deletephoto/">
-            {% csrf_token %}
-            <input type="hidden" name="C1" value="{{d.photo}}" />
-            <button>Delete Photo</button>
-        </form>
-    {% endfor %}
-{% else %}
-    <p>
-        <a href="http://127.0.0.1:8000/uploadphoto/">Upload Photo</a>
-    </p>
-{% endif %}
+    .photo-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 15px;
+    }
 
-<hr>
+    /* Right Card: Details */
+    .details-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        flex: 2;
+        min-width: 400px;
+        border-top: 6px solid #1a73e8;
+    }
 
-<!-- ✅ TEACHER DATA -->
-{% if data %}
-    {% for d in data %}
-        <h1>{{d.name}}</h1>
+    .details-card h1 {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 25px;
+        font-size: 1.8rem;
+    }
 
-        <p>
-            Address : {{d.address}} <br/>
-            Email : {{d.email}} <br/>
-            Contact : {{d.phone}} <br/>
-            Course ID : {{d.crid}}
-        </p>
+    .info-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
 
-        <!-- ✅ EDIT PROFILE -->
-        <form method="post" action="http://127.0.0.1:8000/editteacherprofile/">
-            {% csrf_token %}
-            <input type="hidden" name="E1" value="{{d.email}}">
-            <button type="submit">Edit</button>
-        </form>
+    .info-item label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
 
-        <!-- ✅ CHANGE PASSWORD -->
-        <form method="post" action="http://127.0.0.1:8000/teacher_pass_change/">
-            {% csrf_token %}
-            <input type="hidden" name="E1" value="{{d.email}}">
-            <button type="submit">Change Password</button>
-        </form>
+    .info-item span {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 1rem;
+    }
 
-    {% endfor %}
+    /* Modern Buttons */
+    .btn-custom {
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
 
-{% elif result %}
-    <h2>DATA SAVED</h2>
-    <p><a href="http://127.0.0.1:8000/teacher_home/">CONTINUE</a></p>
+    .btn-edit { background: #1a73e8; color: white; width: 100%; margin-bottom: 10px; }
+    .btn-pass { background: #f6ad55; color: white; width: 100%; }
+    .btn-photo { background: #f1f5f9; color: #475569; font-size: 0.75rem; }
+    .btn-delete { background: #fee2e2; color: #ef4444; font-size: 0.75rem; }
+    .btn-upload { background: #1a73e8; color: white; padding: 12px 25px; display: inline-block; }
 
-{% elif msg %}
-    <h3>{{msg}}</h3>
+    .btn-custom:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.1); }
 
-{% endif %}
+    /* Success Message */
+    .status-alert {
+        text-align: center;
+        background: #ecfdf5;
+        padding: 40px;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 500px;
+    }
 
+    @media (max-width: 600px) { .info-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="profile-wrapper">
+    {% if data %}
+        {% for d in data %}
+            
+            <div class="photo-card">
+                {% if data1 %}
+                    {% for p in data1 %}
+                        <img src="../media/{{p.photo}}" class="teacher-img" alt="Teacher" />
+                        
+                        <div class="photo-actions">
+                            <form method="post" action="http://127.0.0.1:8000/chngephoto/">
+                                {% csrf_token %}
+                                <input type="hidden" name="C1" value="{{p.photo}}" />
+                                <button class="btn-custom btn-photo">Change</button>
+                            </form>
+
+                            <form method="post" action="http://127.0.0.1:8000/deletephoto/">
+                                {% csrf_token %}
+                                <input type="hidden" name="C1" value="{{p.photo}}" />
+                                <button class="btn-custom btn-delete">Delete</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="padding: 40px 0;">
+                        <div style="font-size: 4rem; margin-bottom: 15px;">👤</div>
+                        <a href="http://127.0.0.1:8000/uploadphoto/" class="btn-custom btn-upload">Upload Photo</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="details-card">
+                <h1>{{d.name}}</h1>
+                
+                <div class="info-row">
+                    <div class="info-item">
+                        <label>Email Address</label>
+                        <span>{{d.email}}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Contact Number</label>
+                        <span>{{d.phone}}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Course ID</label>
+                        <span>#{{d.crid}}</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Current Address</label>
+                        <span>{{d.address}}</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <form method="post" action="http://127.0.0.1:8000/editteacherprofile/">
+                        {% csrf_token %}
+                        <input type="hidden" name="E1" value="{{d.email}}">
+                        <button type="submit" class="btn-custom btn-edit">✏️ Edit Profile Details</button>
+                    </form>
+
+                    <form method="post" action="http://127.0.0.1:8000/teacher_pass_change/">
+                        {% csrf_token %}
+                        <input type="hidden" name="E1" value="{{d.email}}">
+                        <button type="submit" class="btn-custom btn-pass">🔐 Change Password</button>
+                    </form>
+                </div>
+            </div>
+
+        {% endfor %}
+
+    {% elif result %}
+        <div class="status-alert">
+            <div style="font-size: 3rem; margin-bottom: 15px;">✅</div>
+            <h2 style="color: #065f46; font-weight: 800;">DATA SAVED</h2>
+            <p style="color: #065f46; margin-bottom: 25px;">Profile information updated successfully.</p>
+            <a href="http://127.0.0.1:8000/teacher_home/" class="btn-custom btn-upload">CONTINUE</a>
+        </div>
+
+    {% elif msg %}
+        <div class="status-alert" style="background: #fef2f2; border: 1px solid #fecaca;">
+            <h3 style="color: #991b1b;">{{msg}}</h3>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

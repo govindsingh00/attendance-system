@@ -1,17 +1,118 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
 {% block m1 %}
-<h1>Upload Photo</h1>
-{% if data %}
-{% for d in data %}
-<form method="post" action="http://127.0.0.1:8000/deletephoto1/" enctype="multipart/form-data">
-    {% csrf_token %}
-    <p>OLD PROFILE PHOTO
-        <input src="../media/{{d.photo}}" type="image" width="100" height="100" />
-        <input type="hidden" width="100" height="100" name="IMG1" value="{{d.photo}}" />
-    </p>
-    <button type="submit">Confirm Delete</button>
-</form>
-{% endfor %}
-{% endif %}
-{% endblock %}
+<style>
+    /* Main Layout */
+    .delete-photo-wrapper {
+        padding: 60px 20px;
+        background-color: #fff5f5; /* Light Red tint */
+        min-height: 80vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    /* Danger Card */
+    .delete-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(239, 68, 68, 0.1);
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        border-top: 6px solid #ef4444; /* Danger Red */
+    }
+
+    .warning-icon {
+        font-size: 50px;
+        color: #ef4444;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .delete-card h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 10px;
+        font-size: 1.5rem;
+    }
+
+    .delete-card p {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+    }
+
+    /* Photo Preview */
+    .preview-box {
+        margin-bottom: 30px;
+        position: relative;
+        display: inline-block;
+    }
+
+    .confirm-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fee2e2;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .label-text {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #ef4444;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    /* Delete Button */
+    .btn-delete-final {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-delete-final:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-cancel {
+        display: block;
+        margin-top: 15px;
+        color: #64748b;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .btn-cancel:hover {
+        color: #1e293b;
+        text-decoration: underline;
+    }
+</style>
+
+<div class="delete-photo-wrapper">
+    <div class="delete-card">
+        <span class="warning-icon">🗑️</span>
+        <h2>Delete Photo?</h2>
+        <p>Are you sure you want to remove this profile picture? This action cannot be undone.</p>
+
+        {% if data %}
+        {% for d in data %}
+        <form method="post" action="
