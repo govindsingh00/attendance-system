@@ -1,175 +1,20 @@
-{{% extends "AdminDash.html" %}
+{% extends "AdminDash.html" %}
 {% load static %}
-
 {% block m1 %}
-<style>
-    /* Main Layout */
-    .edit-course-section {
-        padding: 40px 20px;
-        background-color: #f8fafc;
-        min-height: 85vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-    }
-
-    /* Card Styling */
-    .edit-card {
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        padding: 40px;
-        width: 100%;
-        max-width: 550px;
-        border: 1px solid #e2e8f0;
-    }
-
-    .edit-card h2 {
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 5px;
-        font-size: 1.6rem;
-        text-align: center;
-    }
-
-    .subtitle {
-        color: #64748b;
-        font-size: 0.9rem;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-
-    /* Form Design */
-    .form-group {
-        margin-bottom: 20px;
-        text-align: left;
-    }
-
-    .form-group label {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #475569;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-        letter-spacing: 0.5px;
-    }
-
-    .input-field {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #f1f5f9;
-        border-radius: 10px;
-        background-color: #f8fafc;
-        color: #1e293b;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        outline: none;
-    }
-
-    .input-field:focus {
-        border-color: #1a73e8;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
-    }
-
-    /* Save Button */
-    .btn-update-course {
-        background: #1a73e8;
-        color: white;
-        border: none;
-        padding: 14px 30px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
-    }
-
-    .btn-update-course:hover {
-        background: #1557b0;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(26, 115, 232, 0.3);
-    }
-
-    /* Message Box */
-    .success-box {
-        text-align: center;
-        background: #ecfdf5;
-        border: 1px solid #d1fae5;
-        padding: 30px;
-        border-radius: 20px;
-        max-width: 500px;
-        width: 100%;
-    }
-
-    .btn-view-changes {
-        display: inline-block;
-        margin-top: 15px;
-        background: #10b981;
-        color: white;
-        padding: 10px 25px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 700;
-        transition: 0.3s;
-    }
-
-    .btn-view-changes:hover {
-        background: #059669;
-    }
-</style>
-
-<div class="edit-course-section">
-    {% if data %}
-        {% for d in data %}
-        <div class="edit-card">
-            <h2>Edit Course Details</h2>
-            <p class="subtitle">Update the course information carefully.</p>
-
-            <form method="post" action="http://127.0.0.1:8000/edit_course1/">
-                {% csrf_token %}
-                
-                <input type="hidden" name="C1" value="{{d.cid}}"/>
-
-                <div class="form-group">
-                    <label>Course Name</label>
-                    <input type="text" class="input-field" name="t1" value="{{d.crname}}" required />
-                </div>
-
-                <div style="display: flex; gap: 15px;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>Fees (₹)</label>
-                        <input type="text" class="input-field" name="t2" value="{{d.fee}}" required />
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>Duration</label>
-                        <input type="text" class="input-field" name="t3" value="{{d.duration}}" required />
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Remark / Description</label>
-                    <input type="text" class="input-field" name="t4" value="{{d.remark}}" />
-                </div>
-
-                <button type="submit" class="btn-update-course">
-                    <i class="fas fa-save me-2"></i> Save Changes
-                </button>
-            </form>
-        </div>
-        {% endfor %}
-
-    {% elif mssg or msg %}
-        <div class="success-box">
-            <div style="font-size: 3rem; margin-bottom: 10px;">✅</div>
-            <h3 style="color: #065f46;">{{msg}}{{mssg}}</h3>
-            <p style="color: #065f46; opacity: 0.8;">Course details have been updated successfully.</p>
-            <a href="http://127.0.0.1:8000/allcourses/" class="btn-view-changes">See All Courses</a>
-        </div>
-    {% endif %}
-</div>
+<h1> Edit Course </h1>
+{% if data %}
+    {% for d in data %}
+        <form method="post" action="http://127.0.0.1:8000/edit_course1/">
+            {% csrf_token %}
+            <input readonly type="hidden" name="C1" value="{{d.cid}}"/>
+            <p>Course Name<input name="t1" value="{{d.crname}}"/></p>
+            <p>Duration<input type="text" name="t2" value="{{d.duration}}"/></p>
+            <p>Remark<input type="text" name="t3" value="{{d.remark}}"/></p>
+            <button type="submit">Save Changes</button>
+        </form>
+    {% endfor %}
+{% elif mssg %}
+    <h3>{{mssg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allcourses/">See Changes</a></p>
+{% endif %}
 {% endblock %}

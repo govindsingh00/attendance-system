@@ -1,146 +1,16 @@
 {% extends "AdminDash.html" %}
 {% load static %}
-
 {% block m1 %}
-<style>
-    /* Main Container Styling */
-    .reg-container {
-        padding: 40px 20px;
-        background-color: #f8fafc;
-        min-height: 80vh;
-        display: flex;
-        justify-content: center;
-    }
+<h1>Course registration</h1>
+<form method="post" action="http://127.0.0.1:8000/course_reg/">
+    {% csrf_token %}
+    <p>Course Name:<input type="text" name="t1"/></p>
+    <p>Duration:<input type="text" name="t2"/></p>
+    <p>Remark:<input type="text" name="t3"/></p>
+    <button type="submit">Add Course</button>
+</form>
 
-    /* Form Card Styling */
-    .reg-card {
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        padding: 40px;
-        width: 100%;
-        max-width: 600px;
-        border-top: 6px solid #1a73e8; /* Admin Blue Accent */
-    }
-
-    .reg-card h2 {
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 10px;
-        font-size: 1.8rem;
-    }
-
-    .subtitle {
-        color: #64748b;
-        margin-bottom: 30px;
-        font-size: 0.95rem;
-    }
-
-    /* Form Group Styling */
-    .form-group {
-        margin-bottom: 20px;
-        text-align: left;
-    }
-
-    .form-group label {
-        display: block;
-        font-weight: 700;
-        color: #334155;
-        margin-bottom: 8px;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .form-control-custom {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e2e8f0;
-        border-radius: 10px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        outline: none;
-    }
-
-    .form-control-custom:focus {
-        border-color: #1a73e8;
-        box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
-    }
-
-    /* Button Styling */
-    .btn-submit {
-        background: #1a73e8;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
-    }
-
-    .btn-submit:hover {
-        background: #1557b0;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(26, 115, 232, 0.3);
-    }
-
-    /* Message Styling */
-    .alert-msg {
-        margin-top: 25px;
-        padding: 15px;
-        border-radius: 10px;
-        background-color: #ecfdf5;
-        color: #059669;
-        border: 1px solid #d1fae5;
-        font-weight: 600;
-        text-align: center;
-    }
-</style>
-
-<div class="reg-container">
-    <div class="reg-card">
-        <h2>Course Registration</h2>
-        <p class="subtitle">Fill in the details to add a new course to the system.</p>
-
-        <form method="post" action="http://127.0.0.1:8000/course_reg/">
-            {% csrf_token %}
-
-            <div class="form-group">
-                <label>Course Name</label>
-                <input type="text" name="t1" class="form-control-custom" placeholder="e.g. Python Full Stack" required />
-            </div>
-
-            <div class="row" style="display: flex; gap: 15px;">
-                <div class="form-group" style="flex: 1;">
-                    <label>Fee (INR)</label>
-                    <input type="text" name="t2" class="form-control-custom" placeholder="e.g. 15000" required />
-                </div>
-                <div class="form-group" style="flex: 1;">
-                    <label>Duration</label>
-                    <input type="text" name="t3" class="form-control-custom" placeholder="e.g. 6 Months" required />
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Remark / Description</label>
-                <input type="text" name="t4" class="form-control-custom" placeholder="Brief about the course..." />
-            </div>
-
-            <button type="submit" class="btn-submit">
-                <i class="fas fa-plus-circle me-2"></i> Add New Course
-            </button>
-        </form>
-
-        {% if msg %}
-            <div class="alert-msg">
-                <i class="fas fa-check-circle me-1"></i> {{msg}}
-            </div>
-        {% endif %}
-    </div>
-</div>
+{% if msg %}
+    <h4>{{msg}}</h4>
+{% endif %}
 {% endblock %}

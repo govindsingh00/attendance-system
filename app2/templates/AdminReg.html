@@ -5,7 +5,7 @@
 <h1> Admin Registration Form </h1>
 <p> Fill out the form for registration </p>
 <hr><hr>
-<form method="post" action="http://127.0.0.1:8000/admin_reg/" onsubmit="return B()">
+<form method="post" action="/admin_reg/" onsubmit="return B()">
     {% csrf_token %}
     <div class="form-row">
       <div class="form-group col-md-12">
@@ -22,16 +22,23 @@
     </div>
     <div class="form-row">
       <div class="form-group col-md-4">
-        <label for="txt21">City</label><span id="er21"></span>
-        <input type="text" name="t4" class="form-control" id="txt21">
+        <label for="state_admin">State</label><span id="er22"></span>
+        <select name="t5" class="form-control" id="state_admin" required>
+          <option value="">— Select state —</option>
+          {% for s in indian_states %}
+          <option value="{{ s }}">{{ s }}</option>
+          {% endfor %}
+        </select>
       </div>
       <div class="form-group col-md-4">
-        <label for="txt22">State</label><span id="er22"></span>
-        <input type="text" name="t5" class="form-control" id="txt22">
+        <label for="city_admin">City</label><span id="er21"></span>
+        <select name="t4" class="form-control" id="city_admin" required>
+          <option value="">— Select state first —</option>
+        </select>
       </div>
       <div class="form-group col-md-4">
-        <label for="txt23">Zip</label><span id="er23"></span>
-        <input type="text" name="t6" class="form-control" id="txt23">
+        <label for="txt23">Pincode</label><span id="er23"></span>
+        <input type="text" name="t6" class="form-control" id="txt23" maxlength="10" pattern="[0-9]{6}" placeholder="6 digits" inputmode="numeric">
       </div>
     </div>
     <div class="form-row">
@@ -78,8 +85,8 @@
         var t11,e11,e21,e22,e23;
 
 		t11=document.getElementById("txt11");
-		t21=document.getElementById("txt21");
-		t22=document.getElementById("txt22");
+		t21=document.getElementById("city_admin");
+		t22=document.getElementById("state_admin");
 		t23=document.getElementById("txt23");
 		e11=document.getElementById("er11");
 		e21=document.getElementById("er21");
@@ -134,18 +141,18 @@
 				e2.style.color="red";
 				return false;
 			}
-		if(v21=="" || v21==null)
-			{
-				e21.innerHTML="Enter City";
-				t21.focus();
-				e21.style.color="red";
-				return false;
-			}
 		if(v22=="" || v22==null)
 			{
-				e22.innerHTML="Enter State";
+				e22.innerHTML="Select state";
 				t22.focus();
 				e22.style.color="red";
+				return false;
+			}
+		if(v21=="" || v21==null)
+			{
+				e21.innerHTML="Select city";
+				t21.focus();
+				e21.style.color="red";
 				return false;
 			}
 		if(v23=="" || v23==null)
@@ -340,6 +347,7 @@
 		return result;
 	}
 </script>
+{% include "includes/state_city_cascade.html" with suffix="admin" %}
 {% if msg %}
     <h3>{{msg}}</h3>
 <p><a href="http://127.0.0.1:8000/admin_home/">Continue</a></p>

@@ -1,169 +1,63 @@
 {% extends "AdminDash.html" %}
 {% load static %}
-
 {% block m1 %}
-<style>
-    .profile-container {
-        padding: 30px;
-        background-color: #f4f7fe;
-        min-height: 100vh;
-    }
-
-    /* Header Profile Card */
-    .student-header-card {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        display: flex;
-        align-items: center;
-        gap: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-    }
-
-    .profile-img-wrapper {
-        position: relative;
-    }
-
-    .profile-img-wrapper img {
-        width: 140px;
-        height: 140px;
-        border-radius: 20px;
-        object-fit: cover;
-        border: 4px solid #eef2ff;
-    }
-
-    .student-main-info h1 {
-        font-size: 1.8rem;
-        font-weight: 800;
-        color: #1b2559;
-        margin-bottom: 10px;
-    }
-
-    .info-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-        margin-top: 15px;
-    }
-
-    .info-item {
-        font-size: 0.9rem;
-        color: #707eae;
-    }
-
-    .info-item strong {
-        color: #1b2559;
-        display: block;
-    }
-
-    /* Table Styling */
-    .table-section {
-        background: white;
-        border-radius: 20px;
-        padding: 25px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        margin-bottom: 30px;
-    }
-
-    .section-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #1b2559;
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .custom-table {
-        width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 10px;
-    }
-
-    .custom-table th {
-        padding: 15px;
-        color: #a3aed0;
-        font-weight: 600;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        border-bottom: 1px solid #f4f7fe;
-    }
-
-    .custom-table td {
-        padding: 15px;
-        background: #f8fafc;
-        color: #1b2559;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-
-    .custom-table tr td:first-child { border-radius: 12px 0 0 12px; }
-    .custom-table tr td:last-child { border-radius: 0 12px 12px 0; }
-
-    /* Delete Button */
-    .btn-delete-full {
-        background: #ff4d4d;
-        color: white;
-        border: none;
-        padding: 15px 40px;
-        border-radius: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.3s;
-        width: 100%;
-        margin-top: 10px;
-    }
-
-    .btn-delete-full:hover {
-        background: #e60000;
-        box-shadow: 0 10px 20px rgba(255, 77, 77, 0.2);
-    }
-
-    .status-msg {
-        background: #eef2ff;
-        padding: 20px;
-        border-radius: 15px;
-        text-align: center;
-        margin-top: 20px;
-    }
-</style>
-
-<div class="profile-container">
-    {% if data1 %}
+<h1>STUDENT PROFILE</h1>
+{% if data1 %}
         {% for d1 in data1 %}
-        <form method="post" action="http://127.0.0.1:8000/deletestudentprofile1/">
-            {% csrf_token %}
-            
-            <div class="student-header-card">
-                <div class="profile-img-wrapper">
-                    {% if data4 %}
-                        {% for d4 in data4 %}
-                            <img src="../media/{{d4.photo}}" alt="Profile">
-                            <input type="hidden" name="IMG1" value="{{d4.photo}}" />
-                        {% endfor %}
-                    {% else %}
-                        <img src="{% static 'default-user.png' %}" alt="Default">
-                    {% endif %}
-                </div>
-                
-                <div class="student-main-info">
-                    <h1>Student Details</h1>
-                    <div class="info-grid">
-                        <div class="info-item"><strong>Student ID</strong> #{{d1.stid}}</div>
-                        <div class="info-item"><strong>Father's Name</strong> {{d1.fname}}</div>
-                        <div class="info-item"><strong>DOB</strong> {{d1.dob}}</div>
-                        <div class="info-item"><strong>Gender</strong> {{d1.gender}}</div>
-                        <div class="info-item"><strong>Contact</strong> {{d1.contact}}</div>
-                        <div class="info-item"><strong>Email</strong> {{d1.email}}</div>
-                        <div class="info-item"><strong>Address</strong> {{d1.address}}</div>
-                    </div>
-                    <input type="hidden" name="S1" value="{{d1.stid}}" />
-                    <input type="hidden" name="S2" value="{{d1.email}}" />
-                </div>
-            </div>
+            <form method="post" action="http://127.0.0.1:8000/deletestudentprofile1/">
+                {% csrf_token %}
+            {% if data4 %}
+                {% for d4 in data4 %}
+                    <input src="../media/{{d4.photo}}" type="image" width="100" height="100" align="centre" />
+                    <input type="hidden" name="IMG1" value="{{d4.photo}}" />
+                {% endfor %}
+            {% endif %}
+            <p>
+                Student ID: {{d1.stid}}<br>
+                Father's Name: {{d1.fname}}<br>
+                DOB: {{d1.dob}}<br>
+                Gender: {{d1.gender}}<br>
+                Address: {{d1.address}}<br>
+                Contact: {{d1.contact}}<br>
+                Email: {{d1.email}}
+                <input type="hidden" name="S1" value="{{d1.stid}}" />
+                <input type="hidden" name="S2" value="{{d1.email}}" />
+            </p>
 
-            <div class="table-section">
-                <div class="section-title">📚 Enrolled Courses
+
+            {% if data2 %}
+                <table border="2px">
+                        <thead>
+                            <th>COURSE ID</th>
+                            <th>JOINED COURSES</th>
+                            <th>JOINING DATE</th>
+                            <th>REMARK</th>
+                        </thead>
+                {% for d2 in data2 %}
+                        <tbody>
+                            <tr>
+                                <td>{{d2.st_crid}}</td>
+                                <td>{{d2.crname}}</td>
+                                <td>{{d2.joining}}</td>
+                                <td>{{d2.remark}}</td>
+                            </tr>
+                {% endfor %}
+                        </tbody>
+                </table>
+            {% else %}
+                    <h2>NO JOINED COURSES</h2>
+            {% endif %}
+                <button type="submit">CONFIRM DELETE</button>
+            </form>
+
+            {% if msg %}
+                <h3>{{msg}}</h3>
+                <p><a href="http://127.0.0.1:8000/allstudentsAD/">Continue</a></p>
+            {% endif %}
+
+{% endfor %}
+{% else %}
+    <h3>{{msg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allstudentsAD/">Continue</a></p>
+{% endif %}
+{% endblock %}

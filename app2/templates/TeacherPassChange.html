@@ -1,0 +1,14 @@
+{% extends "TeacherDash.html" %}
+{% block m1 %}
+<h1>Change password</h1>
+{% if data %}
+<form method="post" action="/teacher_pass_change1/">
+    {% csrf_token %}
+    <p>Old password <input type="password" name="t1" required /></p>
+    <p>New password <input type="password" name="t2" required /></p>
+    <button type="submit">Update</button>
+</form>
+{% endif %}
+{% if msg %}<p><strong>{{ msg }}</strong></p>{% endif %}
+<p><a href="/teacher_home/">Back</a></p>
+{% endblock %}

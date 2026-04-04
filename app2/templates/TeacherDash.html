@@ -1,0 +1,47 @@
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'bootstrap/adminbootstrap.css' %}" type="text/css">
+    <script src="{% static 'jquery/jquery.js' %}"></script>
+    <script src="{% static 'bootstrap/popper.min.js' %}"></script>
+    <script src="{% static 'bootstrap/bootstrap.min.js' %}"></script>
+    <script src="{% static 'bootstrap/bootstrap.bundle.js' %}"></script>
+    <title>Teacher</title>
+    <style>
+      h1,h2,h3,h4 { color:#1f4c70; }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-success" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/teacher_home/">Teacher</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navTeacher" aria-controls="navTeacher" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navTeacher">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/teacher_home/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/mark_attendance/">Mark attendance</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/editteacherprofile/">Profile</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/logout/">Logout</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div class="container mt-4">
+        {% block m1 %}
+        {% endblock %}
+      </div>
+  </body>
+</html>

@@ -1,0 +1,34 @@
+{# Expects: state_cities_json, suffix (e.g. admin, student, teacher) #}
+<script type="application/json" id="sc-json-{{ suffix }}">{{ state_cities_json|safe }}</script>
+<script>
+(function () {
+  var suffix = "{{ suffix|escapejs }}";
+  var dataEl = document.getElementById("sc-json-" + suffix);
+  var stateEl = document.getElementById("state_" + suffix);
+  var cityEl = document.getElementById("city_" + suffix);
+  if (!dataEl || !stateEl || !cityEl) return;
+  var data = {};
+  try {
+    data = JSON.parse(dataEl.textContent);
+  } catch (e) {
+    return;
+  }
+  function fillCities() {
+    var st = stateEl.value;
+    cityEl.innerHTML = "";
+    var ph = document.createElement("option");
+    ph.value = "";
+    ph.textContent = "\u2014 Select city \u2014";
+    cityEl.appendChild(ph);
+    if (!st || !data[st]) return;
+    (data[st] || []).forEach(function (c) {
+      var o = document.createElement("option");
+      o.value = c;
+      o.textContent = c;
+      cityEl.appendChild(o);
+    });
+  }
+  stateEl.addEventListener("change", fillCities);
+  if (stateEl.value) fillCities();
+})();
+</script>

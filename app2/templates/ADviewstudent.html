@@ -54,10 +54,8 @@
             <thead>
                 <th>COURSE ID</th>
                 <th>JOINED COURSES</th>
-                <th>TOTAL COURSE FEE</th>
-                <th>COURSE JOINING DATA</th>
+                <th>COURSE JOINING DATE</th>
                 <th>REMARK</th>
-                <th>INSTALLMENT</th>
                 <th>MANAGE</th>
             </thead>
         {% for d2 in data2 %}
@@ -65,17 +63,8 @@
                 <tr>
                     <td>{{d2.st_crid}}</td>
                     <td>{{d2.crname}}</td>
-                    <td>{{d2.fee}}</td>
                     <td>{{d2.joining}}</td>
                     <td>{{d2.remark}}</td>
-                    <td>
-                        <form method="post" action="http://127.0.0.1:8000/studentinstallmentadd/">
-                            {% csrf_token %}
-                            <input type="hidden" name="A1" value="{{d2.stid}}" />
-                            <input type="hidden" name="A2" value="{{d2.st_crid}}" />
-                            <button type="submit">Add Installment</button>
-                        </form>
-                    </td>
                     <td>
                         <form method="post" action="http://127.0.0.1:8000/editstudentcoursedata/" >
                             {% csrf_token %}
@@ -104,50 +93,7 @@
         <button type="submit">Add Course</button>
     </form>
 
-    {% if data3 %}
-        <table border="2px" width="100%" cellpadding="2px" style="border-collapse:collapse;">
-            <thead>
-                <th>TRANSECTION ID</th>
-                <th>COURSE ID</th>
-                <th>INSTALLMENTS</th>
-                <th>SUB DATA</th>
-                <th>REMARK</th>
-                <th>MANAGE</th>
-            </thead>
-        {% for d3 in data3 %}
-            <tbody>
-                <tr>
-                    <td>{{d3.tid}}</td>
-                    <td>{{d3.stcrid}}</td>
-                    <td>{{d3.inst}}</td>
-                    <td>{{d3.sub_date}}</td>
-                    <td>{{d3.remark}}</td>
-                    <td>
-                        <form method="post" action="http://127.0.0.1:8000/editstudentinstdata/" >
-                            {% csrf_token %}
-                            <input type="hidden" name="T1" value="{{d3.tid}}" />
-                            <button type="submit">Edit Installment</button>
-                        </form>
-
-                        <form method="post" action="http://127.0.0.1:8000/deletestudentinstdata/" >
-                            {% csrf_token %}
-                            <input type="hidden" name="T1" value="{{d3.tid}}" />
-                            <button type="submit">Delete Installment</button>
-                        </form>
-                    </td>
-                </tr>
-            </tbody>
-        {% endfor %}
-        {% else %}
-            <h4>NO TRANSECTION FOUND</h4>
-        </table>
-    {% endif %}
 {% endfor %}
 {% endif %}
 
-{% if data5 %}
-    <h3>Total Amount: {{data5.0}}</h3>
-    <h3>Paid Amount: {{data5.1}}</h3>
-    <h3>Due Amount: {{data5.2}}</h3>
-{% endif %}
 {% endblock %}

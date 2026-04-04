@@ -58,12 +58,22 @@ urlpatterns = [
     path('deletestudentprofile1/', deletestudentprofile1),
     path('studentcourseadd/', studentcourseadd),
     path('studentcourseadd1/', studentcourseadd1),
-    path('studentinstallmentadd/', studentinstallmentadd),
-    path('studentinstallmentadd1/', studentinstallmentadd1),
 
     path('teacher_reg/', teacher_reg),
     path('allteachers/', allteachers),
     path('teacher_home/', teacher_home),
+    path('mark_attendance/', mark_attendance),
+    path('mark_attendance/face/', take_attendance_face),
+    path('editteacherprofile/', editteacherprofile),
+    path('editteacherprofile1/', editteacherprofile1),
+    path('teacher_pass_change/', teacher_pass_change),
+    path('teacher_pass_change1/', teacher_pass_change1),
+
+    path('student_attendance/', student_attendance),
+
+    path('teaching_assignments/', teaching_assignments),
+    path('teaching_assignment_add/', teaching_assignment_add),
+    path('teaching_assignment_delete/', teaching_assignment_delete),
 
     path('studentuploadphoto/', studentuploadphoto),
     path('studentchngephoto/', studentchngephoto),
@@ -77,10 +87,6 @@ urlpatterns = [
     path('editstdata/', editstdata),
     path('editstdata1/', editstdata1),
     path('student_course_info/', student_course_info),
-    path('editstudentinstdata/', editstudentinstdata),
-    path('editstudentinstdata1/', editstudentinstdata1),
-    path('deletestudentinstdata/', deletestudentinstdata),
-    path('deletestudentinstdata1/', deletestudentinstdata1),
 
 ]
 

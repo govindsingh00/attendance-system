@@ -1,0 +1,25 @@
+{% extends "StudentDash.html" %}
+{% block s1 %}
+<h1>Attendance</h1>
+<p>Overall attendance: <strong>{{ overall_pct }}%</strong> ({{ total_present }} present of {{ total_sessions }} recorded sessions).</p>
+
+<h2>Course-wise</h2>
+{% if rows %}
+<table class="table table-bordered table-sm" style="max-width:640px;">
+    <thead><tr><th>Course</th><th>Sessions</th><th>Present</th><th>%</th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr>
+        <td>{{ r.name }}</td>
+        <td>{{ r.total }}</td>
+        <td>{{ r.present }}</td>
+        <td>{{ r.pct }}%</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No attendance records yet.</p>
+{% endif %}
+<p><a href="/student_home/">Back to home</a></p>
+{% endblock %}

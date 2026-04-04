@@ -1,206 +1,48 @@
 {% extends "StudentDash.html" %}
 {% load static %}
-
 {% block s1 %}
-<style>
-    .profile-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 25px;
-        margin-top: 20px;
-    }
+{% if data1 %}
+    {% for d in data1 %}
+        <img src="http://127.0.0.1:8000/media/{{d.photo}}" width="100" height="100" style="border-radius:50%;width:150px;height:150px;"/>
+    {% endfor %}
+{% else %}
+    <p>
+        <img src=".." width="100" height="100" alt="Contact admin for profile photo" />
+    </p>
+{% endif %}
+{% if data %}
+    {% for d in data %}
+        <h1>{{d.stname}}</h1>
+        <h2>STUDENT ID -: {{d.stid}}</h2>
+        <p>
+            Father's Name : {{d.fname}} <br/>
+            DOB : {{d.dob}} <br/>
+            GENDER : {{d.gender}} <br/>
+            Address : {{d.address}} <br/>
+            Last Qualification : {{d.lastquali}} <br/>
+            Contact : {{d.contact}} <br/>
+            Email : {{d.email}} <br/>
+            Section : {{ d.section|default:"—" }} <br/>
+        </p>
+        <p><a class="btn btn-sm btn-outline-light" href="http://127.0.0.1:8000/student_attendance/">View attendance</a></p>
+        <form method="post" action="http://127.0.0.1:8000/editstprofile/">
+            {% csrf_token %}
+            <input type="hidden" name="S1" value="{{d.stid}}">
+            <button type="submit">Edit</button>
+        </form>
 
-    /* Left Side: Profile Card */
-    .profile-sidebar {
-        flex: 1;
-        min-width: 300px;
-        background: white;
-        border-radius: 20px;
-        padding: 40px 20px;
-        text-align: center;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    }
-
-    .profile-img {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 5px solid #f0f2f5;
-        margin-bottom: 20px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .profile-sidebar h1 {
-        font-size: 1.5rem;
-        margin-bottom: 5px;
-        color: #1a202c;
-    }
-
-    .profile-sidebar .student-id {
-        background: #ebf4ff;
-        color: #4e73df;
-        display: inline-block;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-weight: 700;
-        font-size: 0.85rem;
-        margin-bottom: 25px;
-    }
-
-    /* Right Side: Details & Actions */
-    .profile-main {
-        flex: 2;
-        min-width: 400px;
-    }
-
-    .details-card {
-        background: white;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        margin-bottom: 25px;
-    }
-
-    .details-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .detail-item {
-        margin-bottom: 15px;
-    }
-
-    .detail-item label {
-        display: block;
-        color: #a0aec0;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        font-weight: 800;
-        margin-bottom: 4px;
-    }
-
-    .detail-item span {
-        font-weight: 600;
-        color: #2d3748;
-        font-size: 1rem;
-    }
-
-    /* Action Buttons */
-    .action-row {
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .btn-action {
-        flex: 1;
-        min-width: 150px;
-        border: none;
-        padding: 12px;
-        border-radius: 12px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.3s;
-        text-align: center;
-        font-size: 0.9rem;
-    }
-
-    .btn-edit { background: #4e73df; color: white; }
-    .btn-pass { background: #f6ad55; color: white; }
-    .btn-info { background: #1cc88a; color: white; }
-
-    .btn-action:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        filter: brightness(1.1);
-    }
-
-    @media (max-width: 600px) {
-        .details-grid { grid-template-columns: 1fr; }
-    }
-</style>
-
-<div class="profile-container">
-    {% if data %}
-        {% for d in data %}
-        
-        <div class="profile-sidebar">
-            {% if data1 %}
-                {% for p in data1 %}
-                    <img src="http://127.0.0.1:8000/media/{{p.photo}}" class="profile-img" alt="Profile" />
-                {% endfor %}
-            {% else %}
-                <img src="https://via.placeholder.com/150" class="profile-img" alt="Default" />
-                <p class="text-muted small">No Photo Found</p>
-            {% endif %}
-
-            <h1>{{d.stname}}</h1>
-            <div class="student-id">ID: {{d.stid}}</div>
-
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-                <form method="post" action="http://127.0.0.1:8000/editstprofile/">
-                    {% csrf_token %}
-                    <input type="hidden" name="S1" value="{{d.stid}}">
-                    <button type="submit" class="btn-action btn-edit" style="width: 100%;">✏️ Edit Profile</button>
-                </form>
-
-                <form method="post" action="http://127.0.0.1:8000/student_pass_change/">
-                    {% csrf_token %}
-                    <input type="hidden" name="S1" value="{{d.stid}}">
-                    <button type="submit" class="btn-action btn-pass" style="width: 100%;">🔐 Change Password</button>
-                </form>
-
-                <form method="post" action="http://127.0.0.1:8000/student_course_info/">
-                    {% csrf_token %}
-                    <input type="hidden" name="S1" value="{{d.stid}}">
-                    <button type="submit" class="btn-action btn-info" style="width: 100%;">📚 My Courses</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="profile-main">
-            <div class="details-card">
-                <h3 style="margin-bottom: 25px;">Basic Information</h3>
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <label>Father's Name</label>
-                        <span>{{d.fname}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Date of Birth</label>
-                        <span>{{d.dob}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Gender</label>
-                        <span>{{d.gender}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Contact</label>
-                        <span>{{d.contact}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Qualification</label>
-                        <span>{{d.lastquali}}</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Email Address</label>
-                        <span>{{d.email}}</span>
-                    </div>
-                    <div class="detail-item" style="grid-column: 1 / -1;">
-                        <label>Residential Address</label>
-                        <span>{{d.address}}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {% endfor %}
-    {% elif msg %}
-        <div class="details-card text-center">
-            <h3>{{msg}}</h3>
-        </div>
-    {% endif %}
-</div>
+        <form method="post" action="http://127.0.0.1:8000/student_pass_change/">
+            {% csrf_token %}
+            <input type="hidden" name="S1" value="{{d.stid}}">
+            <button type="submit">Change Password</button>
+        </form>
+        <form method="post" action="http://127.0.0.1:8000/student_course_info/">
+            {% csrf_token %}
+            <input type="hidden" name="S1" value="{{d.stid}}">
+            <button type="submit">See Course Details</button>
+        </form>
+    {% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+{% endif %}
 {% endblock %}

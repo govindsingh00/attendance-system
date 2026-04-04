@@ -1,0 +1,75 @@
+{% extends "AdminDash.html" %}
+{% block m1 %}
+<h1>Teaching assignments</h1>
+<p>Assign each teacher to a <strong>section</strong>, <strong>course</strong>, and <strong>time slot</strong> (batch). Teachers only see those slots when marking attendance for that section and course.</p>
+
+{% if error %}
+<p style="color:#b00020;"><strong>{{ error }}</strong></p>
+{% endif %}
+
+<h2>Add assignment</h2>
+<form method="post" action="/teaching_assignment_add/">
+    {% csrf_token %}
+    <p>
+        <label>Teacher</label><br/>
+        <select name="tid" required>
+            {% for t in teachers %}
+            <option value="{{ t.tid }}">{{ t.name }} ({{ t.email }})</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label>Course</label><br/>
+        <select name="cid" required>
+            {% for c in courses %}
+            <option value="{{ c.cid }}">{{ c.crname }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p><label>Section (batch)</label><br/><input type="text" name="section" placeholder="e.g. A" required /></p>
+    <p>
+        <label>Time slot</label><br/>
+        <select name="time_slot" required>
+            <option value="">— choose slot —</option>
+            {% for code, label in time_slots %}
+            <option value="{{ code }}">{{ label }} ({{ code }})</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p><label>Subject label (optional)</label><br/><input type="text" name="subject" placeholder="Defaults to course name" /></p>
+    <button type="submit">Save assignment</button>
+</form>
+
+<h2>Current assignments</h2>
+{% if assignments %}
+<table class="table table-sm table-bordered">
+    <thead><tr><th>Teacher</th><th>Course</th><th>Section</th><th>Time slot</th><th>Subject</th><th></th></tr></thead>
+    <tbody>
+    {% for a in assignments %}
+    <tr>
+        <td>{{ a.teacher.name }}</td>
+        <td>{{ a.course.crname }}</td>
+        <td>{{ a.section }}</td>
+        <td>
+            {% for code, label in time_slots %}
+                {% if code == a.time_slot %}{{ label }} <span class="text-muted">({{ code }})</span>{% endif %}
+            {% endfor %}
+        </td>
+        <td>{{ a.subject }}</td>
+        <td>
+            <form method="post" action="/teaching_assignment_delete/" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="aid" value="{{ a.aid }}" />
+                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No assignments yet.</p>
+{% endif %}
+
+<p><a href="/admin_home/">Admin home</a></p>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "TeacherDash.html" %}
+{% block m1 %}
+<h1>Edit teacher profile</h1>
+{% if data %}
+    {% for d in data %}
+    <form method="post" action="/editteacherprofile1/">
+        {% csrf_token %}
+        <input type="hidden" name="E1" value="{{ d.email }}" />
+        <p>Name <input type="text" name="t1" value="{{ d.name }}" required /></p>
+        <p>Phone <input type="text" name="t2" value="{{ d.phone }}" /></p>
+        <p>Address <textarea name="t3" rows="3" style="width:100%;max-width:480px;">{{ d.address }}</textarea></p>
+        <button type="submit">Save</button>
+    </form>
+    {% endfor %}
+{% endif %}
+{% if msg %}<p><strong>{{ msg }}</strong></p>{% endif %}
+<p><a href="/teacher_home/">Back</a></p>
+{% endblock %}

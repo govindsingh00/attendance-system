@@ -1,224 +1,31 @@
 {% extends "AdminDash.html" %}
 {% load static %}
-
 {% block m1 %}
-<style>
-    /* Main Layout */
-    .edit-student-section {
-        padding: 40px 20px;
-        background-color: #f8fafc;
-        min-height: 85vh;
-        display: flex;
-        justify-content: center;
-    }
-
-    /* Card Styling */
-    .edit-card {
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        padding: 40px;
-        width: 100%;
-        max-width: 800px; /* Thoda wide rakha hai grid ke liye */
-        border-top: 6px solid #1a73e8;
-    }
-
-    .edit-card h2 {
-        font-weight: 800;
-        color: #1e293b;
-        margin-bottom: 30px;
-        text-align: center;
-        font-size: 1.8rem;
-    }
-
-    /* Grid Form */
-    .student-form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        text-align: left;
-    }
-
-    .form-group.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .form-group label {
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #475569;
-        text-transform: uppercase;
-        margin-bottom: 8px;
-        letter-spacing: 0.5px;
-    }
-
-    .input-field {
-        width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #f1f5f9;
-        border-radius: 10px;
-        background-color: #f8fafc;
-        color: #1e293b;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        outline: none;
-    }
-
-    .input-field:focus {
-        border-color: #1a73e8;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
-    }
-
-    /* Readonly Field */
-    .input-field[readonly] {
-        background-color: #e2e8f0;
-        cursor: not-allowed;
-    }
-
-    /* Radio Group */
-    .radio-group {
-        display: flex;
-        gap: 20px;
-        padding-top: 10px;
-    }
-
-    .radio-option {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-weight: 600;
-        color: #475569;
-        cursor: pointer;
-    }
-
-    /* Submit Button */
-    .btn-submit-edit {
-        grid-column: 1 / -1;
-        background: #1a73e8;
-        color: white;
-        border: none;
-        padding: 16px;
-        border-radius: 12px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 20px;
-        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
-    }
-
-    .btn-submit-edit:hover {
-        background: #1557b0;
-        transform: translateY(-2px);
-    }
-
-    /* Message Box */
-    .status-box {
-        text-align: center;
-        background: #ecfdf5;
-        padding: 40px;
-        border-radius: 20px;
-        max-width: 500px;
-        margin: 0 auto;
-    }
-
-    .btn-continue {
-        display: inline-block;
-        margin-top: 20px;
-        background: #10b981;
-        color: white;
-        padding: 10px 25px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 700;
-    }
-</style>
-
-<div class="edit-student-section">
-    {% if data %}
-        {% for d in data %}
-        <div class="edit-card">
-            <h2>Edit Student Information</h2>
-
-            <form method="post" action="http://127.0.0.1:8000/editstdata1/">
-                {% csrf_token %}
-                
-                <div class="student-form-grid">
-                    <div class="form-group">
-                        <label>Student ID (Read-only)</label>
-                        <input type="text" class="input-field" readonly name="T1" value="{{d.stid}}" />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Student Name</label>
-                        <input type="text" class="input-field" name="T2" value="{{d.stname}}" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Father's Name</label>
-                        <input type="text" class="input-field" name="T3" value="{{d.fname}}" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label>DOB (dd/mm/yyyy)</label>
-                        <input type="text" class="input-field" name="T4" value="{{d.dob}}" placeholder="dd/mm/yyyy" required />
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Gender Selection</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="T5" value="male" {% if d.gender == 'male' %}checked{% endif %}/> MALE
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="T5" value="female" {% if d.gender == 'female' %}checked{% endif %}/> FEMALE
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="T5" value="trans" {% if d.gender == 'trans' %}checked{% endif %}/> TRANSGENDER
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Residential Address</label>
-                        <input type="text" class="input-field" name="T6" value="{{d.address}}" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Last Qualification</label>
-                        <input type="text" class="input-field" name="T7" value="{{d.lastquali}}" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label>Contact Number</label>
-                        <input type="text" class="input-field" name="T8" value="{{d.contact}}" required />
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Email Address</label>
-                        <input type="email" class="input-field" name="T9" value="{{d.email}}" required />
-                    </div>
-
-                    <button type="submit" class="btn-submit-edit">
-                        Save Updated Information
-                    </button>
-                </div>
-            </form>
-        </div>
-        {% endfor %}
-
-    {% elif msg %}
-        <div class="status-box">
-            <div style="font-size: 3rem; margin-bottom: 10px;">✅</div>
-            <h3 style="color: #065f46;">{{msg}}</h3>
-            <a href="http://127.0.0.1:8000/allstudentsAD/" class="btn-continue">CONTINUE</a>
-        </div>
-    {% endif %}
-</div>
+<h1>Edit Student Data </h1>
+{% if data %}
+    {% for d in data %}
+        <form method="post" action="http://127.0.0.1:8000/editstdata1/">
+            {% csrf_token %}
+            <p>Student Id <input type="text" readonly name="T1" value="{{d.stid}}" /></p>
+            <p>Student Name <input type="text" name="T2" value="{{d.stname}}" /></p>
+            <p>Fathers Name <input type="text" name="T3" value="{{d.fname}}" /></p>
+            <p>DOB <input type="text" name="T4" value="{{d.dob}}" placeholder="dd/mm/yyyy"/></p>
+            <p>Gender <input type="radio" name="T5" value="male"/>MALE
+                <input type="radio" name="T5" value="female"/>FEMALE
+                <input type="radio" name="T5" value="trans"/>TRANSGENDER
+            </p>
+            <p>Address <input type="text" name="T6" value="{{d.address}}" /></p>
+            <p>
+                Last Qualification <input type="text" name="T7" value="{{d.lastquali}}" />
+            </p>
+            <p>Contact <input type="text" name="T8" value="{{d.contact}}" /> </p>
+            <p>Email <input type="text" name="T9" value="{{d.email}}" /></p>
+            <p>Section <input type="text" name="T10" value="{{ d.section }}" placeholder="e.g. A, B" /></p>
+            <button type="submit">Edit Data</button>
+        </form>
+    {% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allstudentsAD/">Continue</a></p>
+{% endif %}
 {% endblock %}

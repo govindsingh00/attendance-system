@@ -1,163 +1,25 @@
 {% extends "AdminDash.html" %}
 {% load static %}
-
 {% block m1 %}
-<style>
-    /* Main Layout */
-    .delete-data-section {
-        padding: 50px 20px;
-        background-color: #fffcfc;
-        min-height: 85vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-    }
+<h1>Edit Course DATA</h1>
+{% if data %}
+{% for d in data %}
+    <form method="post" action="http://127.0.0.1:8000/deletestudentcoursedata1/">
+        {% csrf_token %}
+        <p>Course Id<input readonly type="text" name="T1" value="{{d.st_crid}}"></p>
+        <p>Student Id<input readonly type="text" name="T2" value="{{d.stid}}"></p>
+        <p>
+            Course Name
+            <input readonly type="text" value="{{d.crname}}" />
+        </p>
 
-    /* Danger Card */
-    .delete-card {
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(220, 38, 38, 0.08);
-        padding: 40px;
-        width: 100%;
-        max-width: 600px;
-        border-top: 6px solid #dc2626; /* Danger Red */
-    }
-
-    .warning-header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .warning-icon {
-        font-size: 50px;
-        color: #dc2626;
-        display: block;
-        margin-bottom: 10px;
-    }
-
-    .delete-card h2 {
-        font-weight: 800;
-        color: #1f2937;
-        margin: 0;
-    }
-
-    .delete-card p.subtitle {
-        color: #ef4444;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-
-    /* Form Fields Styling */
-    .data-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        text-align: left;
-        margin-top: 20px;
-    }
-
-    .info-box {
-        margin-bottom: 15px;
-    }
-
-    .info-box.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .info-box label {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #94a3b8;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-        letter-spacing: 0.5px;
-    }
-
-    .readonly-field {
-        width: 100%;
-        padding: 12px 15px;
-        background-color: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        color: #475569;
-        font-weight: 600;
-        cursor: not-allowed;
-        outline: none;
-    }
-
-    /* Action Button */
-    .btn-delete-confirm {
-        background: #dc2626;
-        color: white;
-        border: none;
-        padding: 16px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 25px;
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
-    }
-
-    .btn-delete-confirm:hover {
-        background: #b91c1c;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
-    }
-
-    /* Success Message */
-    .status-msg-box {
-        text-align: center;
-        background: #ecfdf5;
-        padding: 40px;
-        border-radius: 20px;
-        border: 1px solid #d1fae5;
-    }
-
-    .btn-continue {
-        display: inline-block;
-        margin-top: 20px;
-        background: #10b981;
-        color: white;
-        padding: 10px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-    }
-</style>
-
-<div class="delete-data-section">
-    {% if data %}
-    <div class="delete-card">
-        <div class="warning-header">
-            <span class="warning-icon">⚠️</span>
-            <h2>Confirm Deletion</h2>
-            <p class="subtitle">Warning: This student's course enrollment will be removed!</p>
-        </div>
-
-        {% for d in data %}
-        <form method="post" action="http://127.0.0.1:8000/deletestudentcoursedata1/">
-            {% csrf_token %}
-            
-            <div class="data-grid">
-                <div class="info-box">
-                    <label>Course ID</label>
-                    <input class="readonly-field" readonly type="text" name="T1" value="{{d.st_crid}}">
-                </div>
-
-                <div class="info-box">
-                    <label>Student ID</label>
-                    <input class="readonly-field" readonly type="text" name="T2" value="{{d.stid}}">
-                </div>
-
-                <div class="info-box full-width">
-                    <label>Course Name</label>
-                    <input class="readonly-field" readonly type="text" value="{{d.crname}}" />
-                </div>
-
-                <div class="info-box">
-                    <label
+        <p>Joining Date<input readonly type="text" value="{{d.joining}}" /> </p>
+        <p>Remark<input readonly type="text" value="{{d.remark}}" /></p>
+        <button readonly type="submit">Confirm Delete</button>
+    </form>
+{% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allstudentsAD/" >Continue</a> </p>
+{% endif %}
+{% endblock %}

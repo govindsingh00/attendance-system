@@ -8,14 +8,13 @@
             {% csrf_token %}
             <input type="hidden" name="C1" value="{{d.cid}}"/>
             <p>Course Name<input readonly name="t1" value="{{d.crname}}"/></p>
-            <p>Fees<input readonly type="text" name="t2" value="{{d.fee}}"/></p>
-            <p>Duration<input readonly type="text" name="t3" value="{{d.duration}}"/></p>
-            <p>Remark<input readonly type="text" name="t4" value="{{d.remark}}"/></p>
+            <p>Duration<input readonly type="text" name="t2" value="{{d.duration}}"/></p>
+            <p>Remark<input readonly type="text" name="t3" value="{{d.remark}}"/></p>
             <button type="submit">Confirm Delete</button>
         </form>
     {% endfor %}
 {% elif mssg %}
-    <h3>{{msg}}</h3>
+    <h3>{{mssg}}</h3>
     <p><a href="http://127.0.0.1:8000/allcourses/">See Changes</a></p>
 {% endif %}
 {% endblock %}

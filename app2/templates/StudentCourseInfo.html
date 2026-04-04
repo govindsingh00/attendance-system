@@ -1,14 +1,13 @@
 {% extends "StudentDash.html" %}
 {% load static %}
 {% block s1 %}
-<h2 class="text-center">Your Joined Courses' Information</h2>
+<h2 class="text-center">Your enrolled courses</h2>
 <br>
 {% if data1 %}
     <table border="2px" cellpadding="10px" width="100%" style="border-collapse:collapse;">
         <thead>
             <th>COURSE ID</th>
             <th>COURSE NAME</th>
-            <th>COURSE FEE</th>
             <th>JOINING DATE</th>
             <th>REMARK</th>
         </thead>
@@ -18,46 +17,13 @@
             <tr>
                 <td>{{d1.st_crid}}</td>
                 <td>{{d1.crname}}</td>
-                <td>{{d1.fee}}</td>
                 <td>{{d1.joining}}</td>
                 <td>{{d1.remark}}</td>
             </tr>
     {% endfor %}
         </tbody>
         </table>
-{% endif %}
-<hr>
-<h2 class="text-center mt-5">Payment Details</h2>
-{% if data2 %}
-    <table border="2px" cellpadding="10px" width="100%" style="border-collapse:collapse;">
-        <thead>
-            <th>TRANSECTION ID</th>
-            <th>COURSE ID</th>
-            <th>INSTALLMENT AMOUNT</th>
-            <th>PAYMENT DATE</th>
-            <th>REMARK</th>
-        </thead>
-
-    {% for d2 in data2 %}
-        <tbody>
-            <tr>
-                <td>{{d2.tid}}</td>
-                <td>{{d2.stcrid}}</td>
-                <td>{{d2.inst}}</td>
-                <td>{{d2.sub_date}}</td>
-                <td>{{d2.remark}}</td>
-            </tr>
-    {% endfor %}
-        </tbody>
-        </table>
-<hr>
-{% endif %}
-
-{% if data3 %}
-<div class="text-center mt-3">
-    <h3>Total Amount: {{data3.0}}</h3>
-    <h3>Paid Amount: {{data3.1}}</h3>
-    <h3>Due Amount: {{data3.2}}</h3>
-    </div>
+{% else %}
+    <p>No courses enrolled.</p>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,92 @@
+{% extends "TeacherDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1>Mark attendance</h1>
+{% if not has_teaching_assignments %}
+<div class="alert alert-warning" role="alert">
+    <strong>No classes assigned to you yet.</strong> An admin must open <strong>Teaching assignments</strong> (from the admin dashboard) and add one row per class: your name, course, section, and time slot. Until then, the dropdowns below stay empty.
+</div>
+{% endif %}
+<p>Select section, course, and time slot, then load the class list. Set Present or Absent for each student and save.</p>
+<p class="text-muted small"><strong>How it works:</strong> (1) Section → <em>Apply selection</em>. (2) Course → <em>Apply selection</em>. (3) Only <strong>time slots from your teaching assignments</strong> for that section and course appear — not the full timetable. (4) Time slot → <em>Apply selection</em> to load students.</p>
+{% if section and selected_course and not time_slots %}
+<p class="text-warning small"><strong>Note:</strong> No time slots are assigned to you for this section and course. Ask an admin to add them on the Teaching assignments page.</p>
+{% endif %}
+
+{% if error %}
+<p style="color:#b00020;"><strong>{{ error }}</strong></p>
+{% endif %}
+{% if msg %}
+<p style="color:#0d6efd;"><strong>{{ msg }}</strong></p>
+{% endif %}
+
+<form method="get" action="/mark_attendance/">
+    <p>
+        <label>Section</label><br/>
+        <select name="section" required>
+            <option value="">—</option>
+            {% for s in sections %}
+            <option value="{{ s }}" {% if section == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label>Course / subject</label><br/>
+        <select name="cid">
+            <option value="">—</option>
+            {% for c in courses_for_section %}
+            <option value="{{ c.cid }}" {% if selected_course and selected_course.cid == c.cid %}selected{% endif %}>{{ c.crname }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        <label>Time slot</label><br/>
+        <select name="time_slot">
+            <option value="">—</option>
+            {% for code,label in time_slots %}
+            <option value="{{ code }}" {% if time_slot == code %}selected{% endif %}>{{ label }} ({{ code }})</option>
+            {% endfor %}
+        </select>
+    </p>
+    <button type="submit">Apply selection</button>
+</form>
+
+{% if student_rows %}
+<hr/>
+<form method="post" action="/mark_attendance/">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="save" />
+    <input type="hidden" name="section" value="{{ section }}" />
+    <input type="hidden" name="cid" value="{{ selected_course.cid }}" />
+    <input type="hidden" name="time_slot" value="{{ time_slot }}" />
+
+    <table class="table table-bordered table-sm" style="max-width:720px;">
+        <thead><tr><th>Student</th><th>Attendance</th></tr></thead>
+        <tbody>
+        {% for row in student_rows %}
+        <tr>
+            <td>{{ row.st.stname }}</td>
+            <td>
+                <label><input type="radio" name="status_{{ row.st.stid }}" value="Present" {% if row.status == 'Present' %}checked{% endif %}/> Present</label>
+                <label><input type="radio" name="status_{{ row.st.stid }}" value="Absent" {% if row.status != 'Present' %}checked{% endif %}/> Absent</label>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p>
+        <button type="submit" class="btn btn-primary">Save attendance</button>
+    </p>
+</form>
+
+<p>
+    <a class="btn btn-outline-secondary" href="/mark_attendance/face/?section={{ section|urlencode }}&amp;cid={{ selected_course.cid }}&amp;time_slot={{ time_slot|urlencode }}">Take attendance (face verification)</a>
+</p>
+<p class="text-muted small">Face authentication will be connected to this step in a later release.</p>
+{% elif section and selected_course and time_slot and not error %}
+<p>No students found for this section and course. Ensure students have the correct section and are enrolled in this course.</p>
+{% endif %}
+
+<p><a href="/teacher_home/">Back to dashboard</a></p>
+{% endblock %}
