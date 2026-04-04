@@ -1,61 +1,248 @@
 
 {% extends "AdminDash.html" %}
 {% load static %}
-{% block m1 %}
-<h1> Student Registration Form </h1>
-<p class="p1"> Fill out the form for registration </p>
-<hr><hr>
-<form method="post" action="http://127.0.0.1:8000/student_reg/">
-    {% csrf_token %}
-<p> Student Name <br>
-    <input type="text" name="t1" placeholder="Enter Your First Name"/>
-    <input type="text" name="t2" placeholder="Enter Your Last Name"/>
-</p>
-<p> Father's Name
-    <input type="text" name="t111" placeholder="Enter Fathers Name" />
-</p>
-<p> Date of Birth   <input name="t3" pattern="\d{2}/\d{2}/\d{4}" type="text" placeholder="dd/mm/yyyy" /> </p>
-<p> Gender <input type="radio" name="R1" value="Male" /> Male
-<input type="radio" name="R1" value="Female" /> Female
-<input type="radio" name="R1" value="Transgender" /> Transgender
-</p>
-<p> Permanent Address <br>
-    <input type="text" name="t4" placeholder="Address line 1"/> <br>
-    <input type="text" name="t5" placeholder="Address line 2"/></p>
-<p> City <input type="text" name="t6"/></p>
-<p> Pin-code <input type="text" name="t7" /></p>
-<p> State <input type="text" name="t8" /></p>
-<p> Last Qualification Details <br>
-    <select class="txt3" name="t9">
-        <option> B.Sc </option>
-        <option> M.sc </option>
-        <option> BCA </option>
-        <option> B.com </option>
-        <option> M.com </option>
-        <option> 12th </option>
-        <option> 10th </option>
-        <option> pre-nurture </option>
-        <option> B.tech </option>
-        <option> M.tech </option>
-    </select>
-</p>
-<p> contact <br>
-    <input type="text" name="t222"/>
-</p>
-<p> Email <br>
-    <input type="text" name="t11"/>
-</p>
-<p> Password <br>
-    <input type="password" name="t12"/>
-</p>
-<p> Confirm Password <br>
-    <input type="password" name="t13"/>
-</p>
-<p> <button type="reset" > Clear Fields</button></p>
-<P> <button type="submit" > Submit Form</button></P>
-</form>
-{% if msg %}
-    <h3>{{msg}}</h3>
-{% endif %}
-{% endblock %}
 
+{% block m1 %}
+<style>
+    /* Main Layout */
+    .reg-container {
+        padding: 40px 20px;
+        background-color: #f8fafc;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+    }
+
+    /* Form Card */
+    .reg-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        padding: 40px;
+        width: 100%;
+        max-width: 850px;
+        border-top: 6px solid #1a73e8;
+    }
+
+    .reg-card h1 {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 5px;
+        font-size: 1.8rem;
+    }
+
+    .p1 {
+        color: #64748b;
+        margin-bottom: 30px;
+        font-size: 1rem;
+    }
+
+    /* Grid System */
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #475569;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Input Styling */
+    .input-field, .select-field {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #f1f5f9;
+        border-radius: 10px;
+        background-color: #f8fafc;
+        color: #1e293b;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .input-field:focus, .select-field:focus {
+        border-color: #1a73e8;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.1);
+    }
+
+    /* Gender Radio Styling */
+    .radio-group {
+        display: flex;
+        gap: 20px;
+        padding: 10px 0;
+    }
+
+    .radio-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #475569;
+        cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn-row {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-reg {
+        flex: 1;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit {
+        background: #1a73e8;
+        color: white;
+        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+    }
+
+    .btn-submit:hover { background: #1557b0; transform: translateY(-2px); }
+
+    .btn-reset {
+        background: #f1f5f9;
+        color: #475569;
+    }
+
+    .btn-reset:hover { background: #e2e8f0; }
+
+    .status-msg {
+        margin-top: 20px;
+        padding: 15px;
+        background: #ecfdf5;
+        border-radius: 10px;
+        color: #065f46;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+        .form-grid { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="reg-container">
+    <div class="reg-card">
+        <h1>Student Registration</h1>
+        <p class="p1">Fill out the official registration form below.</p>
+
+        <form method="post" action="http://127.0.0.1:8000/student_reg/">
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" class="input-field" name="t1" placeholder="First Name" required />
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" class="input-field" name="t2" placeholder="Last Name" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Father's Name</label>
+                    <input type="text" class="input-field" name="t111" placeholder="Father's Full Name" required />
+                </div>
+                <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="text" class="input-field" name="t3" pattern="\d{2}/\d{2}/\d{4}" placeholder="dd/mm/yyyy" required />
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Gender</label>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="R1" value="Male" /> Male</label>
+                        <label class="radio-item"><input type="radio" name="R1" value="Female" /> Female</label>
+                        <label class="radio-item"><input type="radio" name="R1" value="Transgender" /> Transgender</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Address Line 1</label>
+                    <input type="text" class="input-field" name="t4" placeholder="Street/House No." />
+                </div>
+                <div class="form-group">
+                    <label>Address Line 2</label>
+                    <input type="text" class="input-field" name="t5" placeholder="Area/Locality" />
+                </div>
+
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" class="input-field" name="t6" />
+                </div>
+                <div class="form-group">
+                    <label>Pin-code</label>
+                    <input type="text" class="input-field" name="t7" />
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" class="input-field" name="t8" />
+                </div>
+
+                <div class="form-group">
+                    <label>Last Qualification</label>
+                    <select class="select-field" name="t9">
+                        <option>B.Sc</option><option>M.sc</option><option>BCA</option>
+                        <option>B.com</option><option>M.com</option><option>12th</option>
+                        <option>10th</option><option>pre-nurture</option>
+                        <option>B.tech</option><option>M.tech</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Contact Number</label>
+                    <input type="text" class="input-field" name="t222" placeholder="Phone No." />
+                </div>
+                <div class="form-group full-width">
+                    <label>Email Address</label>
+                    <input type="email" class="input-field" name="t11" placeholder="student@example.com" />
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="input-field" name="t12" placeholder="••••••••" />
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" class="input-field" name="t13" placeholder="••••••••" />
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button type="reset" class="btn-reg btn-reset">Clear Fields</button>
+                <button type="submit" class="btn-reg btn-submit">Submit Registration</button>
+            </div>
+        </form>
+
+        {% if msg %}
+            <div class="status-msg">
+                {{msg}}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

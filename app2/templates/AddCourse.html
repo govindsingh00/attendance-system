@@ -1,19 +1,57 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+
 {% block m1 %}
-<h1> Available Courses </h1>
-{% if data %}
-    {% for d in data %}
+<style>
+  .page-wrap { padding: 2rem 1.5rem; max-width: 860px; margin: 0 auto; }
+  .page-title { font-size: 1.6rem; font-weight: 600; margin-bottom: 1.5rem; color: #1a1a2e; }
+  .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .course-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+  .course-name { font-size: 1rem; font-weight: 600; color: #1a1a2e; margin: 0; }
+  .fee-badge { font-size: 0.75rem; color: #065f46; background: #d1fae5; padding: 3px 10px; border-radius: 999px; align-self: flex-start; font-weight: 500; }
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label { font-size: 0.75rem; color: #6b7280; font-weight: 500; }
+  .field-input { width: 100%; box-sizing: border-box; background: #f9fafb; border: 1px solid #d1d5db; border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; color: #374151; outline: none; }
+  .field-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.15); }
+  .field-input[readonly] { color: #9ca3af; cursor: default; background: #f3f4f6; }
+  .add-btn { width: 100%; padding: 9px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: background 0.15s; margin-top: 4px; }
+  .add-btn:hover { background: #1d4ed8; }
+  .empty-msg { text-align: center; padding: 3rem; color: #6b7280; border: 1.5px dashed #d1d5db; border-radius: 12px; font-size: 1rem; }
+</style>
+
+<div class="page-wrap">
+  <h1 class="page-title">Available Courses</h1>
+
+  {% if data %}
+    <div class="courses-grid">
+      {% for d in data %}
         <form method="post" action="http://127.0.0.1:8000/add_course1/">
-            <p>Course Name <input type="text" readonly name="t1" value="{{d[0]}}" /></p>
-            <p>Fee<input type="text" readonly name="t2" value="{{d[1]}}" /></p>
-            <p>Joining Date<input type="text" name="t3" placeholder="dd/mm/yyyy" /></p>
-            <p>Remark<input type="text" name="t4" value="{{d[3]}}" /></p>
-            <p><input type="hidden" name="ID1" value="{{stid}}" />
-                <button type="submit" >Add </button>
+          {% csrf_token %}
+          <div class="course-card">
+            <p class="course-name">{{ d.0 }}</p>
+            <span class="fee-badge">₹{{ d.1 }}</span>
+
+            <input type="hidden" name="t1" value="{{ d.0 }}" />
+            <input type="hidden" name="t2" value="{{ d.1 }}" />
+            <input type="hidden" name="ID1" value="{{ stid }}" />
+
+            <div class="field-group">
+              <label class="field-label">Joining Date</label>
+              <input class="field-input" type="text" name="t3" placeholder="dd/mm/yyyy" required />
+            </div>
+            <div class="field-group">
+              <label class="field-label">Remark</label>
+              <input class="field-input" type="text" name="t4" value="{{ d.3 }}" />
+            </div>
+            <button type="submit" class="add-btn">Add Course</button>
+          </div>
         </form>
-    {% endfor %}
-{% elif msg %}
-    <h4>{{msg}}</h4>
-{% endif %}
+      {% endfor %}
+    </div>
+
+  {% elif msg %}
+    <div class="empty-msg">{{ msg }}</div>
+  {% endif %}
+</div>
 {% endblock %}

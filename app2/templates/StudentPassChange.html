@@ -1,20 +1,180 @@
 {% extends "studentDash.html" %}
 {% load static %}
+
 {% block s1 %}
-<h1>Change Password</h1>
-{% if data %}
-    {% for d in data %}
-        <form method="post" action="http://127.0.0.1:8000/student_pass_change1/">
-            {% csrf_token %}
-            <p>Old Password:<input type="text" name="t1" /> </p>
-            <p>New Password:<input type="text" name="t2" /> </p>
-            <p>Confirm Password:<input type="text" name="t3" /> </p>
-            <input type="hidden" name="E1" value="{{d.email}}"/>
-            <button type="submit">Change Password</button>
-        </form>
-    {% endfor %}
-{% elif msg %}
-    <h3>{{msg}}</h3>
-    <p><a href="http://127.0.0.1:8000/logout/">Click Here to Save Changes</a><br><strong>Warning!! you will be logout by click</strong></p>
-{% endif %}
+<style>
+    /* Main Layout */
+    .password-section {
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 80vh;
+    }
+
+    /* Card Styling */
+    .password-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        padding: 40px;
+        width: 100%;
+        max-width: 450px;
+        border-top: 6px solid #f6ad55; /* Orange accent for security settings */
+    }
+
+    .password-card h2 {
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 1.6rem;
+    }
+
+    .subtitle {
+        color: #64748b;
+        font-size: 0.9rem;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    /* Form Design */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #475569;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+    }
+
+    .input-field {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        background-color: #f8fafc;
+        color: #1e293b;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .input-field:focus {
+        border-color: #f6ad55;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 4px rgba(246, 173, 85, 0.1);
+    }
+
+    /* Update Button */
+    .btn-update-pass {
+        background: #f6ad55;
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-weight: 700;
+        width: 100%;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        box-shadow: 0 4px 12px rgba(246, 173, 85, 0.2);
+    }
+
+    .btn-update-pass:hover {
+        background: #ed8936;
+        transform: translateY(-2px);
+    }
+
+    /* Success/Message Box */
+    .msg-card {
+        text-align: center;
+        background: #fff5f5;
+        padding: 35px;
+        border-radius: 20px;
+        border: 1px solid #feb2b2;
+        max-width: 450px;
+    }
+
+    .btn-logout-save {
+        display: inline-block;
+        margin-top: 20px;
+        background: #e53e3e;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+    .btn-logout-save:hover {
+        background: #c53030;
+        color: white;
+    }
+
+    .warning-text {
+        color: #c53030;
+        font-size: 0.85rem;
+        margin-top: 15px;
+        display: block;
+    }
+</style>
+
+<div class="password-section">
+    {% if data %}
+        {% for d in data %}
+        <div class="password-card">
+            <h2>Change Password</h2>
+            <p class="subtitle">Ensure your account is using a long, random password to stay secure.</p>
+
+            <form method="post" action="http://127.0.0.1:8000/student_pass_change1/">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label>Old Password</label>
+                    <input type="password" class="input-field" name="t1" placeholder="••••••••" required />
+                </div>
+
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" class="input-field" name="t2" placeholder="••••••••" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" class="input-field" name="t3" placeholder="••••••••" required />
+                </div>
+
+                <input type="hidden" name="E1" value="{{d.email}}"/>
+
+                <button type="submit" class="btn-update-pass">
+                    🔒 Update Password
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+
+    {% elif msg %}
+        <div class="msg-card">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🛡️</div>
+            <h3 style="color: #9b2c2c; font-weight: 800;">{{msg}}</h3>
+            <p style="color: #c53030;">Security update requires a fresh session.</p>
+            
+            <a href="http://127.0.0.1:8000/logout/" class="btn-logout-save">
+                Confirm & Logout
+            </a>
+            
+            <strong class="warning-text">
+                ⚠️ Warning: You will be logged out immediately to apply changes.
+            </strong>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
