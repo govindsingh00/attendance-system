@@ -49,3 +49,75 @@
 - One STUDENT has many ATTENDANCE records
 - Each face detection creates one FACE_LOG entry
 - One TEACHER can teach many SUBJECTS
+
+
+
+
+
+
+
+
+
+## Sample SQL Queries
+
+### Create USER Table
+CREATE TABLE USER (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50),
+  email VARCHAR(100),
+  role VARCHAR(10)
+);
+
+### Create SUBJECT Table
+CREATE TABLE SUBJECT (
+  id SERIAL PRIMARY KEY,
+  subject_name VARCHAR(100),
+  teacher_id INT
+);
+
+### Create ATTENDANCE Table
+CREATE TABLE ATTENDANCE (
+  id SERIAL PRIMARY KEY,
+  student_id INT,
+  subject_id INT,
+  attendance_date DATE,
+  status VARCHAR(10)
+);
+
+---
+
+## Sample Data
+
+### USER Table
+| id | username | role |
+|----|----------|------|
+| 1  | navneet  | student |
+| 2  | sir1     | teacher |
+
+### SUBJECT Table
+| id | subject_name |
+|----|--------------|
+| 1  | Mathematics  |
+| 2  | DBMS         |
+
+### ATTENDANCE Table
+| id | student_id | subject_id | status |
+|----|------------|------------|--------|
+| 1  | 1          | 1          | Present |
+
+---
+
+## Constraints
+
+- USER.id is primary key
+- SUBJECT.teacher_id is foreign key
+- ATTENDANCE.student_id is foreign key
+- ATTENDANCE.subject_id is foreign key
+
+---
+
+## Notes
+
+- One student can have multiple attendance records
+- One subject can have multiple students
+- Attendance is recorded daily
