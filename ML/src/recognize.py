@@ -8,7 +8,7 @@ class FaceRecognizer:
     """Handles real-time face recognition using saved face encodings."""
 
     def __init__(self, encodings_path: str = "models/encodings.json",
-                 model_name: str = "VGG-Face", threshold: float = 0.6):
+                 model_name: str = "ArcFace", threshold: float = 0.4):
         self.encodings_path = encodings_path
         self.model_name = model_name
         self.threshold = threshold
@@ -30,7 +30,7 @@ class FaceRecognizer:
 
     def _initialize_camera(self):
         """Initialize the webcam."""
-        self.cam = cv2.VideoCapture(0)
+        self.cam = cv2.VideoCapture(1)
         if not self.cam.isOpened():
             raise RuntimeError("Could not open camera.")
 
