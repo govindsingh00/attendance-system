@@ -114,6 +114,15 @@ def login(request):
     else:
         return render(request,"Login.html")
 
+def home(request):
+    return render(request,"Index.html")
+    
+def about(request):
+    return render(request,"About.html")
+
+def contact(request):
+    return render(request,"contact.html")
+
 def logout(request):
     try:
         del request.session["email"]
