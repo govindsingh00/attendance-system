@@ -2,3 +2,8 @@ asgiref==3.8.1
 Django==5.1
 sqlparse==0.5.1
 tzdata==2024.1
+deepface==0.0.93
+opencv-python==4.9.0.80
+numpy==1.26.4
+tf-keras==2.15.0
+requests==2.31.0
