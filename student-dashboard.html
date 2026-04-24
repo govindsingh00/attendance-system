@@ -1,0 +1,349 @@
+<!--
+  File: student-dashboard.html
+  Role: Student
+  Route: /student/dashboard
+  Purpose: Let students view their attendance statistics, trends, and recent records.
+  Features: Stat cards, Chart.js line chart for monthly attendance trend, subject-wise attendance cards, recent attendance records table.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard — Smart Attend</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================================
+       NAVBAR
+       ============================================ -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="student-dashboard.html">
+        <i class="fas fa-graduation-cap"></i>
+        Smart Attend
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#studentNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="studentNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="student-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="view-attendance.html">My Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a class="btn btn-outline-custom btn-sm" href="login.html">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero-section hero-small" style="background-image: url('https://images.unsplash.com/photo-1427504740708-899386a95281?w=1920&q=80');">
+    <div class="container">
+      <h1>Student Dashboard</h1>
+      <p>Track your attendance, view trends, and stay on top of your classes.</p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STATS SECTION
+       ============================================ -->
+  <section class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-blue">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <div class="stat-value">92.4%</div>
+            <div class="stat-label">Overall Attendance</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-navy">
+              <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-value">148</div>
+            <div class="stat-label">Classes Present</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-blue">
+              <i class="fas fa-times-circle"></i>
+            </div>
+            <div class="stat-value">12</div>
+            <div class="stat-label">Classes Absent</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-navy">
+              <i class="fas fa-triangle-exclamation"></i>
+            </div>
+            <div class="stat-value">Safe</div>
+            <div class="stat-label">Defaulter Status</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CHART & SUBJECTS
+       ============================================ -->
+  <section class="section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Monthly Attendance Trend -->
+        <div class="col-lg-7" data-aos="fade-up">
+          <div class="card-custom h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-navy">Monthly Attendance Trend</h5>
+              <select class="form-control-custom" style="width:auto;">
+                <option>This Semester</option>
+                <option>Last Semester</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas id="studentLineChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subject-wise Attendance -->
+        <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-custom h-100">
+            <h5 class="mb-3 text-navy">Subject-wise Attendance</h5>
+            <div class="d-flex flex-column gap-3">
+              <div class="p-3 rounded-3" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-semibold text-dark"><i class="fas fa-laptop-code text-accent me-2"></i>Data Structures</span>
+                  <span class="badge-present">96%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div class="progress-bar" role="progressbar" style="width: 96%; background: var(--accent-blue);" aria-valuenow="96" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="small text-muted mt-1">46 / 48 classes attended</div>
+              </div>
+              <div class="p-3 rounded-3" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-semibold text-dark"><i class="fas fa-microchip text-accent me-2"></i>Computer Networks</span>
+                  <span class="badge-present">91%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div class="progress-bar" role="progressbar" style="width: 91%; background: var(--accent-blue);" aria-valuenow="91" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="small text-muted mt-1">41 / 45 classes attended</div>
+              </div>
+              <div class="p-3 rounded-3" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-semibold text-dark"><i class="fas fa-database text-accent me-2"></i>DBMS</span>
+                  <span class="badge-present">88%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div class="progress-bar" role="progressbar" style="width: 88%; background: #f59e0b;" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="small text-muted mt-1">35 / 40 classes attended</div>
+              </div>
+              <div class="p-3 rounded-3" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="fw-semibold text-dark"><i class="fas fa-brain text-accent me-2"></i>Machine Learning</span>
+                  <span class="badge-absent">76%</span>
+                </div>
+                <div class="progress" style="height: 8px;">
+                  <div class="progress-bar" role="progressbar" style="width: 76%; background: #ef4444;" aria-valuenow="76" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="small text-muted mt-1">26 / 34 classes attended</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       RECENT ATTENDANCE RECORDS
+       ============================================ -->
+  <section class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="card-custom" data-aos="fade-up">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0 text-navy">Recent Attendance Records</h5>
+          <a href="view-attendance.html" class="small">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Subject</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Marked By</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Apr 23, 2026</td>
+                <td><i class="fas fa-laptop-code text-muted me-2"></i>Data Structures</td>
+                <td>09:00 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td>Prof. Ananya Iyer</td>
+              </tr>
+              <tr>
+                <td>Apr 23, 2026</td>
+                <td><i class="fas fa-microchip text-muted me-2"></i>Computer Networks</td>
+                <td>11:00 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td>Dr. Kavita Rao</td>
+              </tr>
+              <tr>
+                <td>Apr 22, 2026</td>
+                <td><i class="fas fa-database text-muted me-2"></i>DBMS</td>
+                <td>02:00 PM</td>
+                <td><span class="badge-absent">Absent</span></td>
+                <td>Prof. Rajesh Kumar</td>
+              </tr>
+              <tr>
+                <td>Apr 22, 2026</td>
+                <td><i class="fas fa-brain text-muted me-2"></i>Machine Learning</td>
+                <td>04:00 PM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td>Dr. Kavita Rao</td>
+              </tr>
+              <tr>
+                <td>Apr 21, 2026</td>
+                <td><i class="fas fa-laptop-code text-muted me-2"></i>Data Structures</td>
+                <td>09:00 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td>Prof. Ananya Iyer</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5><i class="fas fa-graduation-cap me-2"></i>Smart Attend</h5>
+          <p class="small opacity-75">Modernizing college attendance with face detection technology.</p>
+        </div>
+        <div class="col-md-2">
+          <h5>Quick Links</h5>
+          <a href="index.html">Home</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-md-2">
+          <h5>Student</h5>
+          <a href="student-dashboard.html">Dashboard</a>
+          <a href="view-attendance.html">My Attendance</a>
+          <a href="profile.html">Profile</a>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p class="small opacity-75 mb-1"><i class="fas fa-envelope me-2"></i>support@smartattend.edu</p>
+          <p class="small opacity-75 mb-1"><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Smart Attend. All rights reserved. College Project Demo.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Shared JS -->
+  <script src="js/main.js"></script>
+
+  <!-- Student Dashboard Charts -->
+  <script>
+    // Line Chart — Monthly Attendance Trend
+    const ctxLine = document.getElementById('studentLineChart').getContext('2d');
+    new Chart(ctxLine, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Attendance %',
+          data: [88, 90, 85, 92, 94, 92],
+          borderColor: '#2196F3',
+          backgroundColor: 'rgba(33, 150, 243, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#1a3c6e',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: false,
+            min: 60,
+            max: 100,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: {
+              callback: function(value) { return value + '%'; },
+              font: { family: 'Inter' }
+            }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter' } }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

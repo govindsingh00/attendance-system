@@ -1,0 +1,349 @@
+<!--
+  File: mark-attendance.html
+  Role: Teacher
+  Route: /teacher/mark-attendance
+  Purpose: Allow teachers to mark attendance using a styled face detection interface.
+  Features: Class/session selector, styled webcam area with scanning animation and face overlay corners, demo student list with auto-check simulation, submit attendance button.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mark Attendance — Smart Attend</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================================
+       NAVBAR
+       ============================================ -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="teacher-dashboard.html">
+        <i class="fas fa-graduation-cap"></i>
+        Smart Attend
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#teacherNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="teacherNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link" href="teacher-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link active" href="mark-attendance.html">Mark Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="view-attendance.html">View Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a class="btn btn-outline-custom btn-sm" href="login.html">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero-section hero-small" style="background-image: url('https://images.unsplash.com/photo-1504384308090-c54be3855833?w=1920&q=80');">
+    <div class="container">
+      <h1>Mark Attendance</h1>
+      <p>Use face detection to automatically mark student attendance for your session.</p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       SESSION SELECTOR
+       ============================================ -->
+  <section class="section-padding bg-light-custom pb-3">
+    <div class="container">
+      <div class="card-custom" data-aos="fade-up">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <label class="form-label-custom">Select Class</label>
+            <select class="form-control-custom w-100" id="classSelect">
+              <option>Data Structures — CSE-A</option>
+              <option>Computer Networks — CSE-B</option>
+              <option>DBMS — CSE-A</option>
+              <option>Machine Learning — ECE-A</option>
+            </select>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-custom">Date</label>
+            <input type="date" class="form-control-custom w-100" value="2026-04-23">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-custom">Time Slot</label>
+            <select class="form-control-custom w-100">
+              <option>09:00 AM — 10:00 AM</option>
+              <option>11:00 AM — 12:00 PM</option>
+              <option>02:00 PM — 03:00 PM</option>
+              <option>04:00 PM — 05:00 PM</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-navy w-100" id="startSessionBtn"><i class="fas fa-play me-1"></i> Start</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FACE DETECTION AREA
+       ============================================ -->
+  <section class="section-padding pt-3">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Webcam / Face Detection Area -->
+        <div class="col-lg-7" data-aos="fade-up">
+          <div class="card-custom">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-navy"><i class="fas fa-camera me-2"></i>Face Detection Camera</h5>
+              <span class="badge-role-admin" id="statusBadge"><i class="fas fa-circle text-success me-1" style="font-size:0.5rem;vertical-align:middle;"></i>Ready</span>
+            </div>
+            <div class="face-detection-area mb-3" id="faceArea">
+              <div class="webcam-placeholder" id="webcamPlaceholder">
+                <i class="fas fa-video"></i>
+                <p class="mb-0 mt-2">Click "Start Session" to begin face detection</p>
+                <p class="small opacity-50">Camera will activate automatically</p>
+              </div>
+              <!-- Scanning overlay (hidden by default) -->
+              <div class="face-detection-overlay d-none" id="scanOverlay">
+                <div class="face-corner top-left"></div>
+                <div class="face-corner top-right"></div>
+                <div class="face-corner bottom-left"></div>
+                <div class="face-corner bottom-right"></div>
+                <div class="scan-line"></div>
+                <!-- Demo face boxes -->
+                <div class="face-box" style="top: 18%; left: 25%; width: 18%; height: 22%;" id="faceBox1">
+                  <span class="small text-white position-absolute" style="top:-20px;left:0;background:rgba(0,0,0,0.6);padding:2px 8px;border-radius:4px;font-size:0.7rem;">Rahul S.</span>
+                </div>
+                <div class="face-box" style="top: 22%; left: 55%; width: 16%; height: 20%;" id="faceBox2">
+                  <span class="small text-white position-absolute" style="top:-20px;left:0;background:rgba(0,0,0,0.6);padding:2px 8px;border-radius:4px;font-size:0.7rem;">Priya D.</span>
+                </div>
+                <div class="face-box" style="top: 15%; left: 78%; width: 15%; height: 20%;" id="faceBox3">
+                  <span class="small text-white position-absolute" style="top:-20px;left:0;background:rgba(0,0,0,0.6);padding:2px 8px;border-radius:4px;font-size:0.7rem;">Arjun M.</span>
+                </div>
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 justify-content-center">
+              <button class="btn btn-primary-custom" id="simulateDetectBtn" disabled><i class="fas fa-wand-magic-sparkles me-1"></i> Simulate Detection</button>
+              <button class="btn btn-outline-custom" id="stopSessionBtn" disabled><i class="fas fa-stop me-1"></i> Stop</button>
+            </div>
+            <div class="alert alert-info mt-3 mb-0 small" role="alert" id="scanAlert" style="display:none;">
+              <i class="fas fa-circle-info me-1"></i> <span id="scanMessage">Scanning for faces...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student List -->
+        <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-custom h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-navy">Student List</h5>
+              <div class="small text-muted"><span id="presentCount">0</span> / <span id="totalCount">48</span> Present</div>
+            </div>
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+              <table class="table-custom">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Student</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                  <tr data-student="Rahul Sharma">
+                    <td>1</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Rahul Sharma</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                  <tr data-student="Priya Desai">
+                    <td>2</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Priya Desai</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                  <tr data-student="Arjun Mehta">
+                    <td>3</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Arjun Mehta</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                  <tr data-student="Sneha Nair">
+                    <td>4</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Sneha Nair</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                  <tr data-student="Vikram Patel">
+                    <td>5</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Vikram Patel</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                  <tr data-student="Ananya Iyer">
+                    <td>6</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Ananya Iyer</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                  <tr data-student="Karan Joshi">
+                    <td>7</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Karan Joshi</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                  <tr data-student="Neha Gupta">
+                    <td>8</td>
+                    <td><i class="fas fa-user-circle text-muted me-2"></i>Neha Gupta</td>
+                    <td><input type="checkbox" class="form-check-input attendance-check"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="mt-3">
+              <button class="btn btn-primary-custom w-100" id="submitAttendanceBtn"><i class="fas fa-paper-plane me-1"></i> Submit Attendance</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5><i class="fas fa-graduation-cap me-2"></i>Smart Attend</h5>
+          <p class="small opacity-75">Modernizing college attendance with face detection technology.</p>
+        </div>
+        <div class="col-md-2">
+          <h5>Quick Links</h5>
+          <a href="index.html">Home</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-md-2">
+          <h5>Teacher</h5>
+          <a href="teacher-dashboard.html">Dashboard</a>
+          <a href="mark-attendance.html">Mark Attendance</a>
+          <a href="view-attendance.html">View Attendance</a>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p class="small opacity-75 mb-1"><i class="fas fa-envelope me-2"></i>support@smartattend.edu</p>
+          <p class="small opacity-75 mb-1"><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Smart Attend. All rights reserved. College Project Demo.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- face-api.js (for UI/demo integration) -->
+  <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+  <!-- Shared JS -->
+  <script src="js/main.js"></script>
+
+  <!-- Mark Attendance Demo Logic -->
+  <script>
+    const startBtn = document.getElementById('startSessionBtn');
+    const stopBtn = document.getElementById('stopSessionBtn');
+    const simBtn = document.getElementById('simulateDetectBtn');
+    const webcamPlaceholder = document.getElementById('webcamPlaceholder');
+    const scanOverlay = document.getElementById('scanOverlay');
+    const statusBadge = document.getElementById('statusBadge');
+    const scanAlert = document.getElementById('scanAlert');
+    const scanMessage = document.getElementById('scanMessage');
+    const presentCountEl = document.getElementById('presentCount');
+    const submitBtn = document.getElementById('submitAttendanceBtn');
+    let sessionActive = false;
+
+    function updatePresentCount() {
+      const checked = document.querySelectorAll('.attendance-check:checked').length;
+      presentCountEl.textContent = checked;
+    }
+
+    document.querySelectorAll('.attendance-check').forEach(cb => {
+      cb.addEventListener('change', updatePresentCount);
+    });
+
+    startBtn.addEventListener('click', function() {
+      sessionActive = true;
+      webcamPlaceholder.innerHTML = '<i class="fas fa-video"></i><p class="mb-0 mt-2">Camera Active</p><p class="small opacity-50">Waiting for face detection...</p>';
+      scanOverlay.classList.remove('d-none');
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+      simBtn.disabled = false;
+      statusBadge.innerHTML = '<i class="fas fa-circle text-success me-1" style="font-size:0.5rem;vertical-align:middle;"></i>Live';
+      scanAlert.style.display = 'block';
+      scanMessage.textContent = 'Camera active. Click "Simulate Detection" to detect faces.';
+    });
+
+    stopBtn.addEventListener('click', function() {
+      sessionActive = false;
+      webcamPlaceholder.innerHTML = '<i class="fas fa-video"></i><p class="mb-0 mt-2">Click "Start Session" to begin face detection</p><p class="small opacity-50">Camera will activate automatically</p>';
+      scanOverlay.classList.add('d-none');
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      simBtn.disabled = true;
+      statusBadge.innerHTML = '<i class="fas fa-circle text-success me-1" style="font-size:0.5rem;vertical-align:middle;"></i>Ready';
+      scanAlert.style.display = 'none';
+    });
+
+    simBtn.addEventListener('click', function() {
+      if (!sessionActive) return;
+      scanMessage.textContent = 'Scanning for faces...';
+      scanAlert.className = 'alert alert-info mt-3 mb-0 small';
+
+      // Demo: randomly check some students after a delay
+      const checks = document.querySelectorAll('.attendance-check');
+      checks.forEach(cb => cb.checked = false);
+      updatePresentCount();
+
+      let detected = 0;
+      const targets = [0, 1, 2]; // Rahul, Priya, Arjun
+
+      targets.forEach((idx, i) => {
+        setTimeout(() => {
+          checks[idx].checked = true;
+          updatePresentCount();
+          scanMessage.textContent = 'Detected: ' + checks[idx].closest('tr').dataset.student;
+        }, (i + 1) * 800);
+      });
+
+      setTimeout(() => {
+        scanAlert.className = 'alert alert-success mt-3 mb-0 small';
+        scanMessage.textContent = 'Face detection complete. 3 students recognized.';
+      }, targets.length * 800 + 500);
+    });
+
+    submitBtn.addEventListener('click', function() {
+      const checked = document.querySelectorAll('.attendance-check:checked').length;
+      alert('Attendance submitted successfully! ' + checked + ' students marked present.');
+    });
+  </script>
+</body>
+</html>

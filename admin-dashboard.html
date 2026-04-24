@@ -1,0 +1,324 @@
+<!--
+  File: admin-dashboard.html
+  Role: Admin
+  Route: /admin/dashboard
+  Purpose: Provide administrators with a system overview and quick access to management tools.
+  Features: Stat cards, Chart.js doughnut chart for attendance overview, quick action cards, recent activity table.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Smart Attend</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================================
+       NAVBAR
+       ============================================ -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="admin-dashboard.html">
+        <i class="fas fa-graduation-cap"></i>
+        Smart Attend
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="adminNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="admin-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="manage-users.html">Users</a></li>
+          <li class="nav-item"><a class="nav-link" href="view-attendance.html">Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a class="btn btn-outline-custom btn-sm" href="login.html">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero-section hero-small" style="background-image: url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1920&q=80');">
+    <div class="container">
+      <h1>Admin Dashboard</h1>
+      <p>System overview and management at a glance.</p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STATS SECTION
+       ============================================ -->
+  <section class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-blue">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">4,230</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-navy">
+              <i class="fas fa-chalkboard-user"></i>
+            </div>
+            <div class="stat-value">186</div>
+            <div class="stat-label">Total Teachers</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-blue">
+              <i class="fas fa-clipboard-check"></i>
+            </div>
+            <div class="stat-value">94.2%</div>
+            <div class="stat-label">Today's Attendance</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-navy">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div class="stat-value">12</div>
+            <div class="stat-label">Pending Approvals</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CHARTS & ACTIONS
+       ============================================ -->
+  <section class="section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Attendance Overview Chart -->
+        <div class="col-lg-7" data-aos="fade-up">
+          <div class="card-custom h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-navy">Attendance Overview</h5>
+              <select class="form-control-custom" style="width:auto;">
+                <option>This Week</option>
+                <option>This Month</option>
+                <option>This Semester</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas id="adminDoughnutChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-custom h-100">
+            <h5 class="mb-3 text-navy">Quick Actions</h5>
+            <div class="d-flex flex-column gap-3">
+              <a href="manage-users.html" class="d-flex align-items-center p-3 rounded-3 text-decoration-none" style="background: var(--light-bg); border: 1px solid var(--border-color); transition: var(--transition);">
+                <div class="icon-box bg-soft-blue me-3 mb-0" style="width:44px;height:44px;font-size:1.1rem;">
+                  <i class="fas fa-user-plus"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark">Manage Users</div>
+                  <div class="small text-muted">Add, edit, or remove users</div>
+                </div>
+                <i class="fas fa-chevron-right ms-auto text-muted small"></i>
+              </a>
+              <a href="view-attendance.html" class="d-flex align-items-center p-3 rounded-3 text-decoration-none" style="background: var(--light-bg); border: 1px solid var(--border-color); transition: var(--transition);">
+                <div class="icon-box bg-soft-navy me-3 mb-0" style="width:44px;height:44px;font-size:1.1rem;">
+                  <i class="fas fa-table-list"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark">View Reports</div>
+                  <div class="small text-muted">Check attendance records</div>
+                </div>
+                <i class="fas fa-chevron-right ms-auto text-muted small"></i>
+              </a>
+              <a href="profile.html" class="d-flex align-items-center p-3 rounded-3 text-decoration-none" style="background: var(--light-bg); border: 1px solid var(--border-color); transition: var(--transition);">
+                <div class="icon-box bg-soft-blue me-3 mb-0" style="width:44px;height:44px;font-size:1.1rem;">
+                  <i class="fas fa-gear"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark">System Settings</div>
+                  <div class="small text-muted">Update profile and preferences</div>
+                </div>
+                <i class="fas fa-chevron-right ms-auto text-muted small"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       RECENT ACTIVITY
+       ============================================ -->
+  <section class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="card-custom" data-aos="fade-up">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0 text-navy">Recent Activity</h5>
+          <a href="view-attendance.html" class="small">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Role</th>
+                <th>Action</th>
+                <th>Date & Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Rahul Sharma</td>
+                <td><span class="badge-role-student">Student</span></td>
+                <td>Attendance marked via Face Detection</td>
+                <td>Apr 23, 2026 — 09:15 AM</td>
+                <td><span class="badge-present">Present</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Prof. Ananya Iyer</td>
+                <td><span class="badge-role-teacher">Teacher</span></td>
+                <td>Started attendance session — CSE-A</td>
+                <td>Apr 23, 2026 — 09:00 AM</td>
+                <td><span class="badge-present">Active</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Priya Desai</td>
+                <td><span class="badge-role-student">Student</span></td>
+                <td>Attendance marked via Face Detection</td>
+                <td>Apr 23, 2026 — 09:14 AM</td>
+                <td><span class="badge-present">Present</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Arjun Mehta</td>
+                <td><span class="badge-role-student">Student</span></td>
+                <td>Attendance marked via Face Detection</td>
+                <td>Apr 23, 2026 — 09:12 AM</td>
+                <td><span class="badge-absent">Absent</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Dr. Kavita Rao</td>
+                <td><span class="badge-role-teacher">Teacher</span></td>
+                <td>Downloaded monthly report</td>
+                <td>Apr 22, 2026 — 04:30 PM</td>
+                <td><span class="badge-present">Completed</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5><i class="fas fa-graduation-cap me-2"></i>Smart Attend</h5>
+          <p class="small opacity-75">Modernizing college attendance with face detection technology.</p>
+        </div>
+        <div class="col-md-2">
+          <h5>Quick Links</h5>
+          <a href="index.html">Home</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-md-2">
+          <h5>Admin</h5>
+          <a href="admin-dashboard.html">Dashboard</a>
+          <a href="manage-users.html">Users</a>
+          <a href="view-attendance.html">Attendance</a>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p class="small opacity-75 mb-1"><i class="fas fa-envelope me-2"></i>support@smartattend.edu</p>
+          <p class="small opacity-75 mb-1"><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Smart Attend. All rights reserved. College Project Demo.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Shared JS -->
+  <script src="js/main.js"></script>
+
+  <!-- Admin Dashboard Charts -->
+  <script>
+    // Doughnut Chart — Attendance Overview
+    const ctxDoughnut = document.getElementById('adminDoughnutChart').getContext('2d');
+    new Chart(ctxDoughnut, {
+      type: 'doughnut',
+      data: {
+        labels: ['Present', 'Absent', 'Late', 'On Leave'],
+        datasets: [{
+          data: [78, 12, 6, 4],
+          backgroundColor: ['#2196F3', '#ef4444', '#f59e0b', '#94a3b8'],
+          borderWidth: 0,
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: { family: 'Inter', size: 12 }
+            }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
