@@ -1,0 +1,305 @@
+<!--
+  File: view-attendance.html
+  Role: Teacher / Student
+  Route: /attendance/view
+  Purpose: Display attendance records in a searchable and filterable table for review.
+  Features: Filter bar with date range, subject/class, and status filters, responsive attendance table, export button, pagination.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Attendance — Smart Attend</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============================================
+       NAVBAR (Generic for both Teacher & Student)
+       ============================================ -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="fas fa-graduation-cap"></i>
+        Smart Attend
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link active" href="view-attendance.html">Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a class="btn btn-outline-custom btn-sm" href="login.html">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero-section hero-small" style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=80');">
+    <div class="container">
+      <h1>Attendance Records</h1>
+      <p>Search, filter, and review attendance history across all classes.</p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FILTERS SECTION
+       ============================================ -->
+  <section class="section-padding bg-light-custom pb-3">
+    <div class="container">
+      <div class="card-custom" data-aos="fade-up">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label-custom">From Date</label>
+            <input type="date" class="form-control-custom w-100" value="2026-04-01">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-custom">To Date</label>
+            <input type="date" class="form-control-custom w-100" value="2026-04-23">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label-custom">Subject / Class</label>
+            <select class="form-control-custom w-100">
+              <option>All Classes</option>
+              <option>Data Structures — CSE-A</option>
+              <option>Computer Networks — CSE-B</option>
+              <option>DBMS — CSE-A</option>
+              <option>Machine Learning — ECE-A</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label-custom">Status</label>
+            <select class="form-control-custom w-100">
+              <option>All</option>
+              <option>Present</option>
+              <option>Absent</option>
+              <option>Late</option>
+            </select>
+          </div>
+          <div class="col-md-1">
+            <button class="btn btn-navy w-100"><i class="fas fa-filter"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ATTENDANCE TABLE
+       ============================================ -->
+  <section class="section-padding pt-3">
+    <div class="container">
+      <div class="card-custom" data-aos="fade-up">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+          <h5 class="mb-0 text-navy">Attendance Log</h5>
+          <div class="d-flex gap-2">
+            <div class="input-group" style="max-width: 220px;">
+              <span class="input-group-text bg-white border-end-0"><i class="fas fa-magnifying-glass text-muted small"></i></span>
+              <input type="text" class="form-control-custom border-start-0 w-100" placeholder="Search student...">
+            </div>
+            <button class="btn btn-outline-custom"><i class="fas fa-download me-1"></i> Export</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Roll No</th>
+                <th>Student Name</th>
+                <th>Class</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Marked Via</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CSE001</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Rahul Sharma</td>
+                <td>Data Structures — CSE-A</td>
+                <td>Apr 23, 2026</td>
+                <td>09:15 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+              <tr>
+                <td>CSE002</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Priya Desai</td>
+                <td>Data Structures — CSE-A</td>
+                <td>Apr 23, 2026</td>
+                <td>09:14 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+              <tr>
+                <td>CSE003</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Arjun Mehta</td>
+                <td>Data Structures — CSE-A</td>
+                <td>Apr 23, 2026</td>
+                <td>—</td>
+                <td><span class="badge-absent">Absent</span></td>
+                <td><i class="fas fa-circle-xmark text-muted me-1"></i>—</td>
+              </tr>
+              <tr>
+                <td>CSE004</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Sneha Nair</td>
+                <td>Computer Networks — CSE-B</td>
+                <td>Apr 23, 2026</td>
+                <td>11:05 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+              <tr>
+                <td>CSE005</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Vikram Patel</td>
+                <td>Computer Networks — CSE-B</td>
+                <td>Apr 23, 2026</td>
+                <td>11:06 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+              <tr>
+                <td>CSE006</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Ananya Iyer</td>
+                <td>DBMS — CSE-A</td>
+                <td>Apr 22, 2026</td>
+                <td>02:10 PM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+              <tr>
+                <td>CSE007</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Karan Joshi</td>
+                <td>DBMS — CSE-A</td>
+                <td>Apr 22, 2026</td>
+                <td>—</td>
+                <td><span class="badge-absent">Absent</span></td>
+                <td><i class="fas fa-circle-xmark text-muted me-1"></i>—</td>
+              </tr>
+              <tr>
+                <td>CSE008</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Neha Gupta</td>
+                <td>Machine Learning — ECE-A</td>
+                <td>Apr 22, 2026</td>
+                <td>04:02 PM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+              <tr>
+                <td>CSE009</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Rohan Das</td>
+                <td>Machine Learning — ECE-A</td>
+                <td>Apr 22, 2026</td>
+                <td>04:03 PM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+              <tr>
+                <td>CSE010</td>
+                <td><i class="fas fa-user-circle text-muted me-2"></i>Meera Krishnan</td>
+                <td>Data Structures — CSE-A</td>
+                <td>Apr 21, 2026</td>
+                <td>09:12 AM</td>
+                <td><span class="badge-present">Present</span></td>
+                <td><i class="fas fa-face-viewfinder text-accent me-1"></i>Face Detection</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <span class="small text-muted">Showing 1–10 of 248 records</span>
+          <nav aria-label="Attendance pagination">
+            <ul class="pagination pagination-sm mb-0">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" style="color: var(--navy);">Previous</a>
+              </li>
+              <li class="page-item active">
+                <a class="page-link" href="#" style="background: var(--accent-blue); border-color: var(--accent-blue);">1</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#" style="color: var(--navy);">2</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#" style="color: var(--navy);">3</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#" style="color: var(--navy);">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5><i class="fas fa-graduation-cap me-2"></i>Smart Attend</h5>
+          <p class="small opacity-75">Modernizing college attendance with face detection technology.</p>
+        </div>
+        <div class="col-md-2">
+          <h5>Quick Links</h5>
+          <a href="index.html">Home</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-md-2">
+          <h5>Dashboards</h5>
+          <a href="admin-dashboard.html">Admin</a>
+          <a href="teacher-dashboard.html">Teacher</a>
+          <a href="student-dashboard.html">Student</a>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p class="small opacity-75 mb-1"><i class="fas fa-envelope me-2"></i>support@smartattend.edu</p>
+          <p class="small opacity-75 mb-1"><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Smart Attend. All rights reserved. College Project Demo.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Shared JS -->
+  <script src="../../js/main.js"></script>
+</body>
+</html>
