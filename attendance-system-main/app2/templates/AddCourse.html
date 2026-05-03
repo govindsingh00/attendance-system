@@ -1,0 +1,18 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1> Available Courses </h1>
+{% if data %}
+    {% for d in data %}
+        <form method="post" action="http://127.0.0.1:8000/add_course1/">
+            <p>Course Name <input type="text" readonly name="t1" value="{{d[0]}}" /></p>
+            <p>Joining Date<input type="text" name="t3" placeholder="dd/mm/yyyy" /></p>
+            <p>Remark<input type="text" name="t4" value="{{d[3]}}" /></p>
+            <p><input type="hidden" name="ID1" value="{{stid}}" />
+                <button type="submit" >Add </button>
+        </form>
+    {% endfor %}
+{% elif msg %}
+    <h4>{{msg}}</h4>
+{% endif %}
+{% endblock %}

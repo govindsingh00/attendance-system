@@ -1,0 +1,25 @@
+{% extends "studentDash.html" %}
+{% load static %}
+{% block s1 %}
+<h1> Edit Profile </h1>
+{% if data %}
+{% for d in data %}
+    <form method="post" action="http://127.0.0.1:8000/editstprofile1/">
+        {% csrf_token %}
+        <p>Student Id:<input type="text" readonly name="t1" value="{{d.stid}}"/></p>
+        <p>Student Name:<input type="text" readonly name="t2" value="{{d.stname}}"/></p>
+        <p>Father's Name:<input type="text" readonly name="t3" value="{{d.fname}}"/></p>
+        <p>DOB:<input type="text" name="t4" readonly value="{{d.dob}}"/></p>
+        <p>Gender:<input type="text" name="t5" readonly value="{{d.gender}}"/></p>
+        <p>Address:<input type="text" name="t6" value="{{d.address}}"/></p>
+        <p>Last Qualification:<input type="text" readonly name="t7" value="{{d.lastquali}}"/></p>
+        <p>Contact:<input type="text" name="t8" value="{{d.contact}}"/></p>
+        <p>Email:<input type="text" readonly name="t9" value="{{d.email}}"/></p>
+        <button type="submit" > Save Changes </button>
+    </form>
+{% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+<p><a href="http://127.0.0.1:8000/student_home/"> See Changes </a> </p>
+{% endif %}
+{% endblock %}

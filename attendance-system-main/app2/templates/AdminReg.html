@@ -1,0 +1,355 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<div>
+<h1> Admin Registration Form </h1>
+<p> Fill out the form for registration </p>
+<hr><hr>
+<form method="post" action="/admin_reg/" onsubmit="return B()">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label>Name</label><span id="er1"></span><span id="er11"></span>
+        <input type="text" id="txt1" name="t1" class="form-control"  placeholder="Enter Name"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label for="txt2">Address</label><span id="er2"></span>
+        <input type="text" name="t2" class="form-control" id="txt2" placeholder="Address line 1">
+        <input type="text" name="t3" class="form-control" id="txt2222" placeholder="Address line 1">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="state_admin">State</label><span id="er22"></span>
+        <select name="t5" class="form-control" id="state_admin" required>
+          <option value="">— Select state —</option>
+          {% for s in indian_states %}
+          <option value="{{ s }}">{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="city_admin">City</label><span id="er21"></span>
+        <select name="t4" class="form-control" id="city_admin" required>
+          <option value="">— Select state first —</option>
+        </select>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="txt23">Pincode</label><span id="er23"></span>
+        <input type="text" name="t6" class="form-control" id="txt23" maxlength="10" pattern="[0-9]{6}" placeholder="6 digits" inputmode="numeric">
+      </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="txt3">Contact</label><span id="er3"></span>
+          <input type="text" name="t7" class="form-control" id="txt3" placeholder="Mobile NO.">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="txt4">Email</label><span id="er4"></span>
+          <input type="email" name="t8" class="form-control" id="txt4" placeholder="Email">
+        </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="txt5">Password</label><span id="er5"></span>
+        <input onkeyup="return A()" name="t9" type="password" class="form-control" id="txt5" placeholder="Password">
+      </div>
+      <div class="form-group col-md-6">
+        <label for="txt6">Confirm Password</label><span id="er6"></span>
+        <input type="password" name="t10" class="form-control" id="txt6" placeholder="Password">
+      </div>
+    </div>
+    <button type="reset" class="btn btn-primary">Reset All</button>
+    <button type="submit" class="btn btn-primary">Register</button>
+</form>
+</div>
+<script>
+	function B()
+	{
+		var t1,t2,t3,t4,t5,t6,e1,e2,e3,e4,e5,e6;
+		t1=document.getElementById("txt1");
+		t2=document.getElementById("txt2");
+		t3=document.getElementById("txt3");
+		t4=document.getElementById("txt4");
+		t5=document.getElementById("txt5");
+		t6=document.getElementById("txt6");
+		e1=document.getElementById("er1");
+		e2=document.getElementById("er2");
+		e3=document.getElementById("er3");
+		e4=document.getElementById("er4");
+		e5=document.getElementById("er5");
+		e6=document.getElementById("er6");
+
+        var t11,e11,e21,e22,e23;
+
+		t11=document.getElementById("txt11");
+		t21=document.getElementById("city_admin");
+		t22=document.getElementById("state_admin");
+		t23=document.getElementById("txt23");
+		e11=document.getElementById("er11");
+		e21=document.getElementById("er21");
+		e22=document.getElementById("er22");
+		e23=document.getElementById("er23");
+
+		var v11,v21,v22,v23;
+
+		v11=t11.value;
+		v21=t21.value;
+		v22=t22.value;
+		v23=t23.value;
+
+		var v1,v2,v3,v4,v5,v6;
+		v1=t1.value;
+		v2=t2.value;
+		v3=t3.value;
+		v4=t4.value;
+		v5=t5.value;
+		v6=t6.value;
+
+		e1.innerHTML="";
+		e2.innerHTML="";
+		e3.innerHTML="";
+		e4.innerHTML="";
+		e5.innerHTML="";
+		e6.innerHTML="";
+
+		e11.innerHTML="";
+		e21.innerHTML="";
+		e22.innerHTML="";
+		e23.innerHTML="";
+
+		if(v1=="" || v1==null)
+			{
+				e1.innerHTML="Enter First name";
+				t1.focus();
+				e1.style.color="red";
+				return false;
+			}
+		if(v11=="" || v11==null)
+			{
+				e11.innerHTML="Enter Last name";
+				t11.focus();
+				e11.style.color="red";
+				return false;
+			}
+		if(v2=="" || v2==null)
+			{
+				e2.innerHTML="Enter Address";
+				t2.focus();
+				e2.style.color="red";
+				return false;
+			}
+		if(v22=="" || v22==null)
+			{
+				e22.innerHTML="Select state";
+				t22.focus();
+				e22.style.color="red";
+				return false;
+			}
+		if(v21=="" || v21==null)
+			{
+				e21.innerHTML="Select city";
+				t21.focus();
+				e21.style.color="red";
+				return false;
+			}
+		if(v23=="" || v23==null)
+			{
+				e23.innerHTML="Enter Pincode";
+				t23.focus();
+				e23.style.color="red";
+				return false;
+			}
+		if(v3=="" || v3==null)
+			{
+				e3.innerHTML="Enter Contact";
+				t3.focus();
+				return false;
+			}
+		if(check_contact(v3)==false)
+			{
+				e3.innerHTML="Enter 10 digit number must be started from 6,7 or 9"
+				t3.select();
+				return false;
+			}
+		if(v4=="" || v4==null)
+			{
+				e4.innerHTML="Enter E-mail";
+				t4.focus();
+				return false;
+			}
+		if(check_email(v4)==false)
+			{
+				e4.innerHTML="\w{7,20}\d{2,15}\w{0,6}@gmail.com";
+				t4.select();
+				return false;
+			}
+		if(v5=="" || v5==null)
+			{
+				e1.innerHTML="Enter password";
+				t1.focus();
+				return false;
+			}
+		if(v6=="" || v6==null)
+			{
+				e6.innerHTML="Enter password";
+				t6.focus();
+				return false;
+			}
+		if(check_pass(v5,v6)==false)
+			{
+				e6.innerHTML="password does not match";
+				t6.select();
+				t5.type="text";
+				t6.type="text";
+				return false;
+			}
+	}
+	function A()
+	{
+		var t1,e1;
+		t5=document.getElementById("txt5");
+		e5=document.getElementById("er5");
+
+		var strr,f;
+		strr=t5.value;
+
+		var n=strr.length;
+		f=0;
+
+		e5.innerHTML="";
+
+		if(n<=5)
+			{
+				f=0;
+			}
+		else if(n>=6 && n<=8)
+			{
+				if(check_up(strr)==1 && check_num(strr)==1)
+					{
+						f=1;
+					}
+				else
+					{
+						f=0;
+					}
+			}
+		else if(n>8)
+			{
+				var up,sc,d;
+				uc=check_up(strr);
+				sc=check_sc(strr);
+				d=check_num(strr);
+
+				console.log(uc,sc,d);
+				if(uc>1 && sc>=1 && d>1 )
+					{
+						f=2;
+					}
+				else if(uc==1 && d==1)
+					{
+						f=1;
+					}
+				else
+					{
+						f=0;
+					}
+			}
+		console.log(f);
+
+		if(f==0)
+			{
+				e5.innerHTML="Weak";
+				e5.style.color="red";
+
+			}
+		else if(f==1)
+			{
+				e5.innerHTML="Moderate";
+				e5.style.color="#63D5D8";
+			}
+		else
+			{
+				e5.innerHTML="Strong";
+				e5.style.color="#71E052";
+			}
+	}
+
+	function check_up(q)
+	{
+		var n=q.length;
+		var count=0,i;
+		for(i=0;i<n;i++)
+			{
+				var ch=q.charAt(i);
+
+				if(ch>='A' && ch<='Z')
+					{
+						count++;
+					}
+			}
+		return count;
+	}
+
+	function check_num(p)
+	{
+		var n=p.length;
+		var count=0,i;
+		for(i=0;i<n;i++)
+			{
+				var ch=p.charAt(i);
+				if(ch>='0' && ch<='9')
+					{
+						count++;
+					}
+			}
+		return count;
+	}
+
+	function check_sc(r)
+	{
+		var c=['@','#','$','%','^','&','_'];
+		var i,n,count=0;
+		n=c.length;
+		for(i=0;i<n;i++)
+			{
+				if(r.indexOf(c[i])>=0)
+				{
+					count++;
+				}
+			}
+		return count;
+	}
+
+	function check_pass(a,b)
+	{
+		if(a!=b)
+			{
+				return false;
+			}
+	}
+
+	function check_contact(a)
+	{
+		var pat=/^[6-9]{1}\d{9}$/
+		var result=pat.test(a);
+		console.log(result);
+		return result;
+	}
+
+	function check_email(a)
+	{
+		var pat=/^[\w\.-]+@[a-zA-Z\d\.-]+\.[a-zA-Z]{2,}$/
+		var result=pat.test(a);
+		console.log(result);
+		return result;
+	}
+</script>
+{% include "includes/state_city_cascade.html" with suffix="admin" %}
+{% if msg %}
+    <h3>{{msg}}</h3>
+<p><a href="http://127.0.0.1:8000/admin_home/">Continue</a></p>
+{% endif %}
+{% endblock %}

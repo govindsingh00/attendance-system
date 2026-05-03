@@ -1,0 +1,63 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1>STUDENT PROFILE</h1>
+{% if data1 %}
+        {% for d1 in data1 %}
+            <form method="post" action="http://127.0.0.1:8000/deletestudentprofile1/">
+                {% csrf_token %}
+            {% if data4 %}
+                {% for d4 in data4 %}
+                    <input src="../media/{{d4.photo}}" type="image" width="100" height="100" align="centre" />
+                    <input type="hidden" name="IMG1" value="{{d4.photo}}" />
+                {% endfor %}
+            {% endif %}
+            <p>
+                Student ID: {{d1.stid}}<br>
+                Father's Name: {{d1.fname}}<br>
+                DOB: {{d1.dob}}<br>
+                Gender: {{d1.gender}}<br>
+                Address: {{d1.address}}<br>
+                Contact: {{d1.contact}}<br>
+                Email: {{d1.email}}
+                <input type="hidden" name="S1" value="{{d1.stid}}" />
+                <input type="hidden" name="S2" value="{{d1.email}}" />
+            </p>
+
+
+            {% if data2 %}
+                <table border="2px">
+                        <thead>
+                            <th>COURSE ID</th>
+                            <th>JOINED COURSES</th>
+                            <th>JOINING DATE</th>
+                            <th>REMARK</th>
+                        </thead>
+                {% for d2 in data2 %}
+                        <tbody>
+                            <tr>
+                                <td>{{d2.st_crid}}</td>
+                                <td>{{d2.crname}}</td>
+                                <td>{{d2.joining}}</td>
+                                <td>{{d2.remark}}</td>
+                            </tr>
+                {% endfor %}
+                        </tbody>
+                </table>
+            {% else %}
+                    <h2>NO JOINED COURSES</h2>
+            {% endif %}
+                <button type="submit">CONFIRM DELETE</button>
+            </form>
+
+            {% if msg %}
+                <h3>{{msg}}</h3>
+                <p><a href="http://127.0.0.1:8000/allstudentsAD/">Continue</a></p>
+            {% endif %}
+
+{% endfor %}
+{% else %}
+    <h3>{{msg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allstudentsAD/">Continue</a></p>
+{% endif %}
+{% endblock %}

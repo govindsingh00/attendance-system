@@ -1,0 +1,25 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1>Edit Course DATA</h1>
+{% if data %}
+{% for d in data %}
+    <form method="post" action="http://127.0.0.1:8000/deletestudentcoursedata1/">
+        {% csrf_token %}
+        <p>Course Id<input readonly type="text" name="T1" value="{{d.st_crid}}"></p>
+        <p>Student Id<input readonly type="text" name="T2" value="{{d.stid}}"></p>
+        <p>
+            Course Name
+            <input readonly type="text" value="{{d.crname}}" />
+        </p>
+
+        <p>Joining Date<input readonly type="text" value="{{d.joining}}" /> </p>
+        <p>Remark<input readonly type="text" value="{{d.remark}}" /></p>
+        <button readonly type="submit">Confirm Delete</button>
+    </form>
+{% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allstudentsAD/" >Continue</a> </p>
+{% endif %}
+{% endblock %}

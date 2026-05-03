@@ -1,0 +1,7 @@
+{% extends "TeacherDash.html" %}
+{% block m1 %}
+<h1>Face verification</h1>
+<p>This step will run the face authentication system once it is integrated with the project.</p>
+<p>Current session: section <strong>{{ section }}</strong>, course id <strong>{{ cid }}</strong>, slot <strong>{{ time_slot }}</strong>.</p>
+<p><a href="/mark_attendance/?section={{ section|urlencode }}&amp;cid={{ cid }}&amp;time_slot={{ time_slot|urlencode }}">Back to mark attendance</a></p>
+{% endblock %}

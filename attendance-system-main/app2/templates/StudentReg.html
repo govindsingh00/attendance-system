@@ -1,0 +1,76 @@
+
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1> Student Registration Form </h1>
+<p class="p1"> Fill out the form for registration </p>
+<hr><hr>
+<form method="post" action="/student_reg/">
+    {% csrf_token %}
+<p> Student Name <br>
+    <input type="text" name="t1" placeholder="Enter Your First Name"/>
+    <input type="text" name="t2" placeholder="Enter Your Last Name"/>
+</p>
+<p> Father's Name
+    <input type="text" name="t111" placeholder="Enter Fathers Name" />
+</p>
+<p> Date of Birth   <input name="t3" pattern="\d{2}/\d{2}/\d{4}" type="text" placeholder="dd/mm/yyyy" /> </p>
+<p> Gender <input type="radio" name="R1" value="Male" /> Male
+<input type="radio" name="R1" value="Female" /> Female
+<input type="radio" name="R1" value="Transgender" /> Transgender
+</p>
+<p> Permanent Address <br>
+    <input type="text" name="t4" placeholder="Address line 1"/> <br>
+    <input type="text" name="t5" placeholder="Address line 2"/></p>
+<p> State <br>
+    <select name="t8" id="state_student" required style="min-width:220px;">
+        <option value="">— Select state —</option>
+        {% for s in indian_states %}
+        <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+    </select>
+</p>
+<p> City <br>
+    <select name="t6" id="city_student" required style="min-width:220px;">
+        <option value="">— Select state first —</option>
+    </select>
+</p>
+<p> Pin-code <input type="text" name="t7" maxlength="10" pattern="[0-9]{6}" placeholder="6-digit pincode" inputmode="numeric"/></p>
+<p> Last Qualification Details <br>
+    <select class="txt3" name="t9">
+        <option> B.Sc </option>
+        <option> M.sc </option>
+        <option> BCA </option>
+        <option> B.com </option>
+        <option> M.com </option>
+        <option> 12th </option>
+        <option> 10th </option>
+        <option> pre-nurture </option>
+        <option> B.tech </option>
+        <option> M.tech </option>
+    </select>
+</p>
+<p> Section <br>
+    <input type="text" name="t14" placeholder="e.g. A, B"/>
+</p>
+<p> contact <br>
+    <input type="text" name="t222"/>
+</p>
+<p> Email <br>
+    <input type="text" name="t11"/>
+</p>
+<p> Password <br>
+    <input type="password" name="t12"/>
+</p>
+<p> Confirm Password <br>
+    <input type="password" name="t13"/>
+</p>
+<p> <button type="reset" > Clear Fields</button></p>
+<P> <button type="submit" > Submit Form</button></P>
+</form>
+{% include "includes/state_city_cascade.html" with suffix="student" %}
+{% if msg %}
+    <h3>{{msg}}</h3>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Attendance Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #0f4c81;
+      --accent: #f5a623;
+      --success: #27ae60;
+      --danger: #e74c3c;
+      --bg: #f0f4f9;
+      --card-bg: #ffffff;
+      --text: #1a1a2e;
+      --muted: #6c757d;
+      --sidebar-bg: #0f4c81;
+      --sidebar-text: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4, h5, .brand {
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 240px;
+      background: var(--sidebar-bg);
+      min-height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      z-index: 100;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.12);
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .sidebar-brand .brand {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .sidebar-brand .brand span {
+      color: var(--accent);
+    }
+
+    .sidebar-brand p {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      padding: 20px 12px;
+      flex: 1;
+    }
+
+    .nav-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      padding: 8px 10px 4px;
+      margin-top: 8px;
+    }
+
+    .nav-item-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 2px;
+      transition: all 0.2s;
+    }
+
+    .nav-item-link:hover, .nav-item-link.active {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    .nav-item-link.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .nav-item-link i { font-size: 1rem; }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: #fff; font-size: 0.9rem;
+    }
+
+    .user-name { font-size: 0.85rem; font-weight: 600; color: #fff; }
+    .user-role { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+
+    /* MAIN CONTENT */
+    .main-content {
+      margin-left: 240px;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      background: #fff;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e8ecf0;
+      position: sticky; top: 0; z-index: 50;
+    }
+
+    .topbar-title h4 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .topbar-title p {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 8px 14px;
+      gap: 8px;
+      border: 1px solid #dde2e8;
+    }
+
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 0.85rem;
+      color: var(--text);
+      width: 180px;
+    }
+
+    .search-box i { color: var(--muted); font-size: 0.9rem; }
+
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      border: 1px solid #dde2e8;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+
+    .date-filter input[type="date"] {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 0.83rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* PAGE BODY */
+    .page-body { padding: 24px 28px; }
+
+    /* STAT CARDS */
+    .stat-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid #edf0f4;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .stat-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.blue   { background: #e8f0fe; color: var(--primary); }
+    .stat-icon.green  { background: #e6f9f0; color: var(--success); }
+    .stat-icon.red    { background: #fdecea; color: var(--danger); }
+    .stat-icon.orange { background: #fff4e0; color: var(--accent); }
+
+    .stat-info .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .stat-info .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .stat-info .stat-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: 5px;
+      font-weight: 600;
+    }
+
+    .badge-green { background: #e6f9f0; color: var(--success); }
+    .badge-red   { background: #fdecea; color: var(--danger); }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    /* CHART CARD */
+    .chart-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid #edf0f4;
+      height: 100%;
+    }
+
+    .chart-card .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    /* TABLE CARD */
+    .table-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      border: 1px solid #edf0f4;
+    }
+
+    .table-card .table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .attendance-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .attendance-table thead tr th {
+      background: var(--bg);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      padding: 10px 14px;
+    }
+
+    .attendance-table thead tr th:first-child { border-radius: 8px 0 0 8px; }
+    .attendance-table thead tr th:last-child  { border-radius: 0 8px 8px 0; }
+
+    .attendance-table tbody tr td {
+      padding: 12px 14px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #f0f3f6;
+      vertical-align: middle;
+    }
+
+    .attendance-table tbody tr:last-child td { border-bottom: none; }
+    .attendance-table tbody tr:hover { background: #f8fafc; }
+
+    .student-name-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .student-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.75rem; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-present  { background: #e6f9f0; color: var(--success); }
+    .status-absent   { background: #fdecea; color: var(--danger); }
+    .status-late     { background: #fff4e0; color: var(--accent); }
+
+    .progress-thin {
+      height: 6px;
+      border-radius: 3px;
+      background: #edf0f4;
+      overflow: hidden;
+      width: 80px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    .progress-thin-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar { width: 0; overflow: hidden; }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand">Attend<span>X</span></div>
+    <p>Smart Attendance System</p>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Main</div>
+    <a href="#" class="nav-item-link active"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
+    <a href="#" class="nav-item-link"><i class="bi bi-calendar-check"></i> Attendance</a>
+    <a href="#" class="nav-item-link"><i class="bi bi-people-fill"></i> Students</a>
+    <div class="nav-label">Reports</div>
+    <a href="#" class="nav-item-link"><i class="bi bi-bar-chart-fill"></i> Analytics</a>
+    <a href="#" class="nav-item-link"><i class="bi bi-file-earmark-text"></i> Reports</a>
+    <div class="nav-label">Account</div>
+    <a href="#" class="nav-item-link"><i class="bi bi-gear-fill"></i> Settings</a>
+    <a href="#" class="nav-item-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">K</div>
+      <div>
+        <div class="user-name">Komal</div>
+        <div class="user-role">Student</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">
+      <h4>Attendance Dashboard</h4>
+      <p>Welcome back, Komal 👋 &nbsp;|&nbsp; Today: <span id="todayDate"></span></p>
+    </div>
+    <div class="topbar-actions">
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" id="searchInput" placeholder="Search student..." oninput="filterTable()"/>
+      </div>
+      <div class="date-filter">
+        <i class="bi bi-calendar3"></i>
+        <input type="date" id="dateFilter" onchange="filterByDate()"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE BODY -->
+  <div class="page-body">
+
+    <!-- STAT CARDS -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">48</div>
+            <div class="stat-label">Total Students</div>
+            <span class="stat-badge badge-green">↑ 3 new</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="bi bi-check-circle-fill"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">38</div>
+            <div class="stat-label">Present Today</div>
+            <span class="stat-badge badge-green">79.2%</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="bi bi-x-circle-fill"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">7</div>
+            <div class="stat-label">Absent Today</div>
+            <span class="stat-badge badge-red">14.6%</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="stat-icon orange"><i class="bi bi-clock-fill"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">3</div>
+            <div class="stat-label">Late Arrivals</div>
+            <span class="stat-badge badge-red">6.2%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-8">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="section-title mb-0">Weekly Attendance Trend</div>
+            <span class="badge bg-primary bg-opacity-10 text-primary" style="font-size:0.75rem;">This Week</span>
+          </div>
+          <canvas id="weeklyChart" height="110"></canvas>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="chart-card">
+          <div class="chart-header">
+            <div class="section-title mb-0">Today's Overview</div>
+          </div>
+          <canvas id="donutChart" height="180"></canvas>
+          <div class="d-flex justify-content-center gap-3 mt-2" style="font-size:0.78rem;">
+            <span><span style="color:#27ae60;">●</span> Present</span>
+            <span><span style="color:#e74c3c;">●</span> Absent</span>
+            <span><span style="color:#f5a623;">●</span> Late</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATTENDANCE TABLE -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="section-title mb-0">Student Attendance List</div>
+        <button class="btn btn-sm btn-primary" style="border-radius:8px; font-size:0.8rem;">
+          <i class="bi bi-download me-1"></i> Export
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table class="attendance-table" id="attendanceTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Student Name</th>
+              <th>Roll No.</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Attendance %</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Today's date
+  const today = new Date();
+  document.getElementById('todayDate').textContent = today.toDateString();
+  document.getElementById('dateFilter').value = today.toISOString().split('T')[0];
+
+  // Student Data
+  const students = [
+    { name: "Aarav Sharma",   roll: "CS001", date: "2026-03-31", status: "Present",  pct: 92, color: "#0f4c81" },
+    { name: "Priya Verma",    roll: "CS002", date: "2026-03-31", status: "Absent",   pct: 74, color: "#e74c3c" },
+    { name: "Rohan Gupta",    roll: "CS003", date: "2026-03-31", status: "Present",  pct: 88, color: "#27ae60" },
+    { name: "Sneha Patel",    roll: "CS004", date: "2026-03-31", status: "Late",     pct: 81, color: "#f5a623" },
+    { name: "Arjun Singh",    roll: "CS005", date: "2026-03-31", status: "Present",  pct: 95, color: "#9b59b6" },
+    { name: "Meera Nair",     roll: "CS006", date: "2026-03-31", status: "Present",  pct: 90, color: "#1abc9c" },
+    { name: "Vikram Yadav",   roll: "CS007", date: "2026-03-31", status: "Absent",   pct: 65, color: "#e74c3c" },
+    { name: "Ananya Roy",     roll: "CS008", date: "2026-03-31", status: "Present",  pct: 87, color: "#3498db" },
+    { name: "Karan Mehta",    roll: "CS009", date: "2026-03-31", status: "Late",     pct: 78, color: "#f5a623" },
+    { name: "Divya Joshi",    roll: "CS010", date: "2026-03-31", status: "Present",  pct: 93, color: "#0f4c81" },
+  ];
+
+  function getStatusClass(status) {
+    if (status === "Present") return "status-present";
+    if (status === "Absent")  return "status-absent";
+    return "status-late";
+  }
+
+  function getPctColor(pct) {
+    if (pct >= 85) return "#27ae60";
+    if (pct >= 70) return "#f5a623";
+    return "#e74c3c";
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
+    data.forEach((s, i) => {
+      const pctColor = getPctColor(s.pct);
+      tbody.innerHTML += `
+        <tr>
+          <td style="color:var(--muted); font-size:0.8rem;">${i + 1}</td>
+          <td>
+            <div class="student-name-cell">
+              <div class="student-avatar" style="background:${s.color}">${s.name.charAt(0)}</div>
+              <span style="font-weight:500;">${s.name}</span>
+            </div>
+          </td>
+          <td style="color:var(--muted);">${s.roll}</td>
+          <td style="color:var(--muted);">${s.date}</td>
+          <td><span class="status-badge ${getStatusClass(s.status)}">${s.status}</span></td>
+          <td>
+            <div class="progress-thin">
+              <div class="progress-thin-fill" style="width:${s.pct}%; background:${pctColor};"></div>
+            </div>
+            <span style="font-size:0.8rem; font-weight:600; color:${pctColor};">${s.pct}%</span>
+          </td>
+        </tr>`;
+    });
+  }
+
+  renderTable(students);
+
+  function filterTable() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = students.filter(s => s.name.toLowerCase().includes(q) || s.roll.toLowerCase().includes(q));
+    renderTable(filtered);
+  }
+
+  function filterByDate() {
+    const d = document.getElementById('dateFilter').value;
+    const filtered = students.filter(s => s.date === d);
+    renderTable(filtered.length ? filtered : students);
+  }
+
+  // Weekly Bar Chart
+  const wCtx = document.getElementById('weeklyChart').getContext('2d');
+  new Chart(wCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      datasets: [
+        { label: 'Present', data: [40, 38, 42, 35, 38, 30], backgroundColor: '#27ae60', borderRadius: 6 },
+        { label: 'Absent',  data: [5,  7,  4,  10, 7,  12], backgroundColor: '#e74c3c', borderRadius: 6 },
+        { label: 'Late',    data: [3,  3,  2,  3,  3,  6],  backgroundColor: '#f5a623', borderRadius: 6 },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'top', labels: { font: { size: 11 }, boxWidth: 12 } } },
+      scales: {
+        x: { stacked: false, grid: { display: false } },
+        y: { stacked: false, grid: { color: '#f0f3f6' }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // Donut Chart
+  const dCtx = document.getElementById('donutChart').getContext('2d');
+  new Chart(dCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Present', 'Absent', 'Late'],
+      datasets: [{
+        data: [38, 7, 3],
+        backgroundColor: ['#27ae60', '#e74c3c', '#f5a623'],
+        borderWidth: 0,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: { legend: { display: false } }
+    }
+  });
+</script>
+</body>
+</html>

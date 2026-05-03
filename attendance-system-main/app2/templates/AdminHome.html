@@ -1,0 +1,52 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+{% if data1 %}
+    {% for d in data1 %}
+        <img src="../media/{{d.photo}}" width="100" height="100" style="border-radius:50%;width:150px;height:150px;" />
+        <form method="post" action="http://127.0.0.1:8000/chngephoto/" >
+            {% csrf_token %}
+            <input type="hidden" name="C1" value="{{d.photo}}" />
+            <button>Change Photo</button>
+        </form>
+
+        <form method="post" action="http://127.0.0.1:8000/deletephoto/" >
+            {% csrf_token %}
+            <input type="hidden" name="C1" value="{{d.photo}}" />
+            <button>Delete Photo</button>
+        </form>
+    {% endfor %}
+{% else %}
+    <p>
+        <a href="http://127.0.0.1:8000/uploadphoto/">Upload Photo</a>
+    </p>
+{% endif %}
+
+{% if data %}
+    {% for d in data %}
+        <h1>{{d.name}}</h1>
+        <p>
+            Address : {{d.address}} <br/>
+            Email : {{d.email}} <br/>
+            Contact : {{d.contact}}
+        </p>
+        <form method="post" action="http://127.0.0.1:8000/editadminprofile/">
+        {% csrf_token %}
+            <input type="hidden" name="E1" value="{{d.email}}">
+            <button type="submit">Edit</button>
+        </form>
+
+        <form method="post" action="http://127.0.0.1:8000/admin_pass_change/">
+            {% csrf_token %}
+            <input type="hidden" name="E1" value="{{d.email}}">
+            <button type="submit">Change Password</button>
+        </form>
+    {% endfor %}
+{% elif result %}
+    <h2>DATA SAVED</h2>
+    <p href="http://127.0.0.1:8000/admin_home/"><a>CONTINUE</a></p>
+{% elif msg %}
+    <h3>{{msg}}</h3>
+{% endif %}
+
+{% endblock %}

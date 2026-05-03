@@ -1,0 +1,20 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1> Edit Course </h1>
+{% if data %}
+    {% for d in data %}
+        <form method="post" action="http://127.0.0.1:8000/edit_course1/">
+            {% csrf_token %}
+            <input readonly type="hidden" name="C1" value="{{d.cid}}"/>
+            <p>Course Name<input name="t1" value="{{d.crname}}"/></p>
+            <p>Duration<input type="text" name="t2" value="{{d.duration}}"/></p>
+            <p>Remark<input type="text" name="t3" value="{{d.remark}}"/></p>
+            <button type="submit">Save Changes</button>
+        </form>
+    {% endfor %}
+{% elif mssg %}
+    <h3>{{mssg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allcourses/">See Changes</a></p>
+{% endif %}
+{% endblock %}

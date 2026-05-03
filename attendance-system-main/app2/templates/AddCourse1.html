@@ -1,0 +1,12 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+{% if msg %}
+    <h4>{{msg}}</h4>
+    <form method="post" action="http://127.0.0.1:8000/add_course/">
+        <input type="hidden" name="H1" value="{{stid}}"/>
+        <button type="submit" >Add More</button>
+    </form>
+    <a href="http://127.0.0.1:8000/view_student_ad/"> See Changes</a>
+{% endif %}
+{% endblock %}

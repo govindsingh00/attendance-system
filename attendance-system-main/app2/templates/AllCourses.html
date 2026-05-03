@@ -1,0 +1,22 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1> Available Courses </h1>
+{% if data %}
+    {% for d in data %}
+        <h3>{{d.crname}}</h3>
+        <p>{{d.duration}}</p>
+        <p>{{d.remark}}</p>
+        <form method="post" action="http://127.0.0.1:8000/edit_course/">
+            {% csrf_token %}
+            <input type="hidden" value="{{d.cid}}" name="C1">
+            <button type="submit" >Edit Course</button>
+        </form>
+        <form method="post" action="http://127.0.0.1:8000/delete_course/">
+            {% csrf_token %}
+            <input type="hidden" value="{{d.cid}}" name="C1">
+            <button type="submit" >Delete Course</button>
+        </form>
+    {% endfor %}
+{% endif %}
+{% endblock %}

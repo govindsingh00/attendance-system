@@ -1,0 +1,16 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1>Course registration</h1>
+<form method="post" action="http://127.0.0.1:8000/course_reg/">
+    {% csrf_token %}
+    <p>Course Name:<input type="text" name="t1"/></p>
+    <p>Duration:<input type="text" name="t2"/></p>
+    <p>Remark:<input type="text" name="t3"/></p>
+    <button type="submit">Add Course</button>
+</form>
+
+{% if msg %}
+    <h4>{{msg}}</h4>
+{% endif %}
+{% endblock %}

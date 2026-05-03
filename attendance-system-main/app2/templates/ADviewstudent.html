@@ -1,0 +1,99 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+{% if data1 %}
+    {% for d in data1 %}
+        <h1>{{d.stname}} Profile</h1>
+        <h3>STUDENT ID:{{d.stid}}</h3>
+        {% if data4 %}
+            {% for d4 in data4 %}
+                <img src="../media/{{d4.photo}}" width="100" height="100" />
+                <form method="post" action="http://127.0.0.1:8000/studentchngephoto/" >
+                    {% csrf_token %}
+                    <input type="hidden" name="C1" value="{{d4.photo}}" />
+                    <input type="hidden" name="C2" value="{{d.email}}" />
+                    <button>Change Photo</button>
+                </form>
+
+                <form method="post" action="http://127.0.0.1:8000/studentdeletephoto/"  >
+                    {% csrf_token %}
+                    <input type="hidden" name="C1" value="{{d4.photo}}" />
+                    <input type="hidden" name="C2" value="{{d.email}}" />
+                    <button>Delete Photo</button>
+                </form>
+            {% endfor %}
+        {% else %}
+            <form method="post" action="http://127.0.0.1:8000/studentuploadphoto/" enctype="multipart/form-data" >
+                {% csrf_token %}
+                <p>
+                    Choose Photo <input type="file" name="F1" />
+                </p>
+                <input type="hidden" name="E1" value="{{d.email}}" />
+                <button>UPLOAD PHOTO</button>
+            </form>
+        {% endif %}
+
+        <p>
+            Father's Name: {{d.fname}}<br>
+            DOB: {{d.dob}}<br>
+            Gender: {{d.gender}}<br>
+            Address: {{d.address}}<br>
+            Contact: {{d.contact}}<br>
+            Email: {{d.email}}
+        </p>
+        <p>
+            <form method="post" action="http://127.0.0.1:8000/editstdata/">
+                {% csrf_token %}
+                <input type="hidden" name="STID1" value="{{d.stid}}" />
+                <button type="submit" >Edit Student Profile</button>
+            </form>
+        </p>
+
+    {% if data2 %}
+        <table border="2px" width="100%" cellpadding="2px" style="border-collapse:collapse;">
+            <thead>
+                <th>COURSE ID</th>
+                <th>JOINED COURSES</th>
+                <th>COURSE JOINING DATE</th>
+                <th>REMARK</th>
+                <th>MANAGE</th>
+            </thead>
+        {% for d2 in data2 %}
+            <tbody>
+                <tr>
+                    <td>{{d2.st_crid}}</td>
+                    <td>{{d2.crname}}</td>
+                    <td>{{d2.joining}}</td>
+                    <td>{{d2.remark}}</td>
+                    <td>
+                        <form method="post" action="http://127.0.0.1:8000/editstudentcoursedata/" >
+                            {% csrf_token %}
+                            <input type="hidden" name="A1" value="{{d2.stid}}" />
+                            <input type="hidden" name="A2" value="{{d2.st_crid}}" />
+                            <button type="submit">Edit Course</button>
+                        </form>
+
+                        <form method="post" action="http://127.0.0.1:8000/deletestudentcoursedata/" >
+                            {% csrf_token %}
+                            <input type="hidden" name="A1" value="{{d2.stid}}" />
+                            <input type="hidden" name="A2" value="{{d2.st_crid}}" />
+                            <button type="submit">Delete Course</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <h4>NO COURSES FOUND</h4>
+    {% endif %}
+    <form method="post" action="http://127.0.0.1:8000/studentcourseadd/">
+        {% csrf_token %}
+        <input type="hidden" name="A1" value="{{d.stid}}" />
+        <button type="submit">Add Course</button>
+    </form>
+
+{% endfor %}
+{% endif %}
+
+{% endblock %}

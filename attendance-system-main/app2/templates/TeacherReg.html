@@ -1,0 +1,179 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+
+<div>
+<h1> Teacher Registration Form </h1>
+<p> Fill out the form for registration </p>
+<hr><hr>
+
+<form method="post" enctype="multipart/form-data" action="/teacher_reg/" onsubmit="return B()">
+    {% csrf_token %}
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>First Name</label><span id="er1"></span>
+        <input type="text" id="txt1" name="t1" class="form-control">
+      </div>
+      <div class="form-group col-md-6">
+        <label>Last Name</label><span id="er11"></span>
+        <input type="text" id="txt11" name="t2" class="form-control">
+      </div>
+    </div>
+
+    <!-- ✅ Course Dropdown -->
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label>Course</label>
+        <select name="t3" class="form-control">
+            <option value="">-- Select Course --</option>
+            {% for c in courses %}
+                <option value="{{ c.cid }}">{{ c.crname }}</option>
+            {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>DOB</label>
+        <input type="date" name="t4" class="form-control">
+      </div>
+
+      <div class="form-group col-md-6">
+        <label>Gender</label><br>
+        <input type="radio" name="R1" value="Male"> Male
+        <input type="radio" name="R1" value="Female"> Female
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-12">
+        <label>Address</label><span id="er2"></span>
+        <input type="text" name="t5" class="form-control" id="txt2" placeholder="Address line 1">
+        <input type="text" name="t6" class="form-control" placeholder="Address line 2">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <label for="state_teacher">State</label><span id="er22"></span>
+        <select name="t8" class="form-control" id="state_teacher" required>
+          <option value="">— Select state —</option>
+          {% for s in indian_states %}
+          <option value="{{ s }}">{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="city_teacher">City</label><span id="er21"></span>
+        <select name="t7" class="form-control" id="city_teacher" required>
+          <option value="">— Select state first —</option>
+        </select>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="txt23">Pincode</label><span id="er23"></span>
+        <input type="text" name="t9" class="form-control" id="txt23" maxlength="10" pattern="[0-9]{6}" placeholder="6 digits" inputmode="numeric">
+      </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group col-md-6">
+          <label>Contact</label><span id="er3"></span>
+          <input type="text" name="t10" class="form-control" id="txt3">
+        </div>
+        <div class="form-group col-md-6">
+          <label>Email</label><span id="er4"></span>
+          <input type="email" name="t11" class="form-control" id="txt4">
+        </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label>Password</label><span id="er5"></span>
+        <input onkeyup="return A()" name="t12" type="password" class="form-control" id="txt5">
+      </div>
+      <div class="form-group col-md-6">
+        <label>Confirm Password</label><span id="er6"></span>
+        <input type="password" name="t13" class="form-control" id="txt6">
+      </div>
+    </div>
+
+    <!-- ✅ Photo Upload -->
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <label>Upload Photo</label>
+            <input type="file" name="photo" class="form-control">
+        </div>
+    </div>
+
+    <button type="reset" class="btn btn-primary">Reset</button>
+    <button type="submit" class="btn btn-success">Register</button>
+
+</form>
+
+</div>
+
+<!-- ✅ SAME JS (reuse your validation exactly) -->
+<script>
+    function B()
+    {
+        var t1,t2,t3,t4,t5,t6,e1,e2,e3,e4,e5,e6;
+
+        t1=document.getElementById("txt1");
+        t2=document.getElementById("txt2");
+        t3=document.getElementById("txt3");
+        t4=document.getElementById("txt4");
+        t5=document.getElementById("txt5");
+        t6=document.getElementById("txt6");
+
+        e1=document.getElementById("er1");
+        e2=document.getElementById("er2");
+        e3=document.getElementById("er3");
+        e4=document.getElementById("er4");
+        e5=document.getElementById("er5");
+        e6=document.getElementById("er6");
+
+        if(t1.value=="")
+        {
+            e1.innerHTML="Enter First Name";
+            return false;
+        }
+        if(t3.value=="")
+        {
+            e3.innerHTML="Enter Contact";
+            return false;
+        }
+        if(t4.value=="")
+        {
+            e4.innerHTML="Enter Email";
+            return false;
+        }
+        if(t5.value != t6.value)
+        {
+            e6.innerHTML="Password does not match";
+            return false;
+        }
+        var st = document.getElementById("state_teacher");
+        var ct = document.getElementById("city_teacher");
+        var er21 = document.getElementById("er21");
+        var er22 = document.getElementById("er22");
+        var er23 = document.getElementById("er23");
+        if (er21) er21.innerHTML = "";
+        if (er22) er22.innerHTML = "";
+        if (er23) er23.innerHTML = "";
+        if (!st.value) { if (er22) er22.innerHTML="Select state"; st.focus(); return false; }
+        if (!ct.value) { if (er21) er21.innerHTML="Select city"; ct.focus(); return false; }
+        var pc = document.getElementById("txt23");
+        if (!pc.value || pc.value.length < 6) { if (er23) er23.innerHTML="Enter pincode"; pc.focus(); return false; }
+    }
+</script>
+
+{% include "includes/state_city_cascade.html" with suffix="teacher" %}
+
+{% if msg %}
+<h3 style="color:green;">{{msg}}</h3>
+<p><a href="/admin_home/">Continue</a></p>
+{% endif %}
+
+{% endblock %}

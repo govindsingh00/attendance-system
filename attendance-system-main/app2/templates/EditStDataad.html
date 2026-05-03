@@ -1,0 +1,31 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1>Edit Student Data </h1>
+{% if data %}
+    {% for d in data %}
+        <form method="post" action="http://127.0.0.1:8000/editstdata1/">
+            {% csrf_token %}
+            <p>Student Id <input type="text" readonly name="T1" value="{{d.stid}}" /></p>
+            <p>Student Name <input type="text" name="T2" value="{{d.stname}}" /></p>
+            <p>Fathers Name <input type="text" name="T3" value="{{d.fname}}" /></p>
+            <p>DOB <input type="text" name="T4" value="{{d.dob}}" placeholder="dd/mm/yyyy"/></p>
+            <p>Gender <input type="radio" name="T5" value="male"/>MALE
+                <input type="radio" name="T5" value="female"/>FEMALE
+                <input type="radio" name="T5" value="trans"/>TRANSGENDER
+            </p>
+            <p>Address <input type="text" name="T6" value="{{d.address}}" /></p>
+            <p>
+                Last Qualification <input type="text" name="T7" value="{{d.lastquali}}" />
+            </p>
+            <p>Contact <input type="text" name="T8" value="{{d.contact}}" /> </p>
+            <p>Email <input type="text" name="T9" value="{{d.email}}" /></p>
+            <p>Section <input type="text" name="T10" value="{{ d.section }}" placeholder="e.g. A, B" /></p>
+            <button type="submit">Edit Data</button>
+        </form>
+    {% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allstudentsAD/">Continue</a></p>
+{% endif %}
+{% endblock %}

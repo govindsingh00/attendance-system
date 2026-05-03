@@ -1,0 +1,169 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+
+{% block m1 %}
+<style>
+    /* Section Styling */
+    .teachers-section {
+        padding: 40px 20px;
+        background: #f0f2f5;
+        min-height: 100vh;
+    }
+
+    .teacher-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        padding: 20px;
+    }
+
+    /* Modern Card Design */
+    .t-card {
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        border: none;
+        position: relative;
+    }
+
+    .t-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+
+    /* Image Styling with Gradient Overlay */
+    .t-image-wrapper {
+        position: relative;
+        height: 240px;
+        overflow: hidden;
+    }
+
+    .t-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .t-card:hover .t-img {
+        transform: scale(1.1);
+    }
+
+    .t-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    }
+
+    /* Content Styling */
+    .t-content {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .t-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin-bottom: 5px;
+    }
+
+    .t-badge {
+        background: #e7f3ff;
+        color: #1a73e8;
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .t-info-box {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+        text-align: left;
+    }
+
+    .t-detail {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+
+    .t-detail i {
+        color: #1a73e8;
+        width: 16px;
+    }
+
+    /* Empty State */
+    .no-data {
+        text-align: center;
+        grid-column: 1 / -1;
+        padding: 100px;
+        background: white;
+        border-radius: 20px;
+    }
+</style>
+
+<div class="teachers-section">
+    <div class="d-flex justify-content-between align-items-center mb-5 px-4">
+        <h1 style="font-weight: 800; color: #1a1a2e; margin: 0;">Faculty Directory</h1>
+        <div class="bg-white px-3 py-1 rounded-pill shadow-sm border small">
+            <strong>{{ data|length }}</strong> Teachers Active
+        </div>
+    </div>
+
+    <div class="teacher-grid">
+    {% if data %}
+        {% for item in data %}
+            <div class="t-card">
+                <div class="t-image-wrapper">
+                    {% if item.photo %}
+                        <img src="/media/{{ item.photo }}" class="t-img" alt="Teacher">
+                    {% else %}
+                        <img src="{% static 'default.png' %}" class="t-img" alt="Default">
+                    {% endif %}
+                    <div class="t-overlay"></div>
+                </div>
+
+                <div class="t-content">
+                    <span class="t-badge">Faculty Member</span>
+                    <h5 class="t-name mt-2">{{ item.teacher.name }}</h5>
+
+                    <div class="t-info-box">
+                        <div class="t-detail">
+                            <span>📧</span>
+                            <span class="text-truncate">{{ item.teacher.email }}</span>
+                        </div>
+                        <div class="t-detail">
+                            <span>📞</span>
+                            <span>{{ item.teacher.phone }}</span>
+                        </div>
+                        <div class="t-detail">
+                            <span>📍</span>
+                            <span class="text-truncate">{{ item.teacher.address }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-data shadow-sm">
+            <div style="font-size: 4rem; opacity: 0.3;">👨‍🏫</div>
+            <h3 class="text-muted mt-3">No Teachers Found</h3>
+            <p class="text-muted small">Please add faculty members from the admin panel.</p>
+        </div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

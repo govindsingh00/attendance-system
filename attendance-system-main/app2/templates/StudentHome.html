@@ -1,0 +1,48 @@
+{% extends "StudentDash.html" %}
+{% load static %}
+{% block s1 %}
+{% if data1 %}
+    {% for d in data1 %}
+        <img src="http://127.0.0.1:8000/media/{{d.photo}}" width="100" height="100" style="border-radius:50%;width:150px;height:150px;"/>
+    {% endfor %}
+{% else %}
+    <p>
+        <img src=".." width="100" height="100" alt="Contact admin for profile photo" />
+    </p>
+{% endif %}
+{% if data %}
+    {% for d in data %}
+        <h1>{{d.stname}}</h1>
+        <h2>STUDENT ID -: {{d.stid}}</h2>
+        <p>
+            Father's Name : {{d.fname}} <br/>
+            DOB : {{d.dob}} <br/>
+            GENDER : {{d.gender}} <br/>
+            Address : {{d.address}} <br/>
+            Last Qualification : {{d.lastquali}} <br/>
+            Contact : {{d.contact}} <br/>
+            Email : {{d.email}} <br/>
+            Section : {{ d.section|default:"—" }} <br/>
+        </p>
+        <p><a class="btn btn-sm btn-outline-light" href="http://127.0.0.1:8000/student_attendance/">View attendance</a></p>
+        <form method="post" action="http://127.0.0.1:8000/editstprofile/">
+            {% csrf_token %}
+            <input type="hidden" name="S1" value="{{d.stid}}">
+            <button type="submit">Edit</button>
+        </form>
+
+        <form method="post" action="http://127.0.0.1:8000/student_pass_change/">
+            {% csrf_token %}
+            <input type="hidden" name="S1" value="{{d.stid}}">
+            <button type="submit">Change Password</button>
+        </form>
+        <form method="post" action="http://127.0.0.1:8000/student_course_info/">
+            {% csrf_token %}
+            <input type="hidden" name="S1" value="{{d.stid}}">
+            <button type="submit">See Course Details</button>
+        </form>
+    {% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+{% endif %}
+{% endblock %}

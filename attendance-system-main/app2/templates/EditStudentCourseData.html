@@ -1,0 +1,31 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1>Edit Course DATA</h1>
+{% if data %}
+{% for d in data %}
+    <form method="post" action="http://127.0.0.1:8000/editstudentcoursedata1/">
+        {% csrf_token %}
+        <p>Course Id<input readonly type="text" name="T1" value="{{d.st_crid}}"></p>
+        <p>Student Id<input readonly type="text" name="T2" value="{{d.stid}}"></p>
+        <p>
+            {% if data1 %}
+            <label for="course" >Select Course to Change</label>
+            <select id="course" name="T3" >
+            {% for d1 in data1 %}
+                    <option value="{{d1.crname}}" {% if d1.crname == d.crname %} selected {% endif %}>{{d1.crname}}</option>
+            {% endfor %}
+            </select>
+            {% endif %}
+        </p>
+
+        <p>Joining Date<input type="text" name="T4" value="{{d.joining}}"> </p>
+        <p>Remark<input type="text" name="T5" value="{{d.remark}}" /></p>
+        <button type="submit">Edit Data</button>
+    </form>
+{% endfor %}
+{% elif msg %}
+    <h3>{{msg}}</h3>
+    <p><a href="http://127.0.0.1:8000/allstudentsAD/" >Continue</a> </p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "StudentDash.html" %}
+{% load static %}
+{% block s1 %}
+<h2 class="text-center">Your enrolled courses</h2>
+<br>
+{% if data1 %}
+    <table border="2px" cellpadding="10px" width="100%" style="border-collapse:collapse;">
+        <thead>
+            <th>COURSE ID</th>
+            <th>COURSE NAME</th>
+            <th>JOINING DATE</th>
+            <th>REMARK</th>
+        </thead>
+
+    {% for d1 in data1 %}
+        <tbody>
+            <tr>
+                <td>{{d1.st_crid}}</td>
+                <td>{{d1.crname}}</td>
+                <td>{{d1.joining}}</td>
+                <td>{{d1.remark}}</td>
+            </tr>
+    {% endfor %}
+        </tbody>
+        </table>
+{% else %}
+    <p>No courses enrolled.</p>
+{% endif %}
+{% endblock %}

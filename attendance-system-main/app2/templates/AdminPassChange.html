@@ -1,0 +1,17 @@
+{% extends "AdminDash.html" %}
+{% load static %}
+{% block m1 %}
+<h1>Change Password</h1>
+{% if data %}
+    <form method="post" action="http://127.0.0.1:8000/admin_pass_change1/">
+        {% csrf_token %}
+        <p>Old Password:<input type="text" name="t1" /> </p>
+        <p>New Password:<input type="text" name="t2" /> </p>
+        <p>Confirm Password:<input type="text" name="t3" /> </p>
+        <button type="submit">Change Password</button>
+    </form>
+{% elif msg %}
+    <h3>{{msg}}</h3>
+<p><a href="http://127.0.0.1:8000/logout/">Click Here to Save Changes</a><br><strong>Warning!! you will be logout by click</strong></p>
+{% endif %}
+{% endblock %}
