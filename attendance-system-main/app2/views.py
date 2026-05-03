@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.hashers import make_password, check_password
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -99,17 +100,23 @@ def login(request):
     if request.method == "POST":
         em=request.POST["T1"]
         paswrd=request.POST["T2"]
-        obj = Logindata.objects.get(email=em,password=paswrd)
-        ut=obj.usertype
-        request.session["ut"]=ut
-        request.session["email"]=em
-        if ut=="admin":
-            return HttpResponseRedirect("/admin_home/")
-        elif ut=="student":
-            return HttpResponseRedirect("/student_home/")
-        elif ut=="teacher":
-            return HttpResponseRedirect("/teacher_home/")
-        else:
+        try:
+            obj = Logindata.objects.get(email=em)
+            if check_password(paswrd, obj.password):
+                ut=obj.usertype
+                request.session["ut"]=ut
+                request.session["email"]=em
+                if ut=="admin":
+                    return HttpResponseRedirect("/admin_home/")
+                elif ut=="student":
+                    return HttpResponseRedirect("/student_home/")
+                elif ut=="teacher":
+                    return HttpResponseRedirect("/teacher_home/")
+                else:
+                    return render(request, "Login.html",{"msg":"Either Email or Password is Incorrect"})
+            else:
+                return render(request, "Login.html",{"msg":"Either Email or Password is Incorrect"})
+        except Logindata.DoesNotExist:
             return render(request, "Login.html",{"msg":"Either Email or Password is Incorrect"})
     else:
         return render(request,"Login.html")
@@ -159,7 +166,7 @@ def admin_reg(request):
                 adm.address = add
 
                 lgn.email = em
-                lgn.password = paswrd
+                lgn.password = make_password(paswrd)
                 lgn.usertype = "admin"
 
                 adm.save()
@@ -211,7 +218,7 @@ def student_reg(request):
                 st.section = request.POST.get("t14", "").strip()
 
                 lgn.email = em
-                lgn.password = pswrd
+                lgn.password = make_password(pswrd)
                 lgn.usertype = "student"
 
                 st.save()
@@ -253,7 +260,7 @@ def teacher_reg(request):
                     t.address = add
 
                     lgn.email = em
-                    lgn.password = request.POST["t12"]
+                    lgn.password = make_password(request.POST["t12"])
                     lgn.usertype = "teacher"
 
                     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
@@ -377,10 +384,16 @@ def admin_pass_change1(request):
             if request.method == "POST":
                 old = request.POST["t1"]
                 new = request.POST["t2"]
-                ACC = Logindata.objects.get(email=em,password=old)
-                ACC.password = new
-                ACC.save()
-                return render(request, "AdminPassChange.html", {"msg":"PASSWORD CHANGED"})
+                try:
+                    ACC = Logindata.objects.get(email=em)
+                    if check_password(old, ACC.password):
+                        ACC.password = make_password(new)
+                        ACC.save()
+                        return render(request, "AdminPassChange.html", {"msg":"PASSWORD CHANGED"})
+                    else:
+                        return render(request, "AdminPassChange.html", {"msg":"Incorrect Old Password"})
+                except Logindata.DoesNotExist:
+                    return HttpResponseRedirect("/autherror/")
             else:
                 return HttpResponseRedirect("/admin_home/")
         else:
@@ -470,10 +483,16 @@ def student_pass_change1(request):
                 em = request.POST["E1"]
                 old = request.POST["t1"]
                 new = request.POST["t2"]
-                stdata = Logindata.objects.get(email=em,password=old)
-                stdata.password = new
-                stdata.save()
-                return render(request,"StudentPassChange.html",{"msg":"Password Changed Successfully"})
+                try:
+                    stdata = Logindata.objects.get(email=em)
+                    if check_password(old, stdata.password):
+                        stdata.password = make_password(new)
+                        stdata.save()
+                        return render(request,"StudentPassChange.html",{"msg":"Password Changed Successfully"})
+                    else:
+                        return render(request,"StudentPassChange.html",{"msg":"Incorrect Old Password"})
+                except Logindata.DoesNotExist:
+                    return HttpResponseRedirect("/autherror/")
             else:
                 return HttpResponseRedirect("/student_home/")
         else:
@@ -1192,10 +1211,16 @@ def teacher_pass_change1(request):
         if ut == "teacher" and request.method == "POST":
             old = request.POST["t1"]
             new = request.POST["t2"]
-            acc = Logindata.objects.get(email=em, password=old)
-            acc.password = new
-            acc.save()
-            return render(request, "TeacherPassChange.html", {"msg": "Password changed"})
+            try:
+                acc = Logindata.objects.get(email=em)
+                if check_password(old, acc.password):
+                    acc.password = make_password(new)
+                    acc.save()
+                    return render(request, "TeacherPassChange.html", {"msg": "Password changed"})
+                else:
+                    return render(request, "TeacherPassChange.html", {"msg": "Incorrect Old Password"})
+            except Logindata.DoesNotExist:
+                return HttpResponseRedirect("/autherror/")
         return HttpResponseRedirect("/teacher_home/")
     return HttpResponseRedirect("/autherror/")
 

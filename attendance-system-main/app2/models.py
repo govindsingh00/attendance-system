@@ -1,10 +1,11 @@
 from django.db import models
+from .fields import EncryptedCharField, EncryptedDateField
 # Create your models here.
 
 class Admindata(models.Model):
     name = models.CharField(max_length=100)
-    contact = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
+    contact = EncryptedCharField(max_length=255)
+    address = EncryptedCharField(max_length=255)
     email = models.CharField(max_length=100,primary_key=True)
     def __str__(self):
         return self.name
@@ -22,10 +23,10 @@ class Teacherdata(models.Model):
     crid = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15)
+    phone = EncryptedCharField(max_length=255)
     gender = models.CharField(max_length=10)
-    dob = models.DateField()
-    address = models.TextField()
+    dob = EncryptedDateField()
+    address = EncryptedCharField(max_length=500)
 
     joining_date = models.DateField(auto_now_add=True)
     status = models.BooleanField(default=True)
@@ -37,11 +38,11 @@ class Studentdata(models.Model):
     stid = models.AutoField(primary_key=True)
     stname = models.CharField(max_length=100)
     fname = models.CharField(max_length=100)
-    dob = models.CharField(max_length=100)
+    dob = EncryptedCharField(max_length=255)
     gender = models.CharField(max_length=100)
-    address = models.CharField(max_length=100)
+    address = EncryptedCharField(max_length=255)
     lastquali = models.CharField(max_length=100)
-    contact = models.CharField(max_length=100)
+    contact = EncryptedCharField(max_length=255)
     email = models.CharField(max_length=100)
     section = models.CharField(max_length=50, blank=True, default="")
     def __str__(self):
