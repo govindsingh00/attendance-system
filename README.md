@@ -1,147 +1,206 @@
-E-Attendance System
-📖 Overview
+# Atmos — AI-Powered Face Recognition Attendance System
 
-The E-Attendance System is a modern, digital solution designed to automate and simplify attendance tracking. It eliminates the inefficiencies of traditional manual methods and provides a structured, reliable, and user-friendly platform for managing attendance data.
+![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat-square&logo=python)
+![Django](https://img.shields.io/badge/Django-5.1-green?style=flat-square&logo=django)
+![ArcFace](https://img.shields.io/badge/ArcFace-DeepFace-orange?style=flat-square)
+![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10.33-red?style=flat-square)
 
-This system is especially useful for:
+> Web-based AI attendance system — no special hardware, runs in any browser.
 
-Educational institutions (schools, colleges, coaching centers)
-Offices and organizations
-Training institutes
+---
 
-By integrating automation and optional face recognition, the system ensures accuracy, transparency, and efficiency.
+## What is Atmos?
 
-🎯 Objectives
-Replace manual attendance registers
-Reduce human errors in attendance tracking
-Provide real-time attendance insights
-Enable easy access to attendance reports
-Improve productivity and time management
-🚀 Features
-🔐 Authentication System
-User Signup & Login
-Session-based authentication
-Secure access to system data
-👨‍🎓 Student Management
-Add new students
-Update student details
-Delete student records
-Maintain structured student database
-📝 Attendance Management
-Mark attendance (Present / Absent)
-Automated attendance recording (via ML module if enabled)
-Bulk attendance handling
-📅 Date-wise Tracking
-Track attendance by specific dates
-View historical attendance records
-📊 Reports & Insights
-Generate attendance reports
-View individual student attendance
-Analyze attendance trends
-🧠 Face Recognition (ML Module)
-Detect and recognize faces
-Automate attendance marking
-Reduce proxy attendance
-🎨 Modern UI
-Clean and responsive interface
-Interactive attendance tables
-Improved user experience
-🏗️ Project Structure
+Atmos is a face recognition based attendance system built as an MCA final year project at Lovely Professional University. A teacher starts an attendance session from the browser, students look at the camera, and the system automatically marks them present using ArcFace deep learning model. Blink detection prevents proxy attendance using printed photos.
+
+**Recognition Accuracy:** 70–80%  
+**Response Time:** 2–3 seconds per frame  
+**Anti-Spoofing:** Blink detection via MediaPipe EAR  
+
+---
+
+## How It Works
+Teacher clicks "Start Attendance"
+↓
+Browser camera captures frame every 3 seconds
+↓
+Server checks for blink (liveness verification)
+↓
+Haar Cascade detects face region
+↓
+ArcFace generates 512-D embedding vector
+↓
+Cosine similarity vs stored encodings (threshold: 0.4)
+↓
+Match found → AttendanceRecord saved → Name shown in UI
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Django 5.1 (Python) |
+| Database | SQLite |
+| Face Recognition | DeepFace + ArcFace (ResNet-50) |
+| Face Detection | OpenCV Haar Cascade |
+| Liveness Detection | MediaPipe Face Mesh |
+| Training | Kaggle GPU |
+| Frontend | HTML5, CSS3, JavaScript |
+| Camera | HTML5 getUserMedia API |
+
+---
+
+## Project Structure
 attendance-system/
+├── ML/
+│   ├── datasets/        # Student face images (folder per student ID)
+│   ├── models/          # encodings.json (trained embeddings)
+│   └── src/
+│       ├── recognize.py # FaceRecognizer — detection + matching
+│       ├── liveness.py  # EAR blink detection
+│       └── train.py     # Training script (Kaggle)
 │
-├── FRONTED/                # Frontend UI components
-├── ML/src/                # Machine Learning (Face Recognition)
-├── app2/                  # Backend application logic
-├── student/               # Student management module
+├── app2/
+│   ├── templates/       # All HTML templates
+│   ├── models.py        # Database models
+│   └── views.py         # Views + ML inference endpoint
 │
-├── manage.py              # Django management file
-├── requirements.txt       # Python dependencies
-├── README.md              # Project documentation
-└── .gitignore             # Ignored files
-🛠️ Technologies Used
-🌐 Frontend
-HTML5
-CSS3
-JavaScript
-Responsive UI Design
-⚙️ Backend
-Python (Django Framework)
-REST-based logic (if extended)
-🧠 Machine Learning
-Face Recognition
-OpenCV (for image processing)
-NumPy (data handling)
-🗄️ Database
-SQLite (default)
-Can be extended to MySQL / PostgreSQL
-🔧 Tools & Platforms
-Git & GitHub (Version Control)
-VS Code / PyCharm (Development)
-⚙️ Installation & Setup
-1️⃣ Clone the Repository
+├── student/
+│   ├── settings.py
+│   └── urls.py
+│
+├── manage.py
+├── requirements.txt
+└── .gitignore
+
+---
+
+## Setup & Installation
+
+```bash
+# 1. Clone
 git clone https://github.com/govindsingh00/attendance-system.git
 cd attendance-system
-2️⃣ Create Virtual Environment
+
+# 2. Virtual environment
 python -m venv venv
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # Mac/Linux
 
-Activate it:
-
-Windows:
-venv\Scripts\activate
-Mac/Linux:
-source venv/bin/activate
-3️⃣ Install Dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
-4️⃣ Run Migrations
+
+# 4. Migrate
 python manage.py migrate
-5️⃣ Start the Server
+
+# 5. Run
 python manage.py runserver
-6️⃣ Open in Browser
-http://127.0.0.1:8000/
-🧠 Face Recognition Setup (Optional)
-Add student images to dataset folder
-Train the model using ML module
-Run face recognition script
-System will automatically mark attendance
-📸 Screens & UI Highlights
-Login & Signup Interface
-Student Dashboard
-Attendance Table UI
-Reports Section
-Face Recognition Interface
-🔒 Security Features
-Session-based authentication
-Protected routes
-Data validation
-Secure login system
-📈 Future Enhancements
-📱 Mobile App Integration
-☁️ Cloud Database Support
-📊 Advanced Analytics Dashboard
-📧 Email Notifications
-🔔 Real-time Alerts
-🧾 Export Reports (PDF/Excel)
-👨‍🏫 Teacher/Admin Role Management
-🌍 Multi-user system
-🤝 Contributors
-Govind Singh Tanwar
-Sachin Gupta
-Kashish
-Komal
-Navneet Kumar
-📌 Use Cases
-Schools tracking daily attendance
-Colleges managing large student databases
-Offices monitoring employee presence
-Training institutes managing batches
-⚠️ Limitations
-Face recognition accuracy depends on image quality
-Requires proper lighting conditions
-Basic UI (can be enhanced further)
-📄 License
+```
 
-This project is currently open-source and available for learning and development purposes.
+Open `http://127.0.0.1:8000/`
 
-💡 Conclusion
+---
 
-The E-Attendance System is a powerful and scalable solution that combines web development and machine learning to deliver a smart attendance tracking experience. It reduces manual effort, increases reliability, and opens the door for future smart automation.
+## Face Recognition Setup
+
+### Step 1 — Collect images
+ML/datasets/
+├── 1/   # 30-40 photos of Student ID 1
+├── 2/
+├── 3/
+└── 4/
+
+### Step 2 — Train (on Kaggle for GPU)
+```bash
+python ML/src/train.py
+```
+Generates `ML/models/encodings.json` — normalized ArcFace embeddings per student.
+
+---
+
+## Anti-Spoofing — How Blink Detection Works
+
+MediaPipe detects 468 facial landmarks. 6 landmarks per eye compute Eye Aspect Ratio:
+EAR = (||p2-p6|| + ||p3-p5||) / (2 × ||p1-p4||)
+Open eye  → EAR ≈ 0.25–0.35
+Blink     → EAR drops below 0.22
+Photo     → constant EAR → never blinks → blocked
+
+System requires at least 1 confirmed blink before running face recognition.
+
+---
+
+## User Roles
+
+**Admin**
+- Register students, teachers, courses
+- Assign teachers to sections and time slots
+
+**Teacher**
+- View assigned classes
+- Start face attendance session
+- Download CSV attendance sheet
+
+**Student**
+- View own attendance percentage per course
+
+---
+
+## Database Models
+
+| Model | Key Fields |
+|---|---|
+| Studentdata | stid, stname, email, section |
+| Teacherdata | tid, name, email, phone |
+| Coursedata | cid, crname, duration |
+| TeachingAssignment | teacher, course, section, time_slot |
+| AttendanceRecord | student, course, date, time_slot, status |
+| Logindata | email, password, usertype |
+
+---
+
+## Known Limitations
+
+- Accuracy drops under poor lighting or off-axis face angles
+- CPU inference: 2–3s per frame (GPU would reduce to <500ms)
+- Blink detection cannot defend against video replay attacks
+- Tested on 4 students only — needs larger scale evaluation
+- Single organization deployment only
+
+---
+
+## Future Work
+
+- Video replay attack defense using MiniFASNet or rPPG
+- GPU deployment for real-time performance
+- Per-subject cosine threshold calibration
+- Multi-tenant architecture
+- Mobile app
+- Incremental enrollment without retraining
+
+---
+
+## Research Paper
+
+Published as IEEE-format conference paper:
+
+> **Atmos: An AI-Powered Face Recognition Attendance System with Anti-Spoofing Using ArcFace and Blink Detection**  
+> Sachin Gupta, Govind Singh Tanwar, Kashish Sharma, Komal Kumari, Navneet Kumar, Gagandeep Sethi  
+> Lovely Professional University, Jalandhar, Punjab, India
+
+---
+
+## Team
+
+| Name | Role |
+|---|---|
+| Sachin Gupta | ML Module (ArcFace, Liveness, Django API) |
+| Govind Singh Tanwar | Backend (Django views, models, DB) |
+| Kashish Sharma | Frontend (Templates, UI) |
+| Komal Kumari | Frontend (Templates, UI) |
+| Navneet Kumar | Testing |
+| Gagandeep Sethi | Project Supervisor |
+
+**Lovely Professional University, Jalandhar, Punjab, India**  
+**Master of Computer Applications (MCA)**
