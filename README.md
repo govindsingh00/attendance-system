@@ -133,11 +133,15 @@ Generates `ML/models/encodings.json` — normalized ArcFace embeddings per stude
 
 ## Anti-Spoofing — How Blink Detection Works
 
-MediaPipe detects 468 facial landmarks. 6 landmarks per eye compute Eye Aspect Ratio:
-EAR = (||p2-p6|| + ||p3-p5||) / (2 × ||p1-p4||)
-Open eye  → EAR ≈ 0.25–0.35
-Blink     → EAR drops below 0.22
-Photo     → constant EAR → never blinks → blocked
+MediaPipe detects 468 facial landmarks. 6 landmarks per eye are used to compute Eye Aspect Ratio (EAR):
+
+    EAR = (||p2-p6|| + ||p3-p5||) / (2 x ||p1-p4||)
+
+| Eye State | EAR Value |
+|---|---|
+| Open eye | 0.25 – 0.35 |
+| Blink | drops below 0.22 |
+| Printed photo | constant EAR, never blinks, blocked |
 
 System requires at least 1 confirmed blink before running face recognition.
 
