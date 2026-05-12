@@ -1,20 +1,51 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block page_title %}Edit Course{% endblock %}
+{% block page_sub %}Update course details{% endblock %}
+
 {% block m1 %}
-<h1> Edit Course </h1>
-{% if data %}
-    {% for d in data %}
-        <form method="post" action="http://127.0.0.1:8000/edit_course1/">
-            {% csrf_token %}
-            <input readonly type="hidden" name="C1" value="{{d.cid}}"/>
-            <p>Course Name<input name="t1" value="{{d.crname}}"/></p>
-            <p>Duration<input type="text" name="t2" value="{{d.duration}}"/></p>
-            <p>Remark<input type="text" name="t3" value="{{d.remark}}"/></p>
-            <button type="submit">Save Changes</button>
-        </form>
-    {% endfor %}
-{% elif mssg %}
-    <h3>{{mssg}}</h3>
-    <p><a href="http://127.0.0.1:8000/allcourses/">See Changes</a></p>
+
+{% if mssg %}
+<div class="alert alert-success"><span>✅</span> {{ mssg }} <a href="/allcourses/" style="color:var(--green);font-weight:700">View All Courses</a></div>
 {% endif %}
+
+{% if data %}
+{% for d in data %}
+<div style="max-width:600px">
+    <div class="card">
+        <div class="card-title">📚 Edit Course — <span style="color:var(--blue)">{{ d.crname }}</span></div>
+        <form method="post" action="/edit_course1/">
+            {% csrf_token %}
+            <input type="hidden" name="C1" value="{{ d.cid }}"/>
+            <div style="display:flex;flex-direction:column;gap:1.1rem">
+                <div class="field">
+                    <label>Course Name <span style="color:var(--red)">*</span></label>
+                    <input type="text" name="t1" value="{{ d.crname }}" required/>
+                </div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Duration <span style="color:var(--red)">*</span></label>
+                        <input type="text" name="t2" value="{{ d.duration }}" required/>
+                    </div>
+                    <div class="field">
+                        <label>Fee (₹)</label>
+                        <input type="text" name="t4" value="{{ d.fee }}"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Remarks</label>
+                    <textarea name="t3" rows="3" style="resize:vertical">{{ d.remark }}</textarea>
+                </div>
+                <div style="display:flex;gap:.75rem">
+                    <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                    <a href="/allcourses/" class="btn btn-outline">← Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
 {% endblock %}

@@ -1,25 +1,40 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block page_title %}Remove Course{% endblock %}
+{% block page_sub %}Remove course from student profile{% endblock %}
+
 {% block m1 %}
-<h1>Edit Course DATA</h1>
+{% if msg %}
+<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/allstudentsAD/" style="color:var(--green);font-weight:700">Back to Students</a></div>
+{% endif %}
+
 {% if data %}
 {% for d in data %}
-    <form method="post" action="http://127.0.0.1:8000/deletestudentcoursedata1/">
+<div style="max-width:520px">
+    <div class="alert alert-error" style="margin-bottom:1.25rem">
+        <span>⚠️</span>
+        <div><div style="font-weight:700">This will remove this course from the student's profile permanently.</div></div>
+    </div>
+    <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-title">📚 Course Details</div>
+        <div class="detail-grid">
+            <div><div class="detail-label">Course ID</div><div class="detail-val"><span class="badge badge-blue">{{ d.st_crid }}</span></div></div>
+            <div><div class="detail-label">Student ID</div><div class="detail-val"><span class="badge badge-navy">{{ d.stid }}</span></div></div>
+            <div><div class="detail-label">Course Name</div><div class="detail-val" style="font-size:1rem;font-weight:700">{{ d.crname }}</div></div>
+            <div><div class="detail-label">Joining Date</div><div class="detail-val">{{ d.joining }}</div></div>
+            <div style="grid-column:1/-1"><div class="detail-label">Remark</div><div class="detail-val" style="color:var(--tx-3)">{{ d.remark|default:"—" }}</div></div>
+        </div>
+    </div>
+    <form method="post" action="/deletestudentcoursedata1/" style="display:flex;gap:.75rem">
         {% csrf_token %}
-        <p>Course Id<input readonly type="text" name="T1" value="{{d.st_crid}}"></p>
-        <p>Student Id<input readonly type="text" name="T2" value="{{d.stid}}"></p>
-        <p>
-            Course Name
-            <input readonly type="text" value="{{d.crname}}" />
-        </p>
-
-        <p>Joining Date<input readonly type="text" value="{{d.joining}}" /> </p>
-        <p>Remark<input readonly type="text" value="{{d.remark}}" /></p>
-        <button readonly type="submit">Confirm Delete</button>
+        <input type="hidden" name="T1" value="{{ d.st_crid }}"/>
+        <input type="hidden" name="T2" value="{{ d.stid }}"/>
+        <button type="submit" class="btn" style="background:var(--red);color:#fff;border:none;padding:.6rem 1.25rem;border-radius:8px;font-weight:600"
+                onclick="return confirm('Remove this course from student profile?')">🗑️ Confirm Remove</button>
+        <a href="javascript:history.back()" class="btn btn-outline">← Cancel</a>
     </form>
+</div>
 {% endfor %}
-{% elif msg %}
-    <h3>{{msg}}</h3>
-    <p><a href="http://127.0.0.1:8000/allstudentsAD/" >Continue</a> </p>
 {% endif %}
 {% endblock %}

@@ -1,22 +1,71 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block active_courses %}active{% endblock %}
+{% block page_title %}All Courses{% endblock %}
+{% block page_sub %}Manage available courses{% endblock %}
+
 {% block m1 %}
-<h1> Available Courses </h1>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+    <span class="badge badge-navy">{{ data|length }} Courses</span>
+    <a href="/course_reg/" class="btn btn-primary">➕ Add Course</a>
+</div>
+
 {% if data %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem">
     {% for d in data %}
-        <h3>{{d.crname}}</h3>
-        <p>{{d.duration}}</p>
-        <p>{{d.remark}}</p>
-        <form method="post" action="http://127.0.0.1:8000/edit_course/">
-            {% csrf_token %}
-            <input type="hidden" value="{{d.cid}}" name="C1">
-            <button type="submit" >Edit Course</button>
-        </form>
-        <form method="post" action="http://127.0.0.1:8000/delete_course/">
-            {% csrf_token %}
-            <input type="hidden" value="{{d.cid}}" name="C1">
-            <button type="submit" >Delete Course</button>
-        </form>
+    <div class="card" style="transition:all .3s;position:relative;overflow:hidden" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 30px rgba(0,0,0,.1)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+        <!-- Accent top bar -->
+        <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--navy),var(--blue))"></div>
+        <div style="padding-top:.5rem">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.85rem">
+                <div>
+                    <div style="font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;color:var(--tx-1);margin-bottom:.35rem">{{ d.crname }}</div>
+                    <span class="badge badge-blue">ID: {{ d.cid }}</span>
+                </div>
+                <div style="width:40px;height:40px;border-radius:10px;background:var(--blue-pale);display:grid;place-items:center;font-size:1.2rem;flex-shrink:0">📚</div>
+            </div>
+
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.85rem">
+                <span style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .75rem;background:var(--blue-pale);color:var(--navy);border-radius:50px;font-size:.75rem;font-weight:600">
+                    ⏱️ {{ d.duration }}
+                </span>
+                <span style="display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .75rem;background:var(--amber-bg);color:var(--amber);border-radius:50px;font-size:.75rem;font-weight:600">
+                    💰 ₹{{ d.fee }}
+                </span>
+            </div>
+
+            {% if d.remark %}
+            <p style="font-size:.85rem;color:var(--tx-3);line-height:1.6;margin-bottom:1rem;font-style:italic">"{{ d.remark|truncatechars:80 }}"</p>
+            {% endif %}
+
+            <div style="height:1px;background:var(--border);margin-bottom:1rem"></div>
+
+            <div style="display:flex;gap:.5rem">
+                <form method="post" action="/edit_course/" style="margin:0;flex:1">
+                    {% csrf_token %}
+                    <input type="hidden" name="C1" value="{{ d.cid }}"/>
+                    <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center">✏️ Edit</button>
+                </form>
+                <form method="post" action="/delete_course/" style="margin:0">
+                    {% csrf_token %}
+                    <input type="hidden" name="C1" value="{{ d.cid }}"/>
+                    <button class="btn btn-danger btn-sm" onclick="return confirm('Delete {{ d.crname }}?')">🗑️</button>
+                </form>
+            </div>
+        </div>
+    </div>
     {% endfor %}
+</div>
+
+{% else %}
+<div class="card" style="text-align:center;padding:4rem">
+    <div style="font-size:3rem;margin-bottom:1rem">📚</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem">No Courses Yet</div>
+    <div style="font-size:.9rem;color:var(--tx-3);margin-bottom:1.5rem">Add your first course to get started.</div>
+    <a href="/course_reg/" class="btn btn-primary" style="display:inline-flex">➕ Add First Course</a>
+</div>
 {% endif %}
+
 {% endblock %}

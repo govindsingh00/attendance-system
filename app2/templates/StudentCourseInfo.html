@@ -1,29 +1,47 @@
 {% extends "StudentDash.html" %}
 {% load static %}
-{% block s1 %}
-<h2 class="text-center">Your enrolled courses</h2>
-<br>
-{% if data1 %}
-    <table border="2px" cellpadding="10px" width="100%" style="border-collapse:collapse;">
-        <thead>
-            <th>COURSE ID</th>
-            <th>COURSE NAME</th>
-            <th>JOINING DATE</th>
-            <th>REMARK</th>
-        </thead>
 
-    {% for d1 in data1 %}
-        <tbody>
+{% block active_courses %}active{% endblock %}
+{% block page_title %}My Courses{% endblock %}
+{% block page_sub %}Your enrolled courses{% endblock %}
+
+{% block s1 %}
+
+{% if data1 %}
+<div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div class="card-title" style="margin:0">📚 Enrolled Courses</div>
+        <span class="badge badge-purple">{{ data1|length }} course(s)</span>
+    </div>
+    <div class="table-wrap" style="border:none;border-radius:0">
+        <table>
+            <thead>
+                <tr>
+                    <th>Course ID</th>
+                    <th>Course Name</th>
+                    <th>Joining Date</th>
+                    <th>Remark</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for d1 in data1 %}
             <tr>
-                <td>{{d1.st_crid}}</td>
-                <td>{{d1.crname}}</td>
-                <td>{{d1.joining}}</td>
-                <td>{{d1.remark}}</td>
+                <td><span class="badge badge-blue">{{ d1.st_crid }}</span></td>
+                <td style="font-weight:600;color:var(--tx-1)">{{ d1.crname }}</td>
+                <td style="color:var(--tx-3)">{{ d1.joining }}</td>
+                <td style="color:var(--tx-3)">{{ d1.remark|default:"—" }}</td>
             </tr>
-    {% endfor %}
-        </tbody>
+            {% endfor %}
+            </tbody>
         </table>
+    </div>
+</div>
 {% else %}
-    <p>No courses enrolled.</p>
+<div class="card" style="text-align:center;padding:3.5rem">
+    <div style="font-size:2.5rem;margin-bottom:.75rem">📚</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.4rem">No Courses Enrolled</div>
+    <div style="font-size:.88rem;color:var(--tx-3)">Contact your admin to enroll in courses.</div>
+</div>
 {% endif %}
+
 {% endblock %}

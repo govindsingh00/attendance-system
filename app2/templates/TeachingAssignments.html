@@ -1,75 +1,156 @@
 {% extends "AdminDash.html" %}
+{% load static %}
+
+{% block active_assign %}active{% endblock %}
+{% block page_title %}Teaching Assignments{% endblock %}
+{% block page_sub %}Assign teachers to courses, sections and time slots{% endblock %}
+
 {% block m1 %}
-<h1>Teaching assignments</h1>
-<p>Assign each teacher to a <strong>section</strong>, <strong>course</strong>, and <strong>time slot</strong> (batch). Teachers only see those slots when marking attendance for that section and course.</p>
 
 {% if error %}
-<p style="color:#b00020;"><strong>{{ error }}</strong></p>
+<div class="alert alert-error"><span>⚠️</span> {{ error }}</div>
 {% endif %}
 
-<h2>Add assignment</h2>
-<form method="post" action="/teaching_assignment_add/">
-    {% csrf_token %}
-    <p>
-        <label>Teacher</label><br/>
-        <select name="tid" required>
-            {% for t in teachers %}
-            <option value="{{ t.tid }}">{{ t.name }} ({{ t.email }})</option>
-            {% endfor %}
-        </select>
-    </p>
-    <p>
-        <label>Course</label><br/>
-        <select name="cid" required>
-            {% for c in courses %}
-            <option value="{{ c.cid }}">{{ c.crname }}</option>
-            {% endfor %}
-        </select>
-    </p>
-    <p><label>Section (batch)</label><br/><input type="text" name="section" placeholder="e.g. A" required /></p>
-    <p>
-        <label>Time slot</label><br/>
-        <select name="time_slot" required>
-            <option value="">— choose slot —</option>
-            {% for code, label in time_slots %}
-            <option value="{{ code }}">{{ label }} ({{ code }})</option>
-            {% endfor %}
-        </select>
-    </p>
-    <p><label>Subject label (optional)</label><br/><input type="text" name="subject" placeholder="Defaults to course name" /></p>
-    <button type="submit">Save assignment</button>
-</form>
+<div style="display:grid;grid-template-columns:380px 1fr;gap:1.5rem;align-items:start">
 
-<h2>Current assignments</h2>
-{% if assignments %}
-<table class="table table-sm table-bordered">
-    <thead><tr><th>Teacher</th><th>Course</th><th>Section</th><th>Time slot</th><th>Subject</th><th></th></tr></thead>
-    <tbody>
-    {% for a in assignments %}
-    <tr>
-        <td>{{ a.teacher.name }}</td>
-        <td>{{ a.course.crname }}</td>
-        <td>{{ a.section }}</td>
-        <td>
-            {% for code, label in time_slots %}
-                {% if code == a.time_slot %}{{ label }} <span class="text-muted">({{ code }})</span>{% endif %}
-            {% endfor %}
-        </td>
-        <td>{{ a.subject }}</td>
-        <td>
-            <form method="post" action="/teaching_assignment_delete/" style="display:inline;">
-                {% csrf_token %}
-                <input type="hidden" name="aid" value="{{ a.aid }}" />
-                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>No assignments yet.</p>
-{% endif %}
+    <!-- Add Assignment Form -->
+    <div class="card">
+        <div class="card-title">➕ Add Assignment</div>
+        <p style="font-size:.85rem;color:var(--tx-3);margin-bottom:1.25rem;line-height:1.6">
+            Assign a teacher to a section, course, and time slot. Teachers only see assigned slots when marking attendance.
+        </p>
 
-<p><a href="/admin_home/">Admin home</a></p>
+        <form method="post" action="/teaching_assignment_add/" onsubmit="return validateAssign()">
+            {% csrf_token %}
+
+            <div style="display:flex;flex-direction:column;gap:1rem">
+                <div class="field">
+                    <label>Teacher <span style="color:var(--red)">*</span></label>
+                    <select name="tid" id="tid" required>
+                        <option value="">— Select Teacher —</option>
+                        {% for t in teachers %}
+                        <option value="{{ t.tid }}">{{ t.name }} ({{ t.email }})</option>
+                        {% endfor %}
+                    </select>
+                    <span id="erTid" style="font-size:.75rem;color:var(--red)"></span>
+                </div>
+
+                <div class="field">
+                    <label>Course <span style="color:var(--red)">*</span></label>
+                    <select name="cid" id="cid" required>
+                        <option value="">— Select Course —</option>
+                        {% for c in courses %}
+                        <option value="{{ c.cid }}">{{ c.crname }}</option>
+                        {% endfor %}
+                    </select>
+                    <span id="erCid" style="font-size:.75rem;color:var(--red)"></span>
+                </div>
+
+                <div class="field">
+                    <label>Section <span style="color:var(--red)">*</span></label>
+                    <input type="text" name="section" id="section" placeholder="e.g. A, B, MCA-1"/>
+                    <span id="erSection" style="font-size:.75rem;color:var(--red)"></span>
+                </div>
+
+                <div class="field">
+                    <label>Time Slot <span style="color:var(--red)">*</span></label>
+                    <select name="time_slot" id="timeSlot" required>
+                        <option value="">— Choose Slot —</option>
+                        {% for code, label in time_slots %}
+                        <option value="{{ code }}">{{ label }} ({{ code }})</option>
+                        {% endfor %}
+                    </select>
+                    <span id="erSlot" style="font-size:.75rem;color:var(--red)"></span>
+                </div>
+
+                <div class="field">
+                    <label>Subject Label <span style="font-size:.75rem;color:var(--tx-4)">(optional)</span></label>
+                    <input type="text" name="subject" placeholder="Defaults to course name if empty"/>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top:.25rem">💾 Save Assignment</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Assignments Table -->
+    <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--tx-1)">
+                Current Assignments
+                {% if assignments %}
+                <span class="badge badge-navy" style="margin-left:.5rem">{{ assignments|length }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if assignments %}
+        <div class="table-wrap" style="border:none;border-radius:0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Teacher</th>
+                        <th>Course</th>
+                        <th>Section</th>
+                        <th>Time Slot</th>
+                        <th>Subject</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for a in assignments %}
+                <tr>
+                    <td>
+                        <div style="font-weight:600;color:var(--tx-1)">{{ a.teacher.name }}</div>
+                        <div style="font-size:.75rem;color:var(--tx-4)">{{ a.teacher.email }}</div>
+                    </td>
+                    <td>
+                        <span class="badge badge-blue">{{ a.course.crname }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-navy">{{ a.section }}</span>
+                    </td>
+                    <td style="font-size:.85rem;color:var(--tx-2)">
+                        {% for code, label in time_slots %}
+                            {% if code == a.time_slot %}{{ label }}<br><span style="font-size:.72rem;color:var(--tx-4)">({{ code }})</span>{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td style="font-size:.85rem;color:var(--tx-3)">{{ a.subject|default:"—" }}</td>
+                    <td>
+                        <form method="post" action="/teaching_assignment_delete/" style="margin:0">
+                            {% csrf_token %}
+                            <input type="hidden" name="aid" value="{{ a.aid }}"/>
+                            <button class="btn btn-danger btn-xs" onclick="return confirm('Remove this assignment?')">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+        <div style="text-align:center;padding:3rem;color:var(--tx-3)">
+            <div style="font-size:2.5rem;margin-bottom:.75rem">📋</div>
+            <div style="font-weight:600;margin-bottom:.3rem">No assignments yet</div>
+            <div style="font-size:.85rem">Use the form on the left to add the first assignment.</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function validateAssign() {
+    ['erTid','erCid','erSection','erSlot'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = '';
+    });
+    if(!document.getElementById('tid').value) { document.getElementById('erTid').innerHTML = '⚠ Select teacher'; return false; }
+    if(!document.getElementById('cid').value) { document.getElementById('erCid').innerHTML = '⚠ Select course'; return false; }
+    if(!document.getElementById('section').value.trim()) { document.getElementById('erSection').innerHTML = '⚠ Required'; return false; }
+    if(!document.getElementById('timeSlot').value) { document.getElementById('erSlot').innerHTML = '⚠ Select time slot'; return false; }
+    return true;
+}
+</script>
+
 {% endblock %}

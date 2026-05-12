@@ -1,31 +1,62 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block page_title %}Edit Student Course{% endblock %}
+{% block page_sub %}Update course enrollment details{% endblock %}
+
 {% block m1 %}
-<h1>Edit Course DATA</h1>
+{% if msg %}
+<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/allstudentsAD/" style="color:var(--green);font-weight:700">Back to Students</a></div>
+{% endif %}
+
 {% if data %}
 {% for d in data %}
-    <form method="post" action="http://127.0.0.1:8000/editstudentcoursedata1/">
-        {% csrf_token %}
-        <p>Course Id<input readonly type="text" name="T1" value="{{d.st_crid}}"></p>
-        <p>Student Id<input readonly type="text" name="T2" value="{{d.stid}}"></p>
-        <p>
-            {% if data1 %}
-            <label for="course" >Select Course to Change</label>
-            <select id="course" name="T3" >
-            {% for d1 in data1 %}
-                    <option value="{{d1.crname}}" {% if d1.crname == d.crname %} selected {% endif %}>{{d1.crname}}</option>
-            {% endfor %}
-            </select>
-            {% endif %}
-        </p>
-
-        <p>Joining Date<input type="text" name="T4" value="{{d.joining}}"> </p>
-        <p>Remark<input type="text" name="T5" value="{{d.remark}}" /></p>
-        <button type="submit">Edit Data</button>
-    </form>
+<div style="max-width:560px">
+    <div class="card">
+        <div class="card-title">✏️ Edit Course Enrollment</div>
+        <form method="post" action="/editstudentcoursedata1/">
+            {% csrf_token %}
+            <div style="display:flex;flex-direction:column;gap:1.1rem">
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Course Record ID <span style="font-size:.72rem;color:var(--tx-4)">(read-only)</span></label>
+                        <input type="text" name="T1" value="{{ d.st_crid }}" readonly
+                               style="background:var(--surface2);color:var(--tx-4);cursor:not-allowed"/>
+                    </div>
+                    <div class="field">
+                        <label>Student ID <span style="font-size:.72rem;color:var(--tx-4)">(read-only)</span></label>
+                        <input type="text" name="T2" value="{{ d.stid }}" readonly
+                               style="background:var(--surface2);color:var(--tx-4);cursor:not-allowed"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Course <span style="color:var(--red)">*</span></label>
+                    {% if data1 %}
+                    <select name="T3">
+                        {% for d1 in data1 %}
+                        <option value="{{ d1.crname }}" {% if d1.crname == d.crname %}selected{% endif %}>{{ d1.crname }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <input type="text" name="T3" value="{{ d.crname }}"/>
+                    {% endif %}
+                </div>
+                <div class="field">
+                    <label>Joining Date</label>
+                    <input type="text" name="T4" value="{{ d.joining }}" placeholder="dd/mm/yyyy"/>
+                </div>
+                <div class="field">
+                    <label>Remark</label>
+                    <input type="text" name="T5" value="{{ d.remark }}"/>
+                </div>
+                <div style="display:flex;gap:.75rem">
+                    <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                    <a href="javascript:history.back()" class="btn btn-outline">← Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 {% endfor %}
-{% elif msg %}
-    <h3>{{msg}}</h3>
-    <p><a href="http://127.0.0.1:8000/allstudentsAD/" >Continue</a> </p>
 {% endif %}
 {% endblock %}

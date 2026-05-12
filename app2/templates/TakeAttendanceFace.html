@@ -1,7 +1,364 @@
 {% extends "TeacherDash.html" %}
+{% load static %}
+
+{% block active_face %}active{% endblock %}
+{% block page_title %}Face Attendance{% endblock %}
+{% block page_sub %}AI-powered automatic attendance marking{% endblock %}
+
 {% block m1 %}
-<h1>Face verification</h1>
-<p>This step will run the face authentication system once it is integrated with the project.</p>
-<p>Current session: section <strong>{{ section }}</strong>, course id <strong>{{ cid }}</strong>, slot <strong>{{ time_slot }}</strong>.</p>
-<p><a href="/mark_attendance/?section={{ section|urlencode }}&amp;cid={{ cid }}&amp;time_slot={{ time_slot|urlencode }}">Back to mark attendance</a></p>
+
+<!-- Session Info -->
+<div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem">
+    <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--tx-2)">
+        🏫 Section: <span style="color:#065f46;margin-left:.25rem">{{ section|default:"—" }}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--tx-2)">
+        📚 Course ID: <span style="color:#065f46;margin-left:.25rem">{{ cid|default:"—" }}</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem 1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-weight:600;color:var(--tx-2)">
+        🕐 Slot: <span style="color:#065f46;margin-left:.25rem">{{ time_slot|default:"—" }}</span>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start">
+
+    <!-- Camera Panel -->
+    <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:.6rem">
+                <div id="statusDot" style="width:10px;height:10px;border-radius:50%;background:var(--gray-200);transition:all .3s"></div>
+                <span style="font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;color:var(--tx-1)">Live Camera</span>
+                <span id="statusTxt" style="font-size:.75rem;color:var(--tx-4)">Inactive</span>
+            </div>
+            <span style="font-size:.75rem;color:var(--tx-4);font-weight:500">ArcFace v2</span>
+        </div>
+
+        <!-- Video -->
+        <div style="position:relative;background:#0a0e1a;aspect-ratio:16/9;overflow:hidden">
+            <video id="camFeed" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;display:none"></video>
+            <canvas id="camCanvas" style="display:none"></canvas>
+
+            <!-- Placeholder -->
+            <div id="camPlaceholder" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem">
+                <div style="width:72px;height:72px;border-radius:50%;border:2px dashed rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.8rem">📷</div>
+                <div style="color:rgba(255,255,255,.3);font-size:.88rem">Camera not started</div>
+            </div>
+
+            <!-- Scan overlay -->
+            <div id="scanOverlay" style="display:none;position:absolute;inset:0;pointer-events:none">
+                <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.03) 1px,transparent 1px);background-size:28px 28px"></div>
+                <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);width:140px;height:180px;border:2px solid rgba(59,130,246,.45);border-radius:50% 50% 44% 44%"></div>
+                <div style="position:absolute;top:6%;left:6%;width:22px;height:22px;border-top:2.5px solid rgba(59,130,246,.5);border-left:2.5px solid rgba(59,130,246,.5)"></div>
+                <div style="position:absolute;top:6%;right:6%;width:22px;height:22px;border-top:2.5px solid rgba(59,130,246,.5);border-right:2.5px solid rgba(59,130,246,.5)"></div>
+                <div style="position:absolute;bottom:6%;left:6%;width:22px;height:22px;border-bottom:2.5px solid rgba(59,130,246,.5);border-left:2.5px solid rgba(59,130,246,.5)"></div>
+                <div style="position:absolute;bottom:6%;right:6%;width:22px;height:22px;border-bottom:2.5px solid rgba(59,130,246,.5);border-right:2.5px solid rgba(59,130,246,.5)"></div>
+                <div id="scanLine" style="position:absolute;left:15%;right:15%;height:2px;background:linear-gradient(90deg,transparent,#3b82f6,transparent);box-shadow:0 0 12px rgba(59,130,246,.4)"></div>
+            </div>
+
+            <!-- Match popup -->
+            <div id="matchPopup" style="display:none;position:absolute;bottom:12px;left:12px;right:12px;background:rgba(5,10,24,.85);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:.7rem 1rem;flex-direction:row;align-items:center;justify-content:space-between">
+                <div style="display:flex;align-items:center;gap:.5rem">
+                    <div id="matchAvatar" style="width:30px;height:30px;border-radius:7px;background:rgba(59,130,246,.2);display:grid;place-items:center;font-size:.75rem;font-weight:700;color:#93c5fd">?</div>
+                    <div>
+                        <div id="matchName" style="font-size:.8rem;font-weight:600;color:#fff">Detecting...</div>
+                        <div id="matchId" style="font-size:.68rem;color:rgba(255,255,255,.4)">ID: —</div>
+                    </div>
+                </div>
+                <div id="matchScore" style="padding:.18rem .6rem;border-radius:6px;background:rgba(22,163,74,.15);color:#4ade80;font-size:.7rem;font-weight:700">—%</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div style="padding:1rem 1.5rem;display:flex;gap:.75rem;align-items:center;background:var(--surface2);border-top:1px solid var(--border)">
+            <button id="btnStart" onclick="startCamera()" class="btn btn-green">▶ Start Camera</button>
+            <button id="btnStop" onclick="stopCamera()" class="btn btn-outline" style="display:none">⏹ Stop</button>
+            <button id="btnScan" onclick="startScanning()" class="btn btn-primary" style="display:none">🧠 Start Recognition</button>
+            <button id="btnPause" onclick="pauseScanning()" class="btn btn-outline" style="display:none">⏸ Pause</button>
+            <span id="processingTxt" style="font-size:.78rem;color:var(--tx-4);display:none">⏳ Processing...</span>
+        </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div style="display:flex;flex-direction:column;gap:1rem">
+
+        <!-- Stats -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+            <div class="card" style="padding:1.1rem;text-align:center">
+                <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:var(--green)" id="countPresent">0</div>
+                <div style="font-size:.75rem;color:var(--tx-3);font-weight:500;margin-top:.15rem">Present</div>
+            </div>
+            <div class="card" style="padding:1.1rem;text-align:center">
+                <div style="font-family:'Poppins',sans-serif;font-size:1.8rem;font-weight:800;color:var(--blue)" id="countScanned">0</div>
+                <div style="font-size:.75rem;color:var(--tx-3);font-weight:500;margin-top:.15rem">Scanned</div>
+            </div>
+        </div>
+
+        <!-- Liveness indicator -->
+        <div class="card" style="padding:.9rem 1.1rem;display:flex;align-items:center;gap:.75rem" id="livenessCard">
+            <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,.5);flex-shrink:0" id="livenessDot"></div>
+            <div>
+                <div style="font-size:.8rem;font-weight:700;color:var(--tx-1)" id="livenessStatus">Anti-Spoofing Active</div>
+                <div style="font-size:.72rem;color:var(--tx-4)" id="livenessDetail">Waiting for blink detection...</div>
+            </div>
+        </div>
+
+        <!-- Recognized list -->
+        <div class="card">
+            <div class="card-title" style="margin-bottom:.9rem">✅ Recognized</div>
+            <div id="recognizedList" style="display:flex;flex-direction:column;gap:.4rem;max-height:380px;overflow-y:auto">
+                <div id="emptyState" style="text-align:center;padding:2rem 0;color:var(--tx-4);font-size:.85rem">
+                    No students recognized yet
+                </div>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="card" style="background:var(--green-bg);border-color:var(--green-border)">
+            <div style="font-size:.72rem;font-weight:700;color:var(--green);margin-bottom:.65rem;text-transform:uppercase;letter-spacing:1px">How It Works</div>
+            <div style="display:flex;flex-direction:column;gap:.4rem">
+                <div style="font-size:.8rem;color:var(--tx-2)"><span style="color:var(--green);font-weight:700">1</span> Start camera & recognition</div>
+                <div style="font-size:.8rem;color:var(--tx-2)"><span style="color:var(--green);font-weight:700">2</span> Students face the camera</div>
+                <div style="font-size:.8rem;color:var(--tx-2)"><span style="color:var(--green);font-weight:700">3</span> ArcFace matches face to database</div>
+                <div style="font-size:.8rem;color:var(--tx-2)"><span style="color:var(--green);font-weight:700">4</span> Attendance marked automatically</div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+@keyframes scanMove{0%,100%{top:15%}50%{top:80%}}
+#scanLine{animation:scanMove 3s ease-in-out infinite}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+
+<script>
+// Session data from Django
+const SESSION = {
+    section: "{{ section }}",
+    cid: "{{ cid }}",
+    time_slot: "{{ time_slot }}",
+    teacher_email: "{% if request.session.email %}{{ request.session.email }}{% endif %}"
+};
+
+let stream = null;
+let scanning = false;
+let scanInterval = null;
+let processing = false;
+let sentIds = [];
+let scannedCount = 0;
+
+// Liveness state — reset per scanning session
+let blinkCount = 0;
+let eyesWereClosed = false;
+let isLive = false;
+
+function setStatus(active, text, color) {
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusTxt');
+    dot.style.background = color || (active ? '#22c55e' : '#94a3b8');
+    dot.style.boxShadow = active ? `0 0 6px ${color || 'rgba(34,197,94,.5)'}` : 'none';
+    txt.textContent = text;
+    txt.style.color = active ? (color || 'var(--green)') : 'var(--tx-4)';
+
+    // Update liveness indicator
+    const lDot = document.getElementById('livenessDot');
+    const lStatus = document.getElementById('livenessStatus');
+    const lDetail = document.getElementById('livenessDetail');
+    if(lDot && lStatus && lDetail) {
+        if(isLive) {
+            lDot.style.background = '#22c55e';
+            lDot.style.boxShadow = '0 0 6px rgba(34,197,94,.5)';
+            lStatus.textContent = '✅ Liveness Confirmed';
+            lDetail.textContent = `Blink detected — real face verified`;
+        } else if(scanning) {
+            lDot.style.background = '#f59e0b';
+            lDot.style.boxShadow = '0 0 6px rgba(245,158,11,.5)';
+            lStatus.textContent = '👁️ Waiting for Blink';
+            lDetail.textContent = 'Student must blink to pass anti-spoofing';
+        } else {
+            lDot.style.background = '#94a3b8';
+            lDot.style.boxShadow = 'none';
+            lStatus.textContent = 'Anti-Spoofing Ready';
+            lDetail.textContent = 'Start recognition to activate';
+        }
+    }
+}
+
+async function startCamera() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({video: {width:640, height:480}, audio: false});
+        const video = document.getElementById('camFeed');
+        video.srcObject = stream;
+        video.style.display = 'block';
+        document.getElementById('camPlaceholder').style.display = 'none';
+        document.getElementById('scanOverlay').style.display = 'block';
+        document.getElementById('btnStart').style.display = 'none';
+        document.getElementById('btnStop').style.display = '';
+        document.getElementById('btnScan').style.display = '';
+        setStatus(true, 'Camera Active');
+    } catch(e) {
+        alert('Could not access camera: ' + e.message);
+    }
+}
+
+function stopCamera() {
+    pauseScanning();
+    if(stream) stream.getTracks().forEach(t => t.stop());
+    stream = null;
+    document.getElementById('camFeed').style.display = 'none';
+    document.getElementById('camPlaceholder').style.display = 'flex';
+    document.getElementById('scanOverlay').style.display = 'none';
+    document.getElementById('matchPopup').style.display = 'none';
+    document.getElementById('btnStart').style.display = '';
+    document.getElementById('btnStop').style.display = 'none';
+    document.getElementById('btnScan').style.display = 'none';
+    document.getElementById('btnPause').style.display = 'none';
+    setStatus(false, 'Inactive');
+}
+
+function startScanning() {
+    scanning = true;
+    // Reset liveness state for new session
+    blinkCount = 0;
+    eyesWereClosed = false;
+    isLive = false;
+    document.getElementById('btnScan').style.display = 'none';
+    document.getElementById('btnPause').style.display = '';
+    document.getElementById('matchPopup').style.display = 'flex';
+    document.getElementById('matchName').textContent = 'Please blink to confirm presence...';
+    setStatus(true, 'Waiting for blink...', '#f59e0b');
+    scanInterval = setInterval(captureAndSend, 3000);
+    captureAndSend();
+}
+
+function pauseScanning() {
+    scanning = false;
+    clearInterval(scanInterval);
+    document.getElementById('btnScan').style.display = '';
+    document.getElementById('btnPause').style.display = 'none';
+    document.getElementById('matchPopup').style.display = 'none';
+    document.getElementById('processingTxt').style.display = 'none';
+    setStatus(true, 'Paused');
+}
+
+function captureAndSend() {
+    if(!scanning || processing) return;
+
+    const video = document.getElementById('camFeed');
+    const canvas = document.getElementById('camCanvas');
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+    const frameB64 = canvas.toDataURL('image/jpeg', 0.8);
+
+    processing = true;
+    document.getElementById('processingTxt').style.display = '';
+
+    fetch('/ml/recognize/frame/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
+        body: JSON.stringify({
+            frame: frameB64,
+            section: SESSION.section,
+            cid: SESSION.cid,
+            time_slot: SESSION.time_slot,
+            teacher_email: SESSION.teacher_email,
+            sent_ids: sentIds,
+            blink_count: blinkCount,
+            eyes_were_closed: eyesWereClosed
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        processing = false;
+        document.getElementById('processingTxt').style.display = 'none';
+
+        // Always update liveness state from server response
+        if(data.blink_count !== undefined) blinkCount = data.blink_count;
+        if(data.eyes_were_closed !== undefined) eyesWereClosed = data.eyes_were_closed;
+        if(data.is_live !== undefined) isLive = data.is_live;
+
+        if(data.status === 'need_blink') {
+            setStatus(true, data.msg || '👁️ Please blink', '#f59e0b');
+            document.getElementById('matchName').textContent = '👁️ Please blink to confirm presence';
+            document.getElementById('matchId').textContent = `EAR: ${data.ear || '—'}`;
+            document.getElementById('matchScore').textContent = '⚡ Liveness';
+            document.getElementById('matchScore').style.background = 'rgba(245,158,11,.15)';
+            document.getElementById('matchScore').style.color = '#fbbf24';
+
+        } else if(data.status === 'blinking') {
+            setStatus(true, '👁️ Blink detected...', '#22c55e');
+            document.getElementById('matchName').textContent = '👁️ Blink detected!';
+
+        } else if(data.status === 'recognized') {
+            setStatus(true, '✅ Liveness confirmed — Scanning...');
+            isLive = true;
+            sentIds.push(data.stid);
+            scannedCount++;
+            document.getElementById('countPresent').textContent = sentIds.length;
+            document.getElementById('countScanned').textContent = scannedCount;
+            document.getElementById('matchAvatar').textContent = data.stname.charAt(0);
+            document.getElementById('matchName').textContent = data.stname;
+            document.getElementById('matchId').textContent = 'ID: ' + data.stid;
+            document.getElementById('matchScore').textContent = (data.score * 100).toFixed(1) + '%';
+            document.getElementById('matchScore').style.background = 'rgba(22,163,74,.15)';
+            document.getElementById('matchScore').style.color = '#4ade80';
+            addToList(data.stid, data.stname, data.score);
+            // Reset liveness for next student
+            blinkCount = 0;
+            eyesWereClosed = false;
+            isLive = false;
+
+        } else if(data.status === 'no_face') {
+            setStatus(true, 'No face detected', '#94a3b8');
+        } else if(data.status === 'no_match') {
+            setStatus(true, 'Face not recognized', '#f59e0b');
+            scannedCount++;
+            document.getElementById('countScanned').textContent = scannedCount;
+        } else if(data.status === 'already_marked') {
+            setStatus(true, 'Already marked ✓', '#22c55e');
+        } else {
+            setStatus(true, 'Scanning...');
+        }
+    })
+    .catch(err => {
+        processing = false;
+        document.getElementById('processingTxt').style.display = 'none';
+        setStatus(true, 'Error — retrying...', '#dc2626');
+        console.error('Recognition error:', err);
+    });
+}
+
+function addToList(stid, stname, score) {
+    const list = document.getElementById('recognizedList');
+    const empty = document.getElementById('emptyState');
+    if(empty) empty.remove();
+
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:.55rem .75rem;background:var(--green-bg);border:1px solid var(--green-border);border-radius:8px;animation:fadeIn .4s ease';
+    item.innerHTML = `
+        <div style="display:flex;align-items:center;gap:.45rem">
+            <div style="width:28px;height:28px;border-radius:7px;background:var(--green);display:grid;place-items:center;font-size:.7rem;font-weight:700;color:#fff">${stname.charAt(0)}</div>
+            <div>
+                <div style="font-size:.82rem;font-weight:600;color:var(--tx-1)">${stname}</div>
+                <div style="font-size:.7rem;color:var(--tx-4)">ID: ${stid} · ✅ Present</div>
+            </div>
+        </div>
+        <span style="font-size:.7rem;font-weight:700;color:var(--green)">${(score*100).toFixed(1)}%</span>
+    `;
+    list.prepend(item);
+}
+
+function getCookie(name) {
+    let value = null;
+    document.cookie.split(';').forEach(c => {
+        c = c.trim();
+        if(c.startsWith(name + '=')) value = decodeURIComponent(c.slice(name.length + 1));
+    });
+    return value;
+}
+</script>
+
 {% endblock %}

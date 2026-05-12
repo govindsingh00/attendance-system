@@ -1,31 +1,87 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block page_title %}Edit Student{% endblock %}
+{% block page_sub %}Update student profile data{% endblock %}
+
 {% block m1 %}
-<h1>Edit Student Data </h1>
-{% if data %}
-    {% for d in data %}
-        <form method="post" action="http://127.0.0.1:8000/editstdata1/">
-            {% csrf_token %}
-            <p>Student Id <input type="text" readonly name="T1" value="{{d.stid}}" /></p>
-            <p>Student Name <input type="text" name="T2" value="{{d.stname}}" /></p>
-            <p>Fathers Name <input type="text" name="T3" value="{{d.fname}}" /></p>
-            <p>DOB <input type="text" name="T4" value="{{d.dob}}" placeholder="dd/mm/yyyy"/></p>
-            <p>Gender <input type="radio" name="T5" value="male"/>MALE
-                <input type="radio" name="T5" value="female"/>FEMALE
-                <input type="radio" name="T5" value="trans"/>TRANSGENDER
-            </p>
-            <p>Address <input type="text" name="T6" value="{{d.address}}" /></p>
-            <p>
-                Last Qualification <input type="text" name="T7" value="{{d.lastquali}}" />
-            </p>
-            <p>Contact <input type="text" name="T8" value="{{d.contact}}" /> </p>
-            <p>Email <input type="text" name="T9" value="{{d.email}}" /></p>
-            <p>Section <input type="text" name="T10" value="{{ d.section }}" placeholder="e.g. A, B" /></p>
-            <button type="submit">Edit Data</button>
-        </form>
-    {% endfor %}
-{% elif msg %}
-    <h3>{{msg}}</h3>
-    <p><a href="http://127.0.0.1:8000/allstudentsAD/">Continue</a></p>
+
+{% if msg %}
+<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/allstudentsAD/" style="color:var(--green);font-weight:700">Back to Students</a></div>
 {% endif %}
+
+{% if data %}
+{% for d in data %}
+<div style="max-width:760px">
+    <div class="card">
+        <div class="card-title">✏️ Edit Student — <span style="color:var(--blue)">{{ d.stname }}</span></div>
+        <form method="post" action="/editstdata1/">
+            {% csrf_token %}
+            <div style="display:flex;flex-direction:column;gap:1.25rem">
+
+                <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-3)">Personal Info</div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Student ID <span style="font-size:.72rem;color:var(--tx-4)">(read-only)</span></label>
+                        <input type="text" name="T1" value="{{ d.stid }}" readonly
+                               style="background:var(--surface2);color:var(--tx-4);cursor:not-allowed"/>
+                    </div>
+                    <div class="field">
+                        <label>Section</label>
+                        <input type="text" name="T10" value="{{ d.section }}" placeholder="e.g. A, B, D2528"/>
+                    </div>
+                    <div class="field">
+                        <label>Student Name <span style="color:var(--red)">*</span></label>
+                        <input type="text" name="T2" value="{{ d.stname }}" required/>
+                    </div>
+                    <div class="field">
+                        <label>Father's Name</label>
+                        <input type="text" name="T3" value="{{ d.fname }}"/>
+                    </div>
+                    <div class="field">
+                        <label>Date of Birth</label>
+                        <input type="text" name="T4" value="{{ d.dob }}" placeholder="dd/mm/yyyy"/>
+                    </div>
+                    <div class="field">
+                        <label>Gender</label>
+                        <select name="T5">
+                            <option value="Male" {% if d.gender == "Male" %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if d.gender == "Female" %}selected{% endif %}>Female</option>
+                            <option value="Transgender" {% if d.gender == "Transgender" %}selected{% endif %}>Transgender</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="height:1px;background:var(--border)"></div>
+                <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-3)">Contact & Account</div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Contact Number</label>
+                        <input type="text" name="T8" value="{{ d.contact }}"/>
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" name="T9" value="{{ d.email }}"/>
+                    </div>
+                    <div class="field form-full">
+                        <label>Address</label>
+                        <input type="text" name="T6" value="{{ d.address }}"/>
+                    </div>
+                    <div class="field">
+                        <label>Last Qualification</label>
+                        <input type="text" name="T7" value="{{ d.lastquali }}"/>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:.75rem;padding-top:.25rem">
+                    <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                    <a href="/allstudentsAD/" class="btn btn-outline">← Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
 {% endblock %}

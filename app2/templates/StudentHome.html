@@ -1,48 +1,92 @@
 {% extends "StudentDash.html" %}
 {% load static %}
-{% block s1 %}
-{% if data1 %}
-    {% for d in data1 %}
-        <img src="http://127.0.0.1:8000/media/{{d.photo}}" width="100" height="100" style="border-radius:50%;width:150px;height:150px;"/>
-    {% endfor %}
-{% else %}
-    <p>
-        <img src=".." width="100" height="100" alt="Contact admin for profile photo" />
-    </p>
-{% endif %}
-{% if data %}
-    {% for d in data %}
-        <h1>{{d.stname}}</h1>
-        <h2>STUDENT ID -: {{d.stid}}</h2>
-        <p>
-            Father's Name : {{d.fname}} <br/>
-            DOB : {{d.dob}} <br/>
-            GENDER : {{d.gender}} <br/>
-            Address : {{d.address}} <br/>
-            Last Qualification : {{d.lastquali}} <br/>
-            Contact : {{d.contact}} <br/>
-            Email : {{d.email}} <br/>
-            Section : {{ d.section|default:"—" }} <br/>
-        </p>
-        <p><a class="btn btn-sm btn-outline-light" href="http://127.0.0.1:8000/student_attendance/">View attendance</a></p>
-        <form method="post" action="http://127.0.0.1:8000/editstprofile/">
-            {% csrf_token %}
-            <input type="hidden" name="S1" value="{{d.stid}}">
-            <button type="submit">Edit</button>
-        </form>
 
-        <form method="post" action="http://127.0.0.1:8000/student_pass_change/">
-            {% csrf_token %}
-            <input type="hidden" name="S1" value="{{d.stid}}">
-            <button type="submit">Change Password</button>
-        </form>
-        <form method="post" action="http://127.0.0.1:8000/student_course_info/">
-            {% csrf_token %}
-            <input type="hidden" name="S1" value="{{d.stid}}">
-            <button type="submit">See Course Details</button>
-        </form>
-    {% endfor %}
-{% elif msg %}
-    <h3>{{msg}}</h3>
+{% block active_home %}active{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block page_sub %}View and manage your student profile{% endblock %}
+
+{% block s1 %}
+
+{% if msg %}
+<div class="alert alert-error"><span>⚠️</span> {{ msg }}</div>
 {% endif %}
+
+<div style="display:grid;grid-template-columns:280px 1fr;gap:1.5rem;align-items:start">
+
+    <!-- Profile Card -->
+    <div style="display:flex;flex-direction:column;gap:1.1rem">
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            <div class="profile-body">
+                <div class="profile-photo">
+                    {% if data1 %}{% for d in data1 %}<img src="/media/{{d.photo}}" alt="Photo"/>{% endfor %}
+                    {% else %}🎓{% endif %}
+                </div>
+                {% if data %}{% for d in data %}
+                <div class="profile-name">{{ d.stname }}</div>
+                <div class="profile-tag">Student · ID {{ d.stid }}</div>
+                <div class="profile-rows">
+                    <div class="profile-row"><span>📧</span>{{ d.email }}</div>
+                    <div class="profile-row"><span>📞</span>{{ d.contact }}</div>
+                    <div class="profile-row"><span>🏫</span>Section: {{ d.section|default:"—" }}</div>
+                </div>
+                {% endfor %}{% endif %}
+                {% if data1 %}{% for d in data1 %}
+                <div style="display:flex;gap:.5rem">
+                    <form method="post" action="/studentchngephoto/" style="margin:0">{% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/><button class="btn btn-outline btn-sm">📷 Change</button></form>
+                    <form method="post" action="/studentdeletephoto/" style="margin:0">{% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/><button class="btn btn-danger btn-sm">🗑️</button></form>
+                </div>
+                {% endfor %}
+                {% else %}<a href="/studentuploadphoto/" class="btn btn-outline btn-sm">📷 Upload Photo</a>{% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-title">🚀 Quick Actions</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+                {% if data %}{% for d in data %}
+                <form method="post" action="/student_attendance/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-purple" style="width:100%;justify-content:center">📊 View Attendance</button></form>
+                <form method="post" action="/student_course_info/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-outline" style="width:100%;justify-content:center">📚 Course Details</button></form>
+                {% endfor %}{% endif %}
+                <a href="/studentuploadphoto/" class="btn btn-outline" style="justify-content:center">📷 Upload Photo</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side -->
+    <div style="display:flex;flex-direction:column;gap:1.1rem">
+        {% if data %}{% for d in data %}
+
+        <!-- Personal Info -->
+        <div class="card">
+            <div class="card-title">📋 Personal Details</div>
+            <div class="detail-grid">
+                <div><div class="detail-label">Full Name</div><div class="detail-val">{{ d.stname }}</div></div>
+                <div><div class="detail-label">Student ID</div><div class="detail-val"><span class="badge badge-purple">{{ d.stid }}</span></div></div>
+                <div><div class="detail-label">Father's Name</div><div class="detail-val">{{ d.fname }}</div></div>
+                <div><div class="detail-label">Mother's Name</div><div class="detail-val">{{ d.mname|default:"—" }}</div></div>
+                <div><div class="detail-label">Date of Birth</div><div class="detail-val">{{ d.dob }}</div></div>
+                <div><div class="detail-label">Gender</div><div class="detail-val">{{ d.gender }}</div></div>
+                <div><div class="detail-label">Email</div><div class="detail-val">{{ d.email }}</div></div>
+                <div><div class="detail-label">Contact</div><div class="detail-val">{{ d.contact }}</div></div>
+                <div><div class="detail-label">Section</div><div class="detail-val">{{ d.section|default:"—" }}</div></div>
+                <div><div class="detail-label">Last Qualification</div><div class="detail-val">{{ d.lastquali }}</div></div>
+                <div style="grid-column:1/-1"><div class="detail-label">Address</div><div class="detail-val">{{ d.address }}</div></div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card">
+            <div class="card-title">⚙️ Account Actions</div>
+            <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+                <form method="post" action="/editstprofile/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-primary">✏️ Edit Profile</button></form>
+                <form method="post" action="/student_pass_change/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-outline">🔒 Change Password</button></form>
+            </div>
+        </div>
+
+        {% endfor %}{% endif %}
+    </div>
+</div>
+
 {% endblock %}

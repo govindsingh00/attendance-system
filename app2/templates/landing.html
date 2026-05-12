@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atmos | Smart Attendance System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --navy:#1e3a8a;--navy-deep:#0f2167;--blue:#3b82f6;
+            --blue-light:#dbeafe;--blue-pale:#eff6ff;
+            --white:#fff;--off-white:#f8fafc;
+            --gray-100:#e2e8f0;--gray-200:#cbd5e1;
+            --gray-400:#94a3b8;--gray-500:#64748b;--gray-700:#334155;--gray-900:#0f172a;
+            --green:#16a34a;--green-bg:#dcfce7;
+            --amber:#d97706;--amber-bg:#fef3c7;
+            --shadow:0 4px 20px rgba(0,0,0,.08);
+            --shadow-lg:0 20px 60px rgba(0,0,0,.12);
+        }
+        html{scroll-behavior:smooth}
+        body{font-family:'Outfit',sans-serif;color:var(--gray-900);background:var(--white);overflow-x:hidden}
+        h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif}
+
+        @keyframes slideLeft{from{opacity:0;transform:translateX(-60px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes slideRight{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+        @keyframes scanLine{0%,100%{top:12%}50%{top:78%}}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.6)}}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+        .reveal{opacity:0;transform:translateY(35px);transition:all .7s cubic-bezier(.25,.46,.45,.94)}
+        .reveal.v{opacity:1;transform:translateY(0)}
+        .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.25s}
+        .d4{transition-delay:.3s}.d5{transition-delay:.35s}
+
+        /* NAVBAR */
+        .navbar{
+            position:fixed;top:0;left:0;right:0;z-index:1000;
+            background:rgba(255,255,255,.92);backdrop-filter:blur(16px);
+            border-bottom:1px solid rgba(0,0,0,.06);transition:all .3s;
+        }
+        .navbar.scrolled{box-shadow:0 2px 20px rgba(0,0,0,.08)}
+        .nav-inner{width:100%;padding:0 3.5%;height:68px;display:flex;align-items:center;justify-content:space-between}
+        .nav-brand{display:flex;align-items:center;gap:.6rem;text-decoration:none}
+        .nav-logo{
+            width:38px;height:38px;border-radius:10px;
+            background:linear-gradient(135deg,var(--navy),var(--blue));
+            display:grid;place-items:center;color:#fff;
+            font-family:'Poppins',sans-serif;font-weight:800;font-size:.9rem;
+            box-shadow:0 3px 12px rgba(30,58,138,.25);
+        }
+        .nav-name{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.15rem;color:var(--navy)}
+        .nav-right{display:flex;align-items:center;gap:2.5rem}
+        .nav-link{text-decoration:none;color:var(--gray-500);font-size:.9rem;font-weight:500;position:relative;transition:color .25s}
+        .nav-link:hover{color:var(--navy)}
+        .nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--navy);border-radius:2px;transition:width .25s}
+        .nav-link:hover::after{width:100%}
+        .nav-signin{
+            padding:.55rem 1.5rem;background:var(--navy);color:#fff;
+            border:none;border-radius:8px;text-decoration:none;
+            font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;
+            transition:all .25s;box-shadow:0 3px 12px rgba(30,58,138,.2);
+        }
+        .nav-signin:hover{background:var(--navy-deep);transform:translateY(-1px)}
+
+        /* HERO */
+        .hero{position:relative;width:100%;min-height:100vh;display:flex;align-items:center;overflow:hidden}
+        .hero-bg{
+            position:absolute;inset:0;
+            background:url('https://images.unsplash.com/photo-1562774053-701939374585?w=1920&q=80') center/cover no-repeat;
+        }
+        .hero-bg::after{
+            content:'';position:absolute;inset:0;
+            background:linear-gradient(120deg,rgba(10,25,80,.88) 0%,rgba(30,58,138,.75) 45%,rgba(59,130,246,.45) 100%);
+        }
+        .hero-content{
+            position:relative;z-index:2;width:100%;
+            padding:120px 5% 80px;
+            display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center;
+        }
+        .hero-text{color:#fff;animation:slideLeft .9s ease both}
+        .hero-badge{
+            display:inline-flex;align-items:center;gap:.5rem;
+            padding:.45rem 1.1rem;background:rgba(255,255,255,.12);
+            backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);
+            border-radius:50px;font-size:.8rem;font-weight:600;margin-bottom:1.75rem;
+        }
+        .badge-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.6);animation:pulse 2s ease infinite}
+        .hero h1{font-size:clamp(2.4rem,5vw,4rem);font-weight:800;line-height:1.1;margin-bottom:1.25rem;letter-spacing:-.5px}
+        .hero h1 span{background:linear-gradient(90deg,#93c5fd,#60a5fa,#93c5fd);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 4s linear infinite}
+        .hero-desc{font-size:1.1rem;opacity:.9;line-height:1.75;max-width:540px;margin-bottom:2.5rem}
+        .hero-btns{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem}
+        .btn-hero-primary{
+            padding:.85rem 2.5rem;border-radius:10px;
+            background:#fff;color:var(--navy);
+            font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;
+            text-decoration:none;transition:all .3s;
+            box-shadow:0 6px 25px rgba(0,0,0,.15);display:inline-block;
+        }
+        .btn-hero-primary:hover{transform:translateY(-3px);box-shadow:0 10px 35px rgba(0,0,0,.2)}
+        .btn-hero-ghost{
+            padding:.85rem 2.25rem;border-radius:10px;
+            background:transparent;color:#fff;
+            border:2px solid rgba(255,255,255,.35);
+            font-family:'Outfit',sans-serif;font-size:1rem;font-weight:600;
+            text-decoration:none;transition:all .3s;display:inline-block;
+        }
+        .btn-hero-ghost:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.6)}
+        .hero-metrics{display:flex;gap:3rem}
+        .hm-val{font-family:'Poppins',sans-serif;font-size:1.75rem;font-weight:700}
+        .hm-label{font-size:.82rem;opacity:.65;margin-top:.15rem}
+
+        /* Scan card */
+        .hero-visual{animation:slideRight .9s ease .15s both}
+        .scan-wrap{position:relative;max-width:380px;margin:0 auto;animation:float 5s ease-in-out infinite}
+        .scan-card{width:100%;aspect-ratio:.85;background:#fff;border-radius:22px;box-shadow:var(--shadow-lg),0 0 80px rgba(59,130,246,.1);position:relative;overflow:hidden;border:1px solid var(--gray-100)}
+        .sc-head{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.15rem;background:var(--off-white);border-bottom:1px solid var(--gray-100)}
+        .sc-head-l{display:flex;align-items:center;gap:.45rem}
+        .sc-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 6px rgba(22,163,74,.4)}
+        .sc-head span{font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:600;color:var(--gray-700)}
+        .sc-head small{font-size:.7rem;color:var(--gray-400)}
+        .sc-body{position:relative;height:calc(100% - 46px);background:linear-gradient(180deg,#f0f7ff,#e8f0fe)}
+        .sc-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.05) 1px,transparent 1px);background-size:22px 22px}
+        .face-o{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);width:110px;height:140px;border:2.5px solid var(--blue);border-radius:50% 50% 44% 44%;opacity:.55}
+        .face-o::before{content:'';position:absolute;inset:-14px;border:1.5px dashed rgba(59,130,246,.2);border-radius:inherit}
+        .fp{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px rgba(59,130,246,.5);animation:pulse 2s ease infinite}
+        .fp1{top:34%;left:38%}.fp2{top:34%;right:38%;animation-delay:.2s}
+        .fp3{top:48%;left:50%;transform:translateX(-50%);animation-delay:.4s}
+        .fp4{top:58%;left:50%;transform:translateX(-50%);animation-delay:.6s}
+        .fp5{top:42%;left:32%;animation-delay:.1s}.fp6{top:42%;right:32%;animation-delay:.3s}
+        .fp7{top:40%;left:50%;transform:translateX(-50%);animation-delay:.5s}
+        .fp8{top:52%;left:41%;animation-delay:.7s}.fp9{top:52%;right:41%;animation-delay:.8s}
+        .scan-beam{position:absolute;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);box-shadow:0 0 14px rgba(59,130,246,.4);animation:scanLine 3.5s ease-in-out infinite}
+        .stag{position:absolute;padding:.3rem .7rem;background:#fff;border:1px solid var(--gray-100);border-radius:7px;box-shadow:0 2px 8px rgba(0,0,0,.06);font-size:.7rem;font-weight:600;white-space:nowrap;animation:float 4s ease-in-out infinite}
+        .stag1{top:18%;right:-12px;color:var(--green);animation-delay:0s}
+        .stag2{bottom:32%;left:-18px;color:var(--blue);animation-delay:1.2s}
+        .stag3{bottom:18%;right:0;color:var(--navy);animation-delay:.6s}
+        .sc-foot{position:absolute;bottom:10px;left:10px;right:10px;background:#fff;border-radius:12px;padding:.7rem 1rem;box-shadow:0 4px 16px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between}
+        .sc-foot-l{display:flex;align-items:center;gap:.5rem}
+        .sc-avatar{width:30px;height:30px;border-radius:8px;background:var(--blue-pale);display:grid;place-items:center;font-family:'Poppins',sans-serif;font-size:.65rem;font-weight:700;color:var(--navy)}
+        .sc-name{font-size:.78rem;font-weight:600;color:var(--gray-700)}
+        .sc-id{font-size:.65rem;color:var(--gray-400)}
+        .sc-score{padding:.2rem .6rem;border-radius:6px;background:var(--green-bg);color:var(--green);font-size:.7rem;font-weight:700}
+
+        /* STATS */
+        .stats{width:100%;background:#fff;border-bottom:1px solid var(--gray-100);box-shadow:0 4px 20px rgba(0,0,0,.04);position:relative;z-index:3}
+        .stats-grid{width:100%;display:grid;grid-template-columns:repeat(4,1fr)}
+        .stat{padding:2rem 1.5rem;text-align:center;border-right:1px solid var(--gray-100);transition:background .3s}
+        .stat:last-child{border-right:none}
+        .stat:hover{background:var(--blue-pale)}
+        .stat-icon{font-size:1.4rem;margin-bottom:.4rem}
+        .stat-val{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:700;color:var(--navy);margin-bottom:.15rem}
+        .stat-label{font-size:.82rem;color:var(--gray-500);font-weight:500}
+
+        /* SECTIONS */
+        section{width:100%;padding:6rem 5%}
+        .sec-tag{display:inline-flex;align-items:center;gap:.5rem;font-family:'Poppins',sans-serif;font-size:.72rem;letter-spacing:2.5px;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:.75rem}
+        .sec-tag::before{content:'';width:24px;height:3px;background:var(--blue);border-radius:3px}
+        .sec-title{font-size:clamp(1.75rem,3.5vw,2.6rem);font-weight:800;color:var(--gray-900);line-height:1.25;margin-bottom:.75rem}
+        .sec-desc{font-size:1.05rem;color:var(--gray-500);max-width:560px;line-height:1.7}
+        .sec-header{margin-bottom:3.5rem}
+        .sec-center{text-align:center}
+        .sec-center .sec-desc{margin:0 auto}
+        .sec-center .sec-tag::before{display:none}
+
+        /* FEATURES */
+        .features-sec{background:var(--off-white)}
+        .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+        .feat{background:#fff;border:1px solid var(--gray-100);border-radius:16px;padding:2rem 1.75rem;position:relative;overflow:hidden;transition:all .4s}
+        .feat::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--navy),var(--blue));transform:scaleX(0);transform-origin:left;transition:transform .4s}
+        .feat:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:transparent}
+        .feat:hover::before{transform:scaleX(1)}
+        .feat-ico{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font-size:24px;margin-bottom:1.25rem;background:var(--blue-pale);border:1px solid var(--blue-light)}
+        .feat h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem}
+        .feat p{font-size:.92rem;color:var(--gray-500);line-height:1.65}
+
+        /* HOW IT WORKS */
+        .how-sec{background:url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1920&q=80') center/cover no-repeat fixed;position:relative}
+        .how-sec::before{content:'';position:absolute;inset:0;background:rgba(248,250,252,.97)}
+        .how-inner{position:relative;z-index:2;width:100%;padding:6rem 5%}
+        .how-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1100px;margin:0 auto}
+        .steps{display:flex;flex-direction:column}
+        .step{display:flex;gap:1.5rem;padding:1.75rem 0;border-bottom:1px solid var(--gray-100)}
+        .step:last-child{border-bottom:none}
+        .step-num{width:46px;height:46px;min-width:46px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;display:grid;place-items:center;font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;box-shadow:0 4px 14px rgba(30,58,138,.2)}
+        .step h4{font-size:1rem;font-weight:700;margin-bottom:.3rem}
+        .step p{font-size:.9rem;color:var(--gray-500);line-height:1.6}
+        .how-visual{display:flex;flex-direction:column;gap:1rem}
+        .how-stat{background:#fff;border:1px solid var(--gray-100);border-radius:14px;padding:1.5rem;box-shadow:var(--shadow);display:flex;align-items:center;gap:1rem;transition:all .3s}
+        .how-stat:hover{transform:translateX(6px);border-color:var(--blue-light)}
+        .how-stat-ico{width:48px;height:48px;min-width:48px;border-radius:12px;background:var(--blue-pale);display:grid;place-items:center;font-size:22px}
+        .how-stat-val{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--navy)}
+        .how-stat-label{font-size:.82rem;color:var(--gray-500)}
+
+        /* CTA */
+        .cta-sec{background:url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1920&q=80') center/cover no-repeat;position:relative;text-align:center}
+        .cta-sec::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,25,80,.9),rgba(30,58,138,.85))}
+        .cta-inner{position:relative;z-index:2;max-width:680px;margin:0 auto;color:#fff}
+        .cta-inner h2{font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:800;margin-bottom:1rem}
+        .cta-inner p{font-size:1.05rem;opacity:.85;max-width:500px;margin:0 auto 2.25rem;line-height:1.7}
+        .btn-cta{display:inline-block;padding:.9rem 2.75rem;background:#fff;color:var(--navy);border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:700;text-decoration:none;transition:all .3s;box-shadow:0 8px 30px rgba(0,0,0,.2)}
+        .btn-cta:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+
+        /* FOOTER */
+        footer{width:100%;background:var(--gray-900);color:#fff;padding:3.5rem 5%}
+        .foot-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
+        .foot-left{display:flex;align-items:center;gap:.6rem}
+        .foot-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));display:grid;place-items:center;font-family:'Poppins',sans-serif;font-size:.75rem;font-weight:800;color:#fff}
+        .foot-brand{font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700}
+        .foot-mid{text-align:center;flex:1}
+        .foot-team{font-size:.85rem;color:var(--gray-400);margin-bottom:.3rem}
+        .foot-team strong{color:#fff;font-weight:600}
+        .foot-uni{font-size:.82rem;color:var(--gray-500)}
+        .foot-right{font-size:.75rem;color:var(--gray-500)}
+
+        /* RESPONSIVE */
+        @media(max-width:1024px){
+            .hero-content{grid-template-columns:1fr;text-align:center;padding:110px 5% 60px}
+            .hero-desc{margin-left:auto;margin-right:auto}
+            .hero-btns{justify-content:center}
+            .hero-metrics{justify-content:center}
+            .scan-wrap{max-width:300px}
+            .feat-grid{grid-template-columns:1fr 1fr}
+            .how-grid{grid-template-columns:1fr;gap:3rem}
+        }
+        @media(max-width:768px){
+            section{padding:4rem 5%}
+            .nav-inner{padding:0 4%}
+            .nav-link{display:none}
+            .stats-grid{grid-template-columns:1fr 1fr}
+            .feat-grid{grid-template-columns:1fr}
+            .hero-metrics{flex-direction:column;gap:1rem;align-items:center}
+            .foot-inner{flex-direction:column;text-align:center}
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-inner">
+        <a href="/" class="nav-brand">
+            <div class="nav-logo">A</div>
+            <span class="nav-name">Atmos</span>
+        </a>
+        <div class="nav-right">
+            <a href="#features" class="nav-link">Features</a>
+            <a href="#how" class="nav-link">How It Works</a>
+            <a href="/login/" class="nav-signin">Sign In</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+        <div class="hero-text">
+            <div class="hero-badge"><span class="badge-dot"></span>AI-Powered Face Recognition</div>
+            <h1>Attendance<br><span>Made Intelligent</span></h1>
+            <p class="hero-desc">Replace manual registers with real-time face recognition. Detect, identify, and mark attendance automatically — accurate, fast, and tamper-proof.</p>
+            <div class="hero-btns">
+                <a href="/login/" class="btn-hero-primary">Sign In</a>
+                <a href="#features" class="btn-hero-ghost">See Features</a>
+            </div>
+            <div class="hero-metrics">
+                <div class="hm"><div class="hm-val">512-D</div><div class="hm-label">Face Embeddings</div></div>
+                <div class="hm"><div class="hm-val">&lt;2s</div><div class="hm-label">Recognition Time</div></div>
+                <div class="hm"><div class="hm-val">99%+</div><div class="hm-label">Accuracy Rate</div></div>
+            </div>
+        </div>
+
+        <div class="hero-visual">
+            <div class="scan-wrap">
+                <div class="scan-card">
+                    <div class="sc-head">
+                        <div class="sc-head-l"><div class="sc-dot"></div><span>Live Camera</span></div>
+                        <small>ArcFace v2</small>
+                    </div>
+                    <div class="sc-body">
+                        <div class="sc-grid"></div>
+                        <div class="face-o">
+                            <div class="fp fp1"></div><div class="fp fp2"></div>
+                            <div class="fp fp3"></div><div class="fp fp4"></div>
+                            <div class="fp fp5"></div><div class="fp fp6"></div>
+                            <div class="fp fp7"></div><div class="fp fp8"></div>
+                            <div class="fp fp9"></div>
+                        </div>
+                        <div class="scan-beam"></div>
+                        <div class="stag stag1">✓ Match: 94.2%</div>
+                        <div class="stag stag2">📐 512-D Vector</div>
+                        <div class="stag stag3">🆔 STD-1037</div>
+                        <div class="sc-foot">
+                            <div class="sc-foot-l">
+                                <div class="sc-avatar">SG</div>
+                                <div><div class="sc-name">Student Detected</div><div class="sc-id">ID: STD-1037 · Section A</div></div>
+                            </div>
+                            <div class="sc-score">94.2%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+    <div class="stats-grid">
+        <div class="stat reveal"><div class="stat-icon">🧠</div><div class="stat-val">ArcFace</div><div class="stat-label">Recognition Model</div></div>
+        <div class="stat reveal d1"><div class="stat-icon">⚡</div><div class="stat-val">&lt;2s</div><div class="stat-label">Recognition Speed</div></div>
+        <div class="stat reveal d2"><div class="stat-icon">👥</div><div class="stat-val">3 Roles</div><div class="stat-label">Admin · Teacher · Student</div></div>
+        <div class="stat reveal d3"><div class="stat-icon">🛡️</div><div class="stat-val">Zero</div><div class="stat-label">Proxy Attendance</div></div>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features-sec" id="features">
+    <div class="sec-header sec-center reveal">
+        <div class="sec-tag">Core Features</div>
+        <h2 class="sec-title">Everything your institution needs</h2>
+        <p class="sec-desc">A complete attendance management platform built for schools, colleges, and organizations of any size.</p>
+    </div>
+    <div class="feat-grid">
+        <div class="feat reveal">
+            <div class="feat-ico">🧠</div>
+            <h3>Face Recognition</h3>
+            <p>ArcFace deep learning model identifies students in real time. No ID cards, no manual calls — just instant recognition.</p>
+        </div>
+        <div class="feat reveal d1">
+            <div class="feat-ico">👥</div>
+            <h3>Role-Based Access</h3>
+            <p>Separate dashboards for Admin, Teacher, and Student. Each role sees exactly what they need — nothing more.</p>
+        </div>
+        <div class="feat reveal d2">
+            <div class="feat-ico">📊</div>
+            <h3>Attendance Reports</h3>
+            <p>Filter records by date, course, section, or student. Spot absentee patterns and generate reports instantly.</p>
+        </div>
+        <div class="feat reveal d3">
+            <div class="feat-ico">🛡️</div>
+            <h3>Anti-Proxy System</h3>
+            <p>Session-based duplicate detection ensures no student can be marked present twice. Attendance fraud eliminated.</p>
+        </div>
+        <div class="feat reveal d4">
+            <div class="feat-ico">✏️</div>
+            <h3>Manual Override</h3>
+            <p>Teachers retain full control. Mark or correct attendance manually alongside the automated face recognition.</p>
+        </div>
+        <div class="feat reveal d5">
+            <div class="feat-ico">📱</div>
+            <h3>Simple & Fast</h3>
+            <p>No hardware needed. Works with any standard webcam. Students just stand in front — attendance marked in seconds.</p>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-sec" id="how" style="padding:0">
+    <div class="how-inner">
+        <div class="sec-header sec-center reveal" style="max-width:1100px;margin:0 auto 3.5rem">
+            <div class="sec-tag" style="justify-content:center">How It Works</div>
+            <h2 class="sec-title">From camera to record in seconds</h2>
+            <p class="sec-desc" style="margin:0 auto">Simple for teachers, invisible for students. The system handles everything automatically.</p>
+        </div>
+
+        <div class="how-grid">
+            <div class="steps">
+                <div class="step reveal">
+                    <div class="step-num">1</div>
+                    <div><h4>Admin sets up the system</h4><p>Admin registers students and teachers, creates courses, and assigns teachers to sections.</p></div>
+                </div>
+                <div class="step reveal d1">
+                    <div class="step-num">2</div>
+                    <div><h4>Student faces are enrolled</h4><p>Each student's face is captured and trained into the recognition model. Done once, works forever.</p></div>
+                </div>
+                <div class="step reveal d2">
+                    <div class="step-num">3</div>
+                    <div><h4>Teacher starts attendance</h4><p>Teacher opens the face attendance session. Students walk past the camera — recognized instantly.</p></div>
+                </div>
+                <div class="step reveal d3">
+                    <div class="step-num">4</div>
+                    <div><h4>Attendance saved automatically</h4><p>Present/Absent status is saved to the database in real time. Students can view their own records anytime.</p></div>
+                </div>
+            </div>
+
+            <div class="how-visual reveal d2">
+                <div class="how-stat">
+                    <div class="how-stat-ico">🎯</div>
+                    <div>
+                        <div class="how-stat-val">99%+</div>
+                        <div class="how-stat-label">Face recognition accuracy</div>
+                    </div>
+                </div>
+                <div class="how-stat">
+                    <div class="how-stat-ico">⚡</div>
+                    <div>
+                        <div class="how-stat-val">&lt;2s</div>
+                        <div class="how-stat-label">Time to recognize per student</div>
+                    </div>
+                </div>
+                <div class="how-stat">
+                    <div class="how-stat-ico">🛡️</div>
+                    <div>
+                        <div class="how-stat-val">100%</div>
+                        <div class="how-stat-label">Proxy-proof attendance</div>
+                    </div>
+                </div>
+                <div class="how-stat">
+                    <div class="how-stat-ico">📊</div>
+                    <div>
+                        <div class="how-stat-val">Real-time</div>
+                        <div class="how-stat-label">Reports and analytics</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-sec">
+    <div class="cta-inner reveal">
+        <h2>Ready to automate attendance?</h2>
+        <p>Contact your administrator to get your login credentials and access your dashboard.</p>
+        <a href="/login/" class="btn-cta">Sign In to Dashboard</a>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="foot-inner">
+        <div class="foot-left"><div class="foot-mark">A</div><span class="foot-brand">Atmos</span></div>
+        <div class="foot-mid">
+            <div class="foot-team">Built by <strong>Sachin Gupta</strong> · <strong>Govind Singh Tanwar</strong> · <strong>Kashish</strong> · <strong>Komal</strong> · <strong>Navneet Kumar</strong></div>
+            <div class="foot-uni">Lovely Professional University · MCA Project</div>
+        </div>
+        <div class="foot-right">© 2026 Atmos. All rights reserved.</div>
+    </div>
+</footer>
+
+<script>
+const nb = document.querySelector('.navbar');
+window.addEventListener('scroll', () => nb.classList.toggle('scrolled', scrollY > 30));
+const io = new IntersectionObserver(es => {
+    es.forEach(e => { if(e.isIntersecting){ e.target.classList.add('v'); io.unobserve(e.target); }});
+}, {threshold:.08, rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', function(e) {
+        e.preventDefault();
+        const t = document.querySelector(this.getAttribute('href'));
+        if(t) t.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+});
+</script>
+</body>
+</html>

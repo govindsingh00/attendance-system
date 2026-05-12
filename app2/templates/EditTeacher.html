@@ -1,18 +1,51 @@
 {% extends "TeacherDash.html" %}
+{% load static %}
+
+{% block active_profile %}active{% endblock %}
+{% block page_title %}Edit Profile{% endblock %}
+{% block page_sub %}Update your teacher profile{% endblock %}
+
 {% block m1 %}
-<h1>Edit teacher profile</h1>
-{% if data %}
-    {% for d in data %}
-    <form method="post" action="/editteacherprofile1/">
-        {% csrf_token %}
-        <input type="hidden" name="E1" value="{{ d.email }}" />
-        <p>Name <input type="text" name="t1" value="{{ d.name }}" required /></p>
-        <p>Phone <input type="text" name="t2" value="{{ d.phone }}" /></p>
-        <p>Address <textarea name="t3" rows="3" style="width:100%;max-width:480px;">{{ d.address }}</textarea></p>
-        <button type="submit">Save</button>
-    </form>
-    {% endfor %}
+
+{% if msg %}
+<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/teacher_home/" style="color:var(--green);font-weight:700">Back to Dashboard</a></div>
 {% endif %}
-{% if msg %}<p><strong>{{ msg }}</strong></p>{% endif %}
-<p><a href="/teacher_home/">Back</a></p>
+
+{% if data %}
+{% for d in data %}
+<div style="max-width:600px">
+    <div class="card">
+        <div class="card-title">👨‍🏫 Edit Profile</div>
+        <form method="post" action="/editteacherprofile1/">
+            {% csrf_token %}
+            <input type="hidden" name="E1" value="{{ d.email }}"/>
+            <div style="display:flex;flex-direction:column;gap:1.1rem">
+                <div class="field">
+                    <label>Full Name <span style="color:var(--red)">*</span></label>
+                    <input type="text" name="t1" value="{{ d.name }}" required/>
+                </div>
+                <div class="field">
+                    <label>Phone</label>
+                    <input type="text" name="t2" value="{{ d.phone }}"/>
+                </div>
+                <div class="field">
+                    <label>Address</label>
+                    <textarea name="t3" rows="3" style="resize:vertical">{{ d.address }}</textarea>
+                </div>
+                <div class="field">
+                    <label>Email <span style="font-size:.75rem;color:var(--tx-4)">(cannot be changed)</span></label>
+                    <input type="text" value="{{ d.email }}" readonly
+                           style="background:var(--surface2);color:var(--tx-4);cursor:not-allowed"/>
+                </div>
+                <div style="display:flex;gap:.75rem">
+                    <button type="submit" class="btn btn-green">💾 Save Changes</button>
+                    <a href="/teacher_home/" class="btn btn-outline">← Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
 {% endblock %}

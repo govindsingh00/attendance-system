@@ -74,6 +74,10 @@ urlpatterns = [
 
     path('student_attendance/', student_attendance),
 
+    path('download_attendance/', download_attendance),
+    path('ml/recognize/', ml_recognize),
+    path('ml/recognize/frame/', ml_recognize_frame),
+
     path('teaching_assignments/', teaching_assignments),
     path('teaching_assignment_add/', teaching_assignment_add),
     path('teaching_assignment_delete/', teaching_assignment_delete),

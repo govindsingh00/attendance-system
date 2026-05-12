@@ -1,71 +1,396 @@
 {% load static %}
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../static/bootstrap/adminbootstrap.css" type="text/css">
-    <script src="../static/jquery/jquery.js"></script>
-    <script src="../static/bootstrap/popper.min.js" ></script>
-    <script src="../static/bootstrap/bootstrap.min.js" ></script>
-    <script src="../static/bootstrap/bootstrap.bundle.js" ></script>
-    <title>Admin Dashboard</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Atmos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      h1,h2,h3,h4
-      {
-        color:#1f4c70;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Attendence</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarColor01">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item">
-                <a class="nav-link active" href="http://127.0.0.1:8000/admin_home/">Home
-                  <span class="visually-hidden">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="http://127.0.0.1:8000/alladmins/">Alladmins</a>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Register</a>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/admin_reg/">Admin</a>
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/teacher_reg/">Teacher</a>
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/student_reg/">Student</a>
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/course_reg/">New Course</a> 
-                </div>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Manage</a>
-                <div class="dropdown-menu">
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/allcourses/">Courses</a>
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/allstudentsAD/">Student</a>
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/allteachers/">Teachers</a>
-                  <a class="dropdown-item" href="http://127.0.0.1:8000/teaching_assignments/">Teaching assignments</a>
-                </div>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="http://127.0.0.1:8000/logout/">logout</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
-      <div class="container mt-4">
-        {% block m1 %}
-        {% endblock %}
-      </div>
-    
-  </body>
+        :root{
+            /* Brand */
+            --navy:#1e3a8a;
+            --navy-dark:#0f2167;
+            --blue:#3b82f6;
+            --blue-pale:#eff6ff;
+            --blue-light:#dbeafe;
+            /* Sidebar */
+            --sb-bg1:#0f2167;
+            --sb-bg2:#1e3a8a;
+            --sb-text:rgba(255,255,255,.65);
+            --sb-text-hover:#ffffff;
+            --sb-active-bar:#60a5fa;
+            --sb-hover-bg:rgba(255,255,255,.07);
+            --sb-active-bg:rgba(255,255,255,.12);
+            --sb-border:rgba(255,255,255,.07);
+            --sb-width:255px;
+            /* Surface */
+            --bg:#f1f5f9;
+            --surface:#ffffff;
+            --surface2:#f8fafc;
+            --border:#e2e8f0;
+            --border-dark:#cbd5e1;
+            /* Text */
+            --tx-1:#0f172a;
+            --tx-2:#334155;
+            --tx-3:#64748b;
+            --tx-4:#94a3b8;
+            /* Status */
+            --green:#16a34a;--green-bg:#dcfce7;--green-border:rgba(22,163,74,.15);
+            --amber:#d97706;--amber-bg:#fef3c7;--amber-border:rgba(217,119,6,.15);
+            --red:#dc2626;--red-bg:#fef2f2;--red-border:rgba(220,38,38,.15);
+            /* Shadow */
+            --sh-xs:0 1px 2px rgba(0,0,0,.05);
+            --sh-sm:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);
+            --sh-md:0 4px 16px rgba(0,0,0,.07),0 2px 6px rgba(0,0,0,.04);
+            --sh-lg:0 12px 40px rgba(0,0,0,.1),0 4px 12px rgba(0,0,0,.05);
+        }
+
+        html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx-1)}
+        h1,h2,h3,h4,h5,h6{font-family:'Poppins',sans-serif}
+        a{text-decoration:none;color:inherit}
+        button{cursor:pointer;font-family:'Outfit',sans-serif}
+
+        /* ─── LAYOUT ──────────────────────────────── */
+        .app{display:flex;height:100vh;width:100vw;overflow:hidden}
+
+        /* ─── SIDEBAR ─────────────────────────────── */
+        .sidebar{
+            width:var(--sb-width);
+            min-width:var(--sb-width);
+            height:100vh;
+            background:linear-gradient(180deg,var(--sb-bg1) 0%,var(--sb-bg2) 100%);
+            display:flex;
+            flex-direction:column;
+            overflow:hidden;
+            position:relative;
+            z-index:20;
+            box-shadow:2px 0 16px rgba(0,0,0,.12);
+        }
+
+        /* Brand */
+        .sb-brand{
+            padding:1.35rem 1.25rem 1.1rem;
+            display:flex;align-items:center;gap:.6rem;
+            border-bottom:1px solid var(--sb-border);
+            flex-shrink:0;
+        }
+        .sb-mark{
+            width:34px;height:34px;border-radius:9px;flex-shrink:0;
+            background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));
+            border:1px solid rgba(255,255,255,.18);
+            display:grid;place-items:center;
+            font-family:'Poppins',sans-serif;font-weight:800;font-size:.88rem;color:#fff;
+        }
+        .sb-brand-text{}
+        .sb-name{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.05rem;color:#fff;line-height:1.2}
+        .sb-role{font-size:.65rem;color:rgba(255,255,255,.4);font-weight:500;letter-spacing:.8px;text-transform:uppercase}
+
+        /* Nav */
+        .sb-nav{flex:1;overflow-y:auto;padding:.75rem .75rem;display:flex;flex-direction:column;gap:.1rem}
+        .sb-nav::-webkit-scrollbar{width:3px}
+        .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+
+        .sb-section-label{
+            font-size:.62rem;letter-spacing:1.8px;text-transform:uppercase;
+            color:rgba(255,255,255,.28);font-weight:600;
+            padding:.6rem .6rem .3rem;margin-top:.35rem;
+        }
+
+        .sb-link{
+            display:flex;align-items:center;gap:.7rem;
+            padding:.62rem .75rem;border-radius:9px;
+            color:var(--sb-text);font-size:.88rem;font-weight:500;
+            transition:all .18s ease;position:relative;
+        }
+        .sb-link:hover{background:var(--sb-hover-bg);color:var(--sb-text-hover)}
+        .sb-link.active{background:var(--sb-active-bg);color:#fff}
+        .sb-link.active::before{
+            content:'';position:absolute;left:0;top:22%;bottom:22%;
+            width:3px;border-radius:0 3px 3px 0;
+            background:var(--sb-active-bar);
+        }
+        .sb-ico{font-size:1rem;min-width:18px;text-align:center;line-height:1}
+
+        /* Sidebar footer */
+        .sb-footer{
+            padding:.85rem .75rem;
+            border-top:1px solid var(--sb-border);
+            flex-shrink:0;
+        }
+        .sb-logout{
+            display:flex;align-items:center;gap:.7rem;
+            padding:.62rem .75rem;border-radius:9px;
+            color:rgba(255,255,255,.5);font-size:.88rem;font-weight:500;
+            background:none;border:none;width:100%;
+            transition:all .18s;
+        }
+        .sb-logout:hover{background:rgba(220,38,38,.12);color:#fca5a5}
+
+        /* ─── MAIN ────────────────────────────────── */
+        .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+        /* Topbar */
+        .topbar{
+            height:60px;min-height:60px;
+            background:var(--surface);
+            border-bottom:1px solid var(--border);
+            display:flex;align-items:center;justify-content:space-between;
+            padding:0 1.75rem;
+            box-shadow:var(--sh-xs);
+            flex-shrink:0;
+        }
+        .tb-left{}
+        .tb-title{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;color:var(--tx-1);line-height:1.2}
+        .tb-sub{font-size:.75rem;color:var(--tx-4)}
+        .tb-right{display:flex;align-items:center;gap:.85rem}
+        .tb-avatar{
+            width:34px;height:34px;border-radius:9px;
+            background:linear-gradient(135deg,var(--navy),var(--blue));
+            display:grid;place-items:center;
+            font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:700;color:#fff;
+            flex-shrink:0;
+        }
+        .tb-name{font-size:.85rem;font-weight:600;color:var(--tx-2)}
+
+        /* Page content */
+        .page{flex:1;overflow-y:auto;padding:1.75rem;background:var(--bg)}
+        .page::-webkit-scrollbar{width:5px}
+        .page::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:5px}
+
+        /* ─── COMPONENTS ──────────────────────────── */
+
+        /* Card */
+        .card{
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:14px;
+            padding:1.5rem;
+            box-shadow:var(--sh-sm);
+        }
+        .card-title{
+            font-family:'Poppins',sans-serif;
+            font-size:.95rem;font-weight:700;color:var(--tx-1);
+            margin-bottom:1.1rem;
+            display:flex;align-items:center;gap:.45rem;
+        }
+
+        /* Stat cards */
+        .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;margin-bottom:1.5rem}
+        .stat-card{
+            background:var(--surface);border:1px solid var(--border);
+            border-radius:14px;padding:1.35rem 1.25rem;
+            display:flex;align-items:flex-start;justify-content:space-between;
+            box-shadow:var(--sh-sm);transition:all .25s;
+        }
+        .stat-card:hover{transform:translateY(-2px);box-shadow:var(--sh-md)}
+        .stat-val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:var(--tx-1);line-height:1.1}
+        .stat-label{font-size:.78rem;color:var(--tx-3);font-weight:500;margin-top:.3rem}
+        .stat-ico{
+            width:40px;height:40px;border-radius:10px;
+            display:grid;place-items:center;font-size:18px;flex-shrink:0;
+        }
+        .ico-navy{background:var(--blue-pale)}
+        .ico-green{background:var(--green-bg)}
+        .ico-amber{background:var(--amber-bg)}
+        .ico-red{background:var(--red-bg)}
+
+        /* Table */
+        .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+        table{width:100%;border-collapse:collapse;background:var(--surface)}
+        thead th{
+            font-size:.72rem;font-weight:700;text-transform:uppercase;
+            letter-spacing:.6px;color:var(--tx-3);
+            padding:.7rem 1rem;background:var(--surface2);
+            border-bottom:1px solid var(--border);text-align:left;
+        }
+        tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+        tbody tr:last-child{border-bottom:none}
+        tbody tr:hover{background:var(--surface2)}
+        td{padding:.85rem 1rem;font-size:.88rem;color:var(--tx-2)}
+
+        /* Badge */
+        .badge{display:inline-flex;align-items:center;padding:.2rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700;letter-spacing:.2px}
+        .badge-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+        .badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+        .badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+        .badge-blue{background:var(--blue-pale);color:var(--blue);border:1px solid var(--blue-light)}
+        .badge-navy{background:var(--blue-pale);color:var(--navy);border:1px solid var(--blue-light)}
+
+        /* Buttons */
+        .btn{
+            display:inline-flex;align-items:center;gap:.4rem;
+            padding:.55rem 1.15rem;border-radius:8px;
+            font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;
+            border:none;cursor:pointer;transition:all .2s;text-decoration:none;
+        }
+        .btn-primary{background:var(--navy);color:#fff;box-shadow:0 2px 8px rgba(30,58,138,.2)}
+        .btn-primary:hover{background:var(--navy-dark);transform:translateY(-1px);box-shadow:0 4px 14px rgba(30,58,138,.25)}
+        .btn-outline{background:transparent;border:1.5px solid var(--border-dark);color:var(--tx-2)}
+        .btn-outline:hover{border-color:var(--navy);color:var(--navy);background:var(--blue-pale)}
+        .btn-danger{background:transparent;border:1.5px solid var(--red);color:var(--red)}
+        .btn-danger:hover{background:var(--red-bg)}
+        .btn-success{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(22,163,74,.2)}
+        .btn-success:hover{background:#15803d;transform:translateY(-1px)}
+        .btn-sm{padding:.35rem .8rem;font-size:.78rem}
+        .btn-xs{padding:.22rem .6rem;font-size:.72rem}
+
+        /* Alert */
+        .alert{
+            display:flex;align-items:flex-start;gap:.7rem;
+            padding:.9rem 1.1rem;border-radius:10px;
+            font-size:.88rem;font-weight:500;margin-bottom:1.25rem;
+        }
+        .alert-success{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+        .alert-error{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+        .alert-warning{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+        .alert-info{background:var(--blue-pale);color:var(--navy);border:1px solid var(--blue-light)}
+
+        /* Form */
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+        .form-full{grid-column:1/-1}
+        .field{display:flex;flex-direction:column;gap:.38rem}
+        .field label{font-size:.78rem;font-weight:600;color:var(--tx-2)}
+        .field input,.field select,.field textarea{
+            padding:.72rem .9rem;
+            background:var(--surface2);border:1.5px solid var(--border);
+            border-radius:9px;font-family:'Outfit',sans-serif;
+            font-size:.9rem;color:var(--tx-1);outline:none;
+            transition:all .2s;
+        }
+        .field input:focus,.field select:focus,.field textarea:focus{
+            border-color:var(--blue);background:var(--surface);
+            box-shadow:0 0 0 3px rgba(59,130,246,.08);
+        }
+        .field input::placeholder,.field textarea::placeholder{color:var(--tx-4)}
+
+        /* Profile */
+        .profile-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--sh-sm)}
+        .profile-banner{height:90px;background:linear-gradient(135deg,var(--navy-dark),var(--navy),var(--blue))}
+        .profile-body{padding:0 1.5rem 1.5rem}
+        .profile-photo{
+            width:76px;height:76px;border-radius:14px;
+            background:var(--blue-pale);border:4px solid var(--surface);
+            margin-top:-38px;margin-bottom:.9rem;
+            overflow:hidden;display:flex;align-items:center;justify-content:center;
+            font-size:1.6rem;box-shadow:var(--sh-md);
+        }
+        .profile-photo img{width:100%;height:100%;object-fit:cover}
+        .profile-name{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:.2rem}
+        .profile-tag{display:inline-block;padding:.18rem .65rem;background:var(--blue-pale);color:var(--navy);border-radius:50px;font-size:.7rem;font-weight:700;margin-bottom:.9rem}
+        .profile-rows{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.1rem}
+        .profile-row{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--tx-2)}
+        .profile-row-ico{font-size:.9rem}
+
+        /* Page header */
+        .page-hd{margin-bottom:1.5rem}
+        .page-hd h1{font-size:1.4rem;font-weight:800;color:var(--tx-1);margin-bottom:.18rem}
+        .page-hd p{font-size:.85rem;color:var(--tx-3)}
+
+        /* Detail grid */
+        .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+        .detail-item{}
+        .detail-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-4);margin-bottom:.22rem}
+        .detail-val{font-size:.9rem;font-weight:600;color:var(--tx-1)}
+
+        /* Divider */
+        .divider{height:1px;background:var(--border);margin:1.1rem 0}
+
+        /* Responsive */
+        @media(max-width:1024px){.stats-row{grid-template-columns:1fr 1fr}}
+        @media(max-width:768px){
+            .sidebar{position:fixed;left:-100%;transition:left .3s;z-index:100}
+            .sidebar.open{left:0}
+            .stats-row{grid-template-columns:1fr}
+            .form-grid{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sb-brand">
+            <div class="sb-mark">A</div>
+            <div class="sb-brand-text">
+                <div class="sb-name">Atmos</div>
+                <div class="sb-role">Admin Panel</div>
+            </div>
+        </div>
+
+        <nav class="sb-nav">
+            <div class="sb-section-label">Main</div>
+            <a href="/admin_home/" class="sb-link {% block active_home %}{% endblock %}">
+                <span class="sb-ico">🏠</span>Dashboard
+            </a>
+            <a href="/alladmins/" class="sb-link {% block active_admins %}{% endblock %}">
+                <span class="sb-ico">👑</span>All Admins
+            </a>
+
+            <div class="sb-section-label">Register</div>
+            <a href="/admin_reg/" class="sb-link {% block active_adminreg %}{% endblock %}">
+                <span class="sb-ico">➕</span>Add Admin
+            </a>
+            <a href="/teacher_reg/" class="sb-link {% block active_teachreg %}{% endblock %}">
+                <span class="sb-ico">👨‍🏫</span>Add Teacher
+            </a>
+            <a href="/student_reg/" class="sb-link {% block active_stureg %}{% endblock %}">
+                <span class="sb-ico">🎓</span>Add Student
+            </a>
+            <a href="/course_reg/" class="sb-link {% block active_coursereg %}{% endblock %}">
+                <span class="sb-ico">📚</span>Add Course
+            </a>
+
+            <div class="sb-section-label">Manage</div>
+            <a href="/allcourses/" class="sb-link {% block active_courses %}{% endblock %}">
+                <span class="sb-ico">📖</span>Courses
+            </a>
+            <a href="/allstudentsAD/" class="sb-link {% block active_students %}{% endblock %}">
+                <span class="sb-ico">👥</span>Students
+            </a>
+            <a href="/allteachers/" class="sb-link {% block active_teachers %}{% endblock %}">
+                <span class="sb-ico">🧑‍🏫</span>Teachers
+            </a>
+            <a href="/teaching_assignments/" class="sb-link {% block active_assign %}{% endblock %}">
+                <span class="sb-ico">📋</span>Assignments
+            </a>
+        </nav>
+
+        <div class="sb-footer">
+            <a href="/logout/" class="sb-logout">
+                <span class="sb-ico">🚪</span>Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <header class="topbar">
+            <div class="tb-left">
+                <div class="tb-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <div class="tb-sub">{% block page_sub %}Welcome back{% endblock %}</div>
+            </div>
+            <div class="tb-right">
+                <span class="tb-name">Admin</span>
+                <div class="tb-avatar">A</div>
+            </div>
+        </header>
+
+        <main class="page">
+            {% block m1 %}{% endblock %}
+        </main>
+    </div>
+
+</div>
+<script>
+/* Auto-highlight active sidebar link */
+const cur = window.location.pathname;
+document.querySelectorAll('.sb-link').forEach(a => {
+    if(a.getAttribute('href') === cur) a.classList.add('active');
+});
+</script>
+</body>
 </html>

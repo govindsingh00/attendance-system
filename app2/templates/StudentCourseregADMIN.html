@@ -1,32 +1,52 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block page_title %}Add Course to Student{% endblock %}
+{% block page_sub %}Enroll student in a course{% endblock %}
+
 {% block m1 %}
-<h1> Available Courses </h1>
+{% if msg %}
+<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/allstudentsAD/" style="color:var(--green);font-weight:700">Back to Students</a></div>
+{% endif %}
+
 {% if data1 %}
 {% for d2 in data1 %}
-        <form method="post" action="http://127.0.0.1:8000/studentcourseadd1/">
+<div style="max-width:520px">
+    <div class="card">
+        <div class="card-title">➕ Enroll Student in Course</div>
+        <form method="post" action="/studentcourseadd1/">
             {% csrf_token %}
-            <p>
-                {% if data %}
-				<label for="course" >Choose a Course</label>
-                <select id="course" name="t1">
-                {% for d in data %}
-					<option value="{{d.crname}}">{{d.crname}}</option>
-                {% endfor %}
-                </select>
-                {% endif %}
-			</p>
-            <p>Joining Date<input type="text" name="t3" placeholder="dd/mm/yyyy" /></p>
-            <p>Remark<input type="text" name="t4"/></p>
-			<p><input type="hidden" name="A1" value="{{d2.0}}" /></p>
-                <button type="submit" >Add </button>
+            <input type="hidden" name="A1" value="{{ d2.0 }}"/>
+            <div style="display:flex;flex-direction:column;gap:1.1rem">
+                <div class="field">
+                    <label>Select Course <span style="color:var(--red)">*</span></label>
+                    {% if data %}
+                    <select name="t1" required>
+                        <option value="">— Choose a Course —</option>
+                        {% for d in data %}
+                        <option value="{{ d.crname }}">{{ d.crname }}</option>
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <div class="alert alert-warning" style="margin:0"><span>⚠️</span> No courses available. Add courses first.</div>
+                    {% endif %}
+                </div>
+                <div class="field">
+                    <label>Joining Date <span style="color:var(--red)">*</span></label>
+                    <input type="text" name="t3" placeholder="dd/mm/yyyy" required/>
+                </div>
+                <div class="field">
+                    <label>Remark</label>
+                    <input type="text" name="t4" placeholder="Optional note"/>
+                </div>
+                <div style="display:flex;gap:.75rem">
+                    <button type="submit" class="btn btn-primary">➕ Add Course</button>
+                    <a href="/allstudentsAD/" class="btn btn-outline">← Cancel</a>
+                </div>
+            </div>
         </form>
+    </div>
+</div>
 {% endfor %}
-{% endif %}
-{% if msg %}
-    <h4>{{msg}}</h4>
-    <p>
-        <a href="http://127.0.0.1:8000/allstudentsAD/">BACK</a>
-    </p>
 {% endif %}
 {% endblock %}

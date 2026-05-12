@@ -1,8 +1,0 @@
-<h1> Available Courses </h1>
-{% if data %}
-    {% for d in data %}
-        <h3>{{d.crname}}</h3>
-        <p>{{d.duration}}</p>
-        <p>{{d.remark}}</p>
-    {% endfor %}
-{% endif %}

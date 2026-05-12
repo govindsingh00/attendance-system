@@ -1,53 +1,163 @@
 {% load static %}
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../static/bootstrap/adminbootstrap.css" type="text/css">
-    <script src="../static/jquery/jquery.js"></script>
-    <script src="../static/bootstrap/popper.min.js" ></script>
-    <script src="../static/bootstrap/bootstrap.min.js" ></script>
-    <script src="../static/bootstrap/bootstrap.bundle.js" ></script>
-    <title>Admin Dashboard</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student | Atmos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-      h1,h2,h3,h4
-      {
-        color:#1f4c70;
-      }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --navy:#1e3a8a;--navy-dark:#0f2167;--blue:#3b82f6;
+            --blue-pale:#eff6ff;--blue-light:#dbeafe;
+            --purple:#7c3aed;--purple-dark:#4c1d95;--purple-mid:#5b21b6;
+            --purple-pale:#ede9fe;--purple-light:#ddd6fe;
+            --sb-bg1:#2e1065;--sb-bg2:#4c1d95;
+            --sb-text:rgba(255,255,255,.65);--sb-text-hover:#fff;
+            --sb-active-bar:#a78bfa;--sb-hover-bg:rgba(255,255,255,.07);
+            --sb-active-bg:rgba(255,255,255,.12);--sb-border:rgba(255,255,255,.07);
+            --sb-width:255px;
+            --bg:#f1f5f9;--surface:#fff;--surface2:#f8fafc;
+            --border:#e2e8f0;--border-dark:#cbd5e1;
+            --tx-1:#0f172a;--tx-2:#334155;--tx-3:#64748b;--tx-4:#94a3b8;
+            --green:#16a34a;--green-bg:#dcfce7;--green-border:rgba(22,163,74,.15);
+            --amber:#d97706;--amber-bg:#fef3c7;--amber-border:rgba(217,119,6,.15);
+            --red:#dc2626;--red-bg:#fef2f2;--red-border:rgba(220,38,38,.15);
+            --sh-xs:0 1px 2px rgba(0,0,0,.05);--sh-sm:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);--sh-md:0 4px 16px rgba(0,0,0,.07);
+        }
+        html,body{height:100%;overflow:hidden;font-family:'Outfit',sans-serif;background:var(--bg);color:var(--tx-1)}
+        h1,h2,h3,h4,h5{font-family:'Poppins',sans-serif}
+        a{text-decoration:none;color:inherit}
+        button{cursor:pointer;font-family:'Outfit',sans-serif}
+        .app{display:flex;height:100vh;width:100vw;overflow:hidden}
+
+        /* SIDEBAR */
+        .sidebar{width:var(--sb-width);min-width:var(--sb-width);height:100vh;background:linear-gradient(180deg,var(--sb-bg1) 0%,var(--sb-bg2) 100%);display:flex;flex-direction:column;overflow:hidden;z-index:20;box-shadow:2px 0 16px rgba(0,0,0,.12)}
+        .sb-brand{padding:1.35rem 1.25rem 1.1rem;display:flex;align-items:center;gap:.6rem;border-bottom:1px solid var(--sb-border);flex-shrink:0}
+        .sb-mark{width:34px;height:34px;border-radius:9px;flex-shrink:0;background:linear-gradient(135deg,rgba(255,255,255,.18),rgba(255,255,255,.08));border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;font-family:'Poppins',sans-serif;font-weight:800;font-size:.88rem;color:#fff}
+        .sb-name{font-family:'Poppins',sans-serif;font-weight:700;font-size:1.05rem;color:#fff;line-height:1.2}
+        .sb-role{font-size:.65rem;color:rgba(255,255,255,.4);font-weight:500;letter-spacing:.8px;text-transform:uppercase}
+        .sb-nav{flex:1;overflow-y:auto;padding:.75rem .75rem;display:flex;flex-direction:column;gap:.1rem}
+        .sb-nav::-webkit-scrollbar{width:3px}
+        .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:3px}
+        .sb-section-label{font-size:.62rem;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.28);font-weight:600;padding:.6rem .6rem .3rem;margin-top:.35rem}
+        .sb-link{display:flex;align-items:center;gap:.7rem;padding:.62rem .75rem;border-radius:9px;color:var(--sb-text);font-size:.88rem;font-weight:500;transition:all .18s;position:relative}
+        .sb-link:hover{background:var(--sb-hover-bg);color:var(--sb-text-hover)}
+        .sb-link.active{background:var(--sb-active-bg);color:#fff}
+        .sb-link.active::before{content:'';position:absolute;left:0;top:22%;bottom:22%;width:3px;border-radius:0 3px 3px 0;background:var(--sb-active-bar)}
+        .sb-ico{font-size:1rem;min-width:18px;text-align:center;line-height:1}
+        .sb-footer{padding:.85rem .75rem;border-top:1px solid var(--sb-border);flex-shrink:0}
+        .sb-logout{display:flex;align-items:center;gap:.7rem;padding:.62rem .75rem;border-radius:9px;color:rgba(255,255,255,.5);font-size:.88rem;font-weight:500;background:none;border:none;width:100%;transition:all .18s}
+        .sb-logout:hover{background:rgba(220,38,38,.12);color:#fca5a5}
+
+        /* MAIN */
+        .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+        .topbar{height:60px;min-height:60px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.75rem;box-shadow:var(--sh-xs);flex-shrink:0}
+        .tb-title{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:700;color:var(--tx-1);line-height:1.2}
+        .tb-sub{font-size:.75rem;color:var(--tx-4)}
+        .tb-right{display:flex;align-items:center;gap:.85rem}
+        .tb-avatar{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--sb-bg1),#7c3aed);display:grid;place-items:center;font-family:'Poppins',sans-serif;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0}
+        .tb-name{font-size:.85rem;font-weight:600;color:var(--tx-2)}
+        .page{flex:1;overflow-y:auto;padding:1.75rem;background:var(--bg)}
+        .page::-webkit-scrollbar{width:5px}
+        .page::-webkit-scrollbar-thumb{background:var(--border-dark);border-radius:5px}
+
+        /* COMPONENTS */
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;box-shadow:var(--sh-sm)}
+        .card-title{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--tx-1);margin-bottom:1.1rem;display:flex;align-items:center;gap:.45rem}
+        .badge{display:inline-flex;align-items:center;padding:.2rem .65rem;border-radius:50px;font-size:.7rem;font-weight:700}
+        .badge-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+        .badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+        .badge-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+        .badge-blue{background:var(--blue-pale);color:var(--blue);border:1px solid var(--blue-light)}
+        .badge-purple{background:var(--purple-pale);color:var(--purple);border:1px solid var(--purple-light)}
+        .btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.15rem;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;border:none;cursor:pointer;transition:all .2s;text-decoration:none}
+        .btn-primary{background:var(--navy);color:#fff}
+        .btn-primary:hover{background:var(--navy-dark);transform:translateY(-1px)}
+        .btn-purple{background:var(--purple-mid);color:#fff;box-shadow:0 2px 8px rgba(124,58,237,.2)}
+        .btn-purple:hover{background:var(--purple-dark);transform:translateY(-1px)}
+        .btn-outline{background:transparent;border:1.5px solid var(--border-dark);color:var(--tx-2)}
+        .btn-outline:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-pale)}
+        .btn-danger{background:transparent;border:1.5px solid var(--red);color:var(--red)}
+        .btn-danger:hover{background:var(--red-bg)}
+        .btn-sm{padding:.35rem .8rem;font-size:.78rem}
+        .alert{display:flex;align-items:flex-start;gap:.7rem;padding:.9rem 1.1rem;border-radius:10px;font-size:.88rem;font-weight:500;margin-bottom:1.25rem}
+        .alert-success{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+        .alert-error{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+        .alert-warning{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+        table{width:100%;border-collapse:collapse;background:var(--surface)}
+        .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+        thead th{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-3);padding:.7rem 1rem;background:var(--surface2);border-bottom:1px solid var(--border);text-align:left}
+        tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+        tbody tr:last-child{border-bottom:none}
+        tbody tr:hover{background:var(--surface2)}
+        td{padding:.85rem 1rem;font-size:.88rem;color:var(--tx-2)}
+        .field{display:flex;flex-direction:column;gap:.38rem}
+        .field label{font-size:.78rem;font-weight:600;color:var(--tx-2)}
+        .field input,.field select,.field textarea{padding:.72rem .9rem;background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--tx-1);outline:none;transition:all .2s}
+        .field input:focus,.field select:focus{border-color:var(--purple);background:var(--surface);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
+        .profile-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--sh-sm)}
+        .profile-banner{height:90px;background:linear-gradient(135deg,var(--sb-bg1),var(--purple-mid),#a78bfa)}
+        .profile-body{padding:0 1.5rem 1.5rem}
+        .profile-photo{width:76px;height:76px;border-radius:14px;background:var(--purple-pale);border:4px solid var(--surface);margin-top:-38px;margin-bottom:.9rem;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:var(--sh-md)}
+        .profile-photo img{width:100%;height:100%;object-fit:cover}
+        .profile-name{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:700;margin-bottom:.2rem}
+        .profile-tag{display:inline-block;padding:.18rem .65rem;background:var(--purple-pale);color:var(--purple);border-radius:50px;font-size:.7rem;font-weight:700;margin-bottom:.9rem}
+        .profile-rows{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.1rem}
+        .profile-row{display:flex;align-items:center;gap:.45rem;font-size:.85rem;color:var(--tx-2)}
+        .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+        .detail-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-4);margin-bottom:.22rem}
+        .detail-val{font-size:.9rem;font-weight:600;color:var(--tx-1)}
+
+        @media(max-width:768px){.sidebar{display:none}.main{width:100%}}
     </style>
-  </head>
-  <body class="bg-dark" data-bs-theme="dark">
-    <nav class="navbar navbar-expand-lg bg-info" data-bs-theme="dark">
-        <div class="container-fluid ">
-          <a class="navbar-brand" href="#">APNACLASSES</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarColor01">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item">
-                <a class="nav-link active" href="http://127.0.0.1:8000/student_home/">Home
-                  <span class="visually-hidden">(current)</span>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="http://127.0.0.1:8000/student_attendance/">Attendance</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="http://127.0.0.1:8000/logout/">logout</a>
-              </li>
-            </ul>
-          </div>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="sb-brand">
+            <div class="sb-mark">A</div>
+            <div>
+                <div class="sb-name">Atmos</div>
+                <div class="sb-role">Student Panel</div>
+            </div>
         </div>
-      </nav>
+        <nav class="sb-nav">
+            <div class="sb-section-label">Main</div>
+            <a href="/student_home/" class="sb-link {% block active_home %}{% endblock %}"><span class="sb-ico">🏠</span>Dashboard</a>
+            <a href="/student_attendance/" class="sb-link {% block active_attend %}{% endblock %}"><span class="sb-ico">📊</span>My Attendance</a>
+            <a href="/student_course_info/" class="sb-link {% block active_course %}{% endblock %}"><span class="sb-ico">📚</span>Course Info</a>
 
-      <div class="container mt-4">
-        {% block s1 %}
-        {% endblock %}
-      </div>
+            <div class="sb-section-label">Account</div>
+            <a href="/editstprofile/" class="sb-link {% block active_profile %}{% endblock %}"><span class="sb-ico">👤</span>Edit Profile</a>
+            <a href="/student_pass_change/" class="sb-link {% block active_pass %}{% endblock %}"><span class="sb-ico">🔒</span>Change Password</a>
+            <a href="/studentuploadphoto/" class="sb-link {% block active_photo %}{% endblock %}"><span class="sb-ico">📷</span>Upload Photo</a>
+        </nav>
+        <div class="sb-footer">
+            <a href="/logout/" class="sb-logout"><span class="sb-ico">🚪</span>Logout</a>
+        </div>
+    </aside>
 
-  </body>
+    <div class="main">
+        <header class="topbar">
+            <div>
+                <div class="tb-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <div class="tb-sub">{% block page_sub %}Welcome back{% endblock %}</div>
+            </div>
+            <div class="tb-right">
+                <span class="tb-name">Student</span>
+                <div class="tb-avatar">S</div>
+            </div>
+        </header>
+        <main class="page">{% block s1 %}{% endblock %}</main>
+    </div>
+</div>
+<script>
+const cur = window.location.pathname;
+document.querySelectorAll('.sb-link').forEach(a => {
+    if(a.getAttribute('href') === cur) a.classList.add('active');
+});
+</script>
+</body>
 </html>

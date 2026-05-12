@@ -1,16 +1,68 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block active_coursereg %}active{% endblock %}
+{% block page_title %}Add Course{% endblock %}
+{% block page_sub %}Register a new course in the system{% endblock %}
+
 {% block m1 %}
-<h1>Course registration</h1>
-<form method="post" action="http://127.0.0.1:8000/course_reg/">
-    {% csrf_token %}
-    <p>Course Name:<input type="text" name="t1"/></p>
-    <p>Duration:<input type="text" name="t2"/></p>
-    <p>Remark:<input type="text" name="t3"/></p>
-    <button type="submit">Add Course</button>
-</form>
 
 {% if msg %}
-    <h4>{{msg}}</h4>
+<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/allcourses/" style="color:var(--green);font-weight:700">View All Courses</a></div>
 {% endif %}
+
+<div style="max-width:600px">
+    <div class="card">
+        <div class="card-title">📚 New Course</div>
+        <p style="font-size:.88rem;color:var(--tx-3);margin-bottom:1.5rem">Fill in the course details below.</p>
+
+        <form method="post" action="/course_reg/" onsubmit="return validateCourse()">
+            {% csrf_token %}
+
+            <div style="display:flex;flex-direction:column;gap:1.1rem">
+                <div class="field">
+                    <label>Course Name <span style="color:var(--red)">*</span></label>
+                    <input type="text" name="t1" id="t1" placeholder="e.g. Bachelor of Computer Applications"/>
+                    <span id="er1" style="font-size:.75rem;color:var(--red)"></span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Duration <span style="color:var(--red)">*</span></label>
+                        <input type="text" name="t2" id="t2" placeholder="e.g. 3 Years"/>
+                        <span id="er2" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field">
+                        <label>Fee (₹)</label>
+                        <input type="text" name="t4" placeholder="e.g. 50000"/>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Remarks / Description</label>
+                    <textarea name="t3" rows="3" placeholder="Brief description of the course..." style="resize:vertical"></textarea>
+                </div>
+
+                <div style="display:flex;gap:.75rem;padding-top:.25rem">
+                    <button type="submit" class="btn btn-primary">📚 Add Course</button>
+                    <button type="reset" class="btn btn-outline">↺ Clear</button>
+                    <a href="/allcourses/" class="btn btn-outline">← All Courses</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function validateCourse() {
+    document.getElementById('er1').innerHTML = '';
+    document.getElementById('er2').innerHTML = '';
+    const t1 = document.getElementById('t1');
+    const t2 = document.getElementById('t2');
+    if(!t1.value.trim()) { document.getElementById('er1').innerHTML = '⚠ Required'; t1.focus(); return false; }
+    if(!t2.value.trim()) { document.getElementById('er2').innerHTML = '⚠ Required'; t2.focus(); return false; }
+    return true;
+}
+</script>
+
 {% endblock %}

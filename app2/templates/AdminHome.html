@@ -1,52 +1,120 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block active_home %}active{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block page_sub %}Manage your admin profile and account settings{% endblock %}
+
 {% block m1 %}
-{% if data1 %}
-    {% for d in data1 %}
-        <img src="../media/{{d.photo}}" width="100" height="100" style="border-radius:50%;width:150px;height:150px;" />
-        <form method="post" action="http://127.0.0.1:8000/chngephoto/" >
-            {% csrf_token %}
-            <input type="hidden" name="C1" value="{{d.photo}}" />
-            <button>Change Photo</button>
-        </form>
 
-        <form method="post" action="http://127.0.0.1:8000/deletephoto/" >
-            {% csrf_token %}
-            <input type="hidden" name="C1" value="{{d.photo}}" />
-            <button>Delete Photo</button>
-        </form>
-    {% endfor %}
-{% else %}
-    <p>
-        <a href="http://127.0.0.1:8000/uploadphoto/">Upload Photo</a>
-    </p>
+{% if result %}
+<div class="alert alert-success"><span>✅</span> Profile updated successfully. <a href="/admin_home/" style="color:var(--green);font-weight:700">Continue</a></div>
+{% endif %}
+{% if msg %}
+<div class="alert alert-error"><span>⚠️</span> {{ msg }}</div>
 {% endif %}
 
-{% if data %}
-    {% for d in data %}
-        <h1>{{d.name}}</h1>
-        <p>
-            Address : {{d.address}} <br/>
-            Email : {{d.email}} <br/>
-            Contact : {{d.contact}}
-        </p>
-        <form method="post" action="http://127.0.0.1:8000/editadminprofile/">
-        {% csrf_token %}
-            <input type="hidden" name="E1" value="{{d.email}}">
-            <button type="submit">Edit</button>
-        </form>
+<div style="display:grid;grid-template-columns:280px 1fr;gap:1.5rem;align-items:start">
 
-        <form method="post" action="http://127.0.0.1:8000/admin_pass_change/">
-            {% csrf_token %}
-            <input type="hidden" name="E1" value="{{d.email}}">
-            <button type="submit">Change Password</button>
-        </form>
-    {% endfor %}
-{% elif result %}
-    <h2>DATA SAVED</h2>
-    <p href="http://127.0.0.1:8000/admin_home/"><a>CONTINUE</a></p>
-{% elif msg %}
-    <h3>{{msg}}</h3>
-{% endif %}
+    <!-- Profile Card -->
+    <div style="display:flex;flex-direction:column;gap:1.1rem">
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            <div class="profile-body">
+                <div class="profile-photo">
+                    {% if data1 %}{% for d in data1 %}<img src="/media/{{d.photo}}" alt="Photo"/>{% endfor %}
+                    {% else %}👤{% endif %}
+                </div>
+                {% if data %}{% for d in data %}
+                <div class="profile-name">{{ d.name }}</div>
+                <div class="profile-tag">Admin</div>
+                <div class="profile-rows">
+                    <div class="profile-row"><span class="profile-row-ico">📧</span>{{ d.email }}</div>
+                    <div class="profile-row"><span class="profile-row-ico">📞</span>{{ d.contact }}</div>
+                    <div class="profile-row"><span class="profile-row-ico">📍</span>{{ d.address }}</div>
+                </div>
+                {% endfor %}{% endif %}
+
+                <!-- Photo buttons -->
+                {% if data1 %}
+                    {% for d in data1 %}
+                    <div style="display:flex;gap:.5rem">
+                        <form method="post" action="/chngephoto/" style="margin:0">
+                            {% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/>
+                            <button class="btn btn-outline btn-sm">📷 Change</button>
+                        </form>
+                        <form method="post" action="/deletephoto/" style="margin:0">
+                            {% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/>
+                            <button class="btn btn-danger btn-sm">🗑️</button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <a href="/uploadphoto/" class="btn btn-outline btn-sm">📷 Upload Photo</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="card">
+            <div class="card-title">🚀 Quick Links</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+                <a href="/allstudentsAD/" class="btn btn-outline" style="justify-content:center">👥 Students</a>
+                <a href="/allteachers/" class="btn btn-outline" style="justify-content:center">🧑‍🏫 Teachers</a>
+                <a href="/allcourses/" class="btn btn-outline" style="justify-content:center">📖 Courses</a>
+                <a href="/teaching_assignments/" class="btn btn-outline" style="justify-content:center">📋 Assignments</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Side -->
+    <div style="display:flex;flex-direction:column;gap:1.1rem">
+        {% if data %}{% for d in data %}
+
+        <!-- Details -->
+        <div class="card">
+            <div class="card-title">📋 Profile Details</div>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Full Name</div>
+                    <div class="detail-val">{{ d.name }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-val">{{ d.email }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Contact</div>
+                    <div class="detail-val">{{ d.contact }}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Role</div>
+                    <div class="detail-val"><span class="badge badge-navy">Admin</span></div>
+                </div>
+                <div class="detail-item" style="grid-column:1/-1">
+                    <div class="detail-label">Address</div>
+                    <div class="detail-val">{{ d.address }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="card">
+            <div class="card-title">⚙️ Account Actions</div>
+            <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+                <form method="post" action="/editadminprofile/" style="margin:0">
+                    {% csrf_token %}<input type="hidden" name="E1" value="{{d.email}}"/>
+                    <button class="btn btn-primary">✏️ Edit Profile</button>
+                </form>
+                <form method="post" action="/admin_pass_change/" style="margin:0">
+                    {% csrf_token %}<input type="hidden" name="E1" value="{{d.email}}"/>
+                    <button class="btn btn-outline">🔒 Change Password</button>
+                </form>
+            </div>
+        </div>
+
+        {% endfor %}{% endif %}
+    </div>
+</div>
 
 {% endblock %}

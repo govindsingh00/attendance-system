@@ -1,25 +1,107 @@
 {% extends "StudentDash.html" %}
-{% block s1 %}
-<h1>Attendance</h1>
-<p>Overall attendance: <strong>{{ overall_pct }}%</strong> ({{ total_present }} present of {{ total_sessions }} recorded sessions).</p>
+{% load static %}
 
-<h2>Course-wise</h2>
-{% if rows %}
-<table class="table table-bordered table-sm" style="max-width:640px;">
-    <thead><tr><th>Course</th><th>Sessions</th><th>Present</th><th>%</th></tr></thead>
-    <tbody>
-    {% for r in rows %}
-    <tr>
-        <td>{{ r.name }}</td>
-        <td>{{ r.total }}</td>
-        <td>{{ r.present }}</td>
-        <td>{{ r.pct }}%</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-{% else %}
-<p>No attendance records yet.</p>
+{% block active_attendance %}active{% endblock %}
+{% block page_title %}My Attendance{% endblock %}
+{% block page_sub %}Track your attendance across all courses{% endblock %}
+
+{% block s1 %}
+
+<!-- Overall Stats -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem;margin-bottom:1.5rem">
+    <div class="card" style="text-align:center;padding:1.5rem">
+        <div style="font-size:1.4rem;margin-bottom:.4rem">📊</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:2rem;font-weight:800;
+            color:{% if overall_pct >= 75 %}var(--green){% elif overall_pct >= 60 %}var(--amber){% else %}var(--red){% endif %}">
+            {{ overall_pct }}%
+        </div>
+        <div style="font-size:.8rem;color:var(--tx-3);font-weight:500;margin-top:.2rem">Overall Attendance</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1.5rem">
+        <div style="font-size:1.4rem;margin-bottom:.4rem">✅</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:2rem;font-weight:800;color:var(--green)">{{ total_present }}</div>
+        <div style="font-size:.8rem;color:var(--tx-3);font-weight:500;margin-top:.2rem">Classes Present</div>
+    </div>
+    <div class="card" style="text-align:center;padding:1.5rem">
+        <div style="font-size:1.4rem;margin-bottom:.4rem">📅</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:2rem;font-weight:800;color:var(--blue)">{{ total_sessions }}</div>
+        <div style="font-size:.8rem;color:var(--tx-3);font-weight:500;margin-top:.2rem">Total Sessions</div>
+    </div>
+</div>
+
+<!-- Status banner -->
+{% if overall_pct >= 75 %}
+<div class="alert alert-success" style="margin-bottom:1.5rem">
+    <span>✅</span> Your attendance is good. Keep it up!
+</div>
+{% elif overall_pct >= 60 %}
+<div class="alert alert-warning" style="margin-bottom:1.5rem">
+    <span>⚠️</span> Your attendance is below 75%. Try to attend more classes.
+</div>
+{% elif total_sessions > 0 %}
+<div class="alert alert-error" style="margin-bottom:1.5rem">
+    <span>🚨</span> Your attendance is critically low. Please attend classes regularly.
+</div>
 {% endif %}
-<p><a href="/student_home/">Back to home</a></p>
+
+<!-- Course-wise breakdown -->
+<div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+        <div class="card-title" style="margin:0">📚 Course-wise Breakdown</div>
+        {% if rows %}
+        <span class="badge badge-blue">{{ rows|length }} courses</span>
+        {% endif %}
+    </div>
+
+    {% if rows %}
+    <div class="table-wrap" style="border:none;border-radius:0">
+        <table>
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Total Sessions</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>Attendance %</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in rows %}
+            <tr>
+                <td style="font-weight:600;color:var(--tx-1)">{{ r.name }}</td>
+                <td style="color:var(--tx-3)">{{ r.total }}</td>
+                <td><span style="color:var(--green);font-weight:600">{{ r.present }}</span></td>
+                <td><span style="color:var(--red);font-weight:600">{{ r.total|add:r.present|add:"-"|add:r.present }}</span>{{ r.total|add:"-"|add:r.present }}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:.6rem">
+                        <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+                            <div style="height:100%;width:{{ r.pct }}%;background:{% if r.pct >= 75 %}var(--green){% elif r.pct >= 60 %}var(--amber){% else %}var(--red){% endif %};border-radius:3px;transition:width .5s"></div>
+                        </div>
+                        <span style="font-size:.82rem;font-weight:700;color:{% if r.pct >= 75 %}var(--green){% elif r.pct >= 60 %}var(--amber){% else %}var(--red){% endif %}">{{ r.pct }}%</span>
+                    </div>
+                </td>
+                <td>
+                    {% if r.pct >= 75 %}
+                    <span class="badge badge-green">Good</span>
+                    {% elif r.pct >= 60 %}
+                    <span class="badge badge-amber">Low</span>
+                    {% else %}
+                    <span class="badge badge-red">Critical</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:3rem;color:var(--tx-4)">
+        <div style="font-size:2.5rem;margin-bottom:.75rem">📅</div>
+        <div style="font-weight:600;margin-bottom:.3rem">No attendance records yet</div>
+        <div style="font-size:.85rem">Your attendance will appear here once classes begin.</div>
+    </div>
+    {% endif %}
+</div>
+
 {% endblock %}

@@ -1,92 +1,200 @@
 {% extends "TeacherDash.html" %}
 {% load static %}
+
+{% block nav_manual %}active{% endblock %}
+{% block page_title %}Mark Attendance{% endblock %}
+{% block page_sub %}Select class and mark student attendance{% endblock %}
+
 {% block m1 %}
-<h1>Mark attendance</h1>
+
 {% if not has_teaching_assignments %}
-<div class="alert alert-warning" role="alert">
-    <strong>No classes assigned to you yet.</strong> An admin must open <strong>Teaching assignments</strong> (from the admin dashboard) and add one row per class: your name, course, section, and time slot. Until then, the dropdowns below stay empty.
+<div class="alert" style="background:#fef3c7;color:#92400e;border:1px solid rgba(217,119,6,.15);padding:1rem 1.25rem;border-radius:10px;margin-bottom:1.5rem;display:flex;align-items:flex-start;gap:.75rem">
+    <span style="font-size:1.2rem">⚠️</span>
+    <div>
+        <div style="font-weight:700;margin-bottom:.2rem">No classes assigned yet</div>
+        <div style="font-size:.88rem;opacity:.85">An admin must open <strong>Teaching Assignments</strong> and add your classes before you can mark attendance.</div>
+    </div>
 </div>
-{% endif %}
-<p>Select section, course, and time slot, then load the class list. Set Present or Absent for each student and save.</p>
-<p class="text-muted small"><strong>How it works:</strong> (1) Section → <em>Apply selection</em>. (2) Course → <em>Apply selection</em>. (3) Only <strong>time slots from your teaching assignments</strong> for that section and course appear — not the full timetable. (4) Time slot → <em>Apply selection</em> to load students.</p>
-{% if section and selected_course and not time_slots %}
-<p class="text-warning small"><strong>Note:</strong> No time slots are assigned to you for this section and course. Ask an admin to add them on the Teaching assignments page.</p>
 {% endif %}
 
 {% if error %}
-<p style="color:#b00020;"><strong>{{ error }}</strong></p>
+<div class="alert alert-error">⚠️ {{ error }}</div>
 {% endif %}
+
 {% if msg %}
-<p style="color:#0d6efd;"><strong>{{ msg }}</strong></p>
+<div class="alert alert-success">✅ {{ msg }}</div>
 {% endif %}
 
-<form method="get" action="/mark_attendance/">
-    <p>
-        <label>Section</label><br/>
-        <select name="section" required>
-            <option value="">—</option>
-            {% for s in sections %}
-            <option value="{{ s }}" {% if section == s %}selected{% endif %}>{{ s }}</option>
-            {% endfor %}
-        </select>
-    </p>
-    <p>
-        <label>Course / subject</label><br/>
-        <select name="cid">
-            <option value="">—</option>
-            {% for c in courses_for_section %}
-            <option value="{{ c.cid }}" {% if selected_course and selected_course.cid == c.cid %}selected{% endif %}>{{ c.crname }}</option>
-            {% endfor %}
-        </select>
-    </p>
-    <p>
-        <label>Time slot</label><br/>
-        <select name="time_slot">
-            <option value="">—</option>
-            {% for code,label in time_slots %}
-            <option value="{{ code }}" {% if time_slot == code %}selected{% endif %}>{{ label }} ({{ code }})</option>
-            {% endfor %}
-        </select>
-    </p>
-    <button type="submit">Apply selection</button>
-</form>
+<div style="display:grid;grid-template-columns:340px 1fr;gap:1.5rem;align-items:start">
 
-{% if student_rows %}
-<hr/>
-<form method="post" action="/mark_attendance/">
-    {% csrf_token %}
-    <input type="hidden" name="action" value="save" />
-    <input type="hidden" name="section" value="{{ section }}" />
-    <input type="hidden" name="cid" value="{{ selected_course.cid }}" />
-    <input type="hidden" name="time_slot" value="{{ time_slot }}" />
+    <!-- LEFT — Filter Card -->
+    <div style="display:flex;flex-direction:column;gap:1.25rem">
+        <div class="card">
+            <div class="card-title">🎯 Select Class</div>
+            <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:1.25rem;line-height:1.6">Choose section, course, and time slot to load the student list.</p>
 
-    <table class="table table-bordered table-sm" style="max-width:720px;">
-        <thead><tr><th>Student</th><th>Attendance</th></tr></thead>
-        <tbody>
-        {% for row in student_rows %}
-        <tr>
-            <td>{{ row.st.stname }}</td>
-            <td>
-                <label><input type="radio" name="status_{{ row.st.stid }}" value="Present" {% if row.status == 'Present' %}checked{% endif %}/> Present</label>
-                <label><input type="radio" name="status_{{ row.st.stid }}" value="Absent" {% if row.status != 'Present' %}checked{% endif %}/> Absent</label>
-            </td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            <form method="get" action="/mark_attendance/">
+                <div style="display:flex;flex-direction:column;gap:1rem">
 
-    <p>
-        <button type="submit" class="btn btn-primary">Save attendance</button>
-    </p>
-</form>
+                    <div style="display:flex;flex-direction:column;gap:.4rem">
+                        <label style="font-size:.82rem;font-weight:600;color:var(--gray-700)">Section</label>
+                        <select name="section" required style="padding:.75rem 1rem;background:var(--off-white);border:1.5px solid var(--gray-100);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--gray-900);outline:none;cursor:pointer;transition:border-color .2s">
+                            <option value="">— Select Section —</option>
+                            {% for s in sections %}
+                            <option value="{{ s }}" {% if section == s %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-<p>
-    <a class="btn btn-outline-secondary" href="/mark_attendance/face/?section={{ section|urlencode }}&amp;cid={{ selected_course.cid }}&amp;time_slot={{ time_slot|urlencode }}">Take attendance (face verification)</a>
-</p>
-<p class="text-muted small">Face authentication will be connected to this step in a later release.</p>
-{% elif section and selected_course and time_slot and not error %}
-<p>No students found for this section and course. Ensure students have the correct section and are enrolled in this course.</p>
-{% endif %}
+                    <div style="display:flex;flex-direction:column;gap:.4rem">
+                        <label style="font-size:.82rem;font-weight:600;color:var(--gray-700)">Course / Subject</label>
+                        <select name="cid" style="padding:.75rem 1rem;background:var(--off-white);border:1.5px solid var(--gray-100);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--gray-900);outline:none;cursor:pointer;transition:border-color .2s">
+                            <option value="">— Select Course —</option>
+                            {% for c in courses_for_section %}
+                            <option value="{{ c.cid }}" {% if selected_course and selected_course.cid == c.cid %}selected{% endif %}>{{ c.crname }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-<p><a href="/teacher_home/">Back to dashboard</a></p>
+                    <div style="display:flex;flex-direction:column;gap:.4rem">
+                        <label style="font-size:.82rem;font-weight:600;color:var(--gray-700)">Time Slot</label>
+                        <select name="time_slot" style="padding:.75rem 1rem;background:var(--off-white);border:1.5px solid var(--gray-100);border-radius:10px;font-family:'Outfit',sans-serif;font-size:.9rem;color:var(--gray-900);outline:none;cursor:pointer;transition:border-color .2s">
+                            <option value="">— Select Time Slot —</option>
+                            {% for code,label in time_slots %}
+                            <option value="{{ code }}" {% if time_slot == code %}selected{% endif %}>{{ label }} ({{ code }})</option>
+                            {% endfor %}
+                        </select>
+                        {% if section and selected_course and not time_slots %}
+                        <p style="font-size:.78rem;color:var(--amber);margin-top:.3rem">⚠️ No time slots assigned for this section and course.</p>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-green" style="width:100%;justify-content:center;margin-top:.25rem">
+                        Apply Selection →
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Face Attendance shortcut -->
+        {% if section and selected_course and time_slot %}
+        <div class="card" style="background:linear-gradient(135deg,#064e3b,#065f46);border:none">
+            <div style="color:#fff">
+                <div style="font-size:1.5rem;margin-bottom:.5rem">🧠</div>
+                <div style="font-family:'Poppins',sans-serif;font-weight:700;margin-bottom:.35rem">Face Attendance</div>
+                <div style="font-size:.85rem;opacity:.8;margin-bottom:1rem">Switch to AI-powered face recognition for this class.</div>
+                <a href="/mark_attendance/face/?section={{ section|urlencode }}&cid={{ selected_course.cid }}&time_slot={{ time_slot|urlencode }}"
+                   style="display:inline-flex;align-items:center;gap:.4rem;padding:.6rem 1.25rem;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:8px;color:#fff;font-size:.85rem;font-weight:600;text-decoration:none;transition:all .2s">
+                    Start Face Attendance →
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <a href="/teacher_home/" class="btn btn-outline" style="justify-content:center">← Back to Dashboard</a>
+    </div>
+
+    <!-- RIGHT — Student List -->
+    <div>
+        {% if student_rows %}
+        <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:1rem">
+                <div class="card-title" style="margin-bottom:0">
+                    👥 Student List
+                    <span class="badge badge-blue" style="margin-left:.5rem">{{ student_rows|length }} students</span>
+                </div>
+                <div style="display:flex;gap:.5rem">
+                    <span style="font-size:.82rem;color:var(--gray-500)">
+                        📚 {{ selected_course.crname }} &nbsp;·&nbsp; 🕐 {{ time_slot }} &nbsp;·&nbsp; 🏫 {{ section }}
+                    </span>
+                </div>
+            </div>
+
+            <form method="post" action="/mark_attendance/">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save"/>
+                <input type="hidden" name="section" value="{{ section }}"/>
+                <input type="hidden" name="cid" value="{{ selected_course.cid }}"/>
+                <input type="hidden" name="time_slot" value="{{ time_slot }}"/>
+
+                <!-- Mark All buttons -->
+                <div style="display:flex;gap:.5rem;margin-bottom:1rem">
+                    <button type="button" onclick="markAll('Present')" class="btn btn-sm" style="background:var(--green-bg);color:var(--green);border:1px solid rgba(22,163,74,.2)">✅ Mark All Present</button>
+                    <button type="button" onclick="markAll('Absent')" class="btn btn-sm" style="background:var(--red-bg);color:var(--red);border:1px solid rgba(220,38,38,.2)">❌ Mark All Absent</button>
+                </div>
+
+                <div style="overflow-x:auto">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width:50px">#</th>
+                                <th>Student Name</th>
+                                <th>Student ID</th>
+                                <th>Attendance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for row in student_rows %}
+                        <tr>
+                            <td style="color:var(--gray-400);font-size:.85rem">{{ forloop.counter }}</td>
+                            <td style="font-weight:600">{{ row.st.stname }}</td>
+                            <td><span class="badge badge-blue">{{ row.st.stid }}</span></td>
+                            <td>
+                                <div style="display:flex;gap:.75rem;align-items:center">
+                                    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--green)">
+                                        <input type="radio" name="status_{{ row.st.stid }}" value="Present"
+                                               {% if row.status == 'Present' %}checked{% endif %}
+                                               style="accent-color:var(--green)"/>
+                                        Present
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.88rem;font-weight:500;color:var(--red)">
+                                        <input type="radio" name="status_{{ row.st.stid }}" value="Absent"
+                                               {% if row.status != 'Present' %}checked{% endif %}
+                                               style="accent-color:var(--red)"/>
+                                        Absent
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--gray-100);display:flex;gap:.75rem">
+                    <button type="submit" class="btn btn-green">💾 Save Attendance</button>
+                    <a href="/mark_attendance/" class="btn btn-outline">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        {% elif section and selected_course and time_slot and not error %}
+        <div class="card" style="text-align:center;padding:3rem">
+            <div style="font-size:3rem;margin-bottom:1rem">👥</div>
+            <div style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.5rem">No Students Found</div>
+            <div style="font-size:.9rem;color:var(--gray-500)">No students found for this section and course.<br>Make sure students have the correct section and are enrolled.</div>
+        </div>
+
+        {% else %}
+        <div class="card" style="text-align:center;padding:3rem">
+            <div style="font-size:3rem;margin-bottom:1rem">📋</div>
+            <div style="font-family:'Poppins',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:.5rem">Select a Class</div>
+            <div style="font-size:.9rem;color:var(--gray-500)">Choose section, course, and time slot on the left<br>to load the student list.</div>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+function markAll(status) {
+    document.querySelectorAll(`input[type="radio"][value="${status}"]`).forEach(r => r.checked = true);
+}
+// Style select focus
+document.querySelectorAll('select').forEach(s => {
+    s.addEventListener('focus', () => s.style.borderColor = 'var(--blue)');
+    s.addEventListener('blur', () => s.style.borderColor = 'var(--gray-100)');
+});
+</script>
+
 {% endblock %}

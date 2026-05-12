@@ -1,113 +1,34 @@
-{% extends "AccountantDash.html" %}
+{% extends "AdminDash.html" %}
 {% load static %}
 
+{% block page_title %}Delete Student Photo{% endblock %}
+{% block page_sub %}Remove student profile photo{% endblock %}
+
 {% block m1 %}
-<style>
-    /* Container Styling */
-    .delete-container {
-        padding: 60px 20px;
-        background-color: #fff5f5; /* Soft red background */
-        min-height: 85vh;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-    }
-
-    /* Warning Card */
-    .delete-card {
-        background: #ffffff;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(220, 38, 38, 0.1);
-        padding: 40px;
-        width: 100%;
-        max-width: 400px;
-        text-align: center;
-        border-top: 6px solid #dc2626; /* Danger Red Accent */
-    }
-
-    .warning-icon {
-        font-size: 50px;
-        color: #dc2626;
-        margin-bottom: 15px;
-        display: block;
-    }
-
-    .delete-card h2 {
-        font-weight: 800;
-        color: #1f2937;
-        margin-bottom: 10px;
-    }
-
-    .delete-card p {
-        color: #6b7280;
-        font-size: 0.95rem;
-        margin-bottom: 25px;
-        line-height: 1.5;
-    }
-
-    /* Current Photo Preview */
-    .preview-wrapper {
-        margin-bottom: 30px;
-        position: relative;
-    }
-
-    .student-old-photo {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%; /* Rounded Look */
-        object-fit: cover;
-        border: 4px solid #fee2e2;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .label-danger-tag {
-        display: block;
-        font-size: 0.75rem;
-        font-weight: 800;
-        color: #dc2626;
-        text-transform: uppercase;
-        margin-bottom: 12px;
-        letter-spacing: 1px;
-    }
-
-    /* Action Button */
-    .btn-confirm-delete {
-        background: #dc2626;
-        color: white;
-        border: none;
-        padding: 14px 30px;
-        border-radius: 12px;
-        font-weight: 700;
-        width: 100%;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
-    }
-
-    .btn-confirm-delete:hover {
-        background: #b91c1c;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
-    }
-
-    .btn-cancel {
-        display: block;
-        margin-top: 15px;
-        color: #6b7280;
-        text-decoration: none;
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-
-    .btn-cancel:hover {
-        color: #111827;
-        text-decoration: underline;
-    }
-</style>
-
-<div class="delete-container">
-    <div class="delete-card">
-        <span class="warning-icon">⚠️</span>
-        <h2>Confirm Delete</h2>
-        <p>
+<div style="max-width:420px">
+    <div class="alert alert-error" style="margin-bottom:1.25rem">
+        <span>⚠️</span>
+        <div><div style="font-weight:700">This will permanently remove the student's profile photo.</div></div>
+    </div>
+    <div class="card">
+        <div class="card-title">🗑️ Delete Student Photo</div>
+        {% if data %}{% for d in data %}
+        <form method="post" action="/studentdeletephoto1/">
+            {% csrf_token %}
+            <input type="hidden" name="IMG1" value="{{ d.photo }}"/>
+            <input type="hidden" name="E1" value="{{ d.email }}"/>
+            <div style="text-align:center;margin-bottom:1.5rem">
+                <div style="width:100px;height:100px;border-radius:50%;overflow:hidden;margin:0 auto;border:4px solid var(--red-bg);box-shadow:var(--sh-md)">
+                    <img src="/media/{{ d.photo }}" style="width:100%;height:100%;object-fit:cover" alt="Photo"/>
+                </div>
+            </div>
+            <div style="display:flex;gap:.75rem">
+                <button type="submit" class="btn" style="background:var(--red);color:#fff;border:none;flex:1;justify-content:center;padding:.6rem 1rem;border-radius:8px;font-weight:600"
+                        onclick="return confirm('Delete this photo permanently?')">🗑️ Confirm Delete</button>
+                <a href="javascript:history.back()" class="btn btn-outline">← Cancel</a>
+            </div>
+        </form>
+        {% endfor %}{% endif %}
+    </div>
+</div>
+{% endblock %}

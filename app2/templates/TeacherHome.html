@@ -1,70 +1,143 @@
 {% extends "TeacherDash.html" %}
 {% load static %}
+
+{% block active_home %}active{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_sub %}Welcome back — your assigned classes are below{% endblock %}
+
 {% block m1 %}
 
-<p><a class="btn btn-primary" href="/mark_attendance/">Mark attendance</a></p>
-
-<!-- ✅ PHOTO SECTION -->
-{% if data1 %}
-    {% for d in data1 %}
-        <img src="/media/{{d.photo}}" width="100" height="100"
-             style="border-radius:50%;width:150px;height:150px;" alt="Profile" />
-
-        <form method="post" action="/chngephoto/">
-            {% csrf_token %}
-            <input type="hidden" name="C1" value="{{d.photo}}" />
-            <button>Change Photo</button>
-        </form>
-
-        <form method="post" action="/deletephoto/">
-            {% csrf_token %}
-            <input type="hidden" name="C1" value="{{d.photo}}" />
-            <button>Delete Photo</button>
-        </form>
-    {% endfor %}
-{% else %}
-    <p>
-        <a href="/uploadphoto/">Upload photo</a>
-    </p>
+{% if msg %}
+<div class="alert alert-error"><span>⚠️</span> {{ msg }}</div>
 {% endif %}
 
-<hr>
+<div style="display:grid;grid-template-columns:1fr 300px;gap:1.5rem;align-items:start">
 
-<!-- ✅ TEACHER DATA -->
-{% if data %}
-    {% for d in data %}
-        <h1>{{d.name}}</h1>
+    <!-- LEFT — Assigned Classes -->
+    <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+            <div style="font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;color:var(--tx-1)">
+                📋 My Assigned Classes
+            </div>
+            {% if assignments %}
+            <span class="badge badge-green">{{ assignments|length }} classes</span>
+            {% endif %}
+        </div>
 
-        <p>
-            Address : {{d.address}} <br/>
-            Email : {{d.email}} <br/>
-            Contact : {{d.phone}} <br/>
-            Course ID : {{d.crid}}
-        </p>
+        {% if assignments %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.1rem">
+            {% for item in assignments %}
+            {% with a=item.assignment %}
+            <div class="card" style="position:relative;overflow:hidden;transition:all .3s"
+                 onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='0 12px 30px rgba(0,0,0,.1)'"
+                 onmouseout="this.style.transform='';this.style.boxShadow=''">
 
-        <!-- ✅ EDIT PROFILE -->
-        <form method="post" action="/editteacherprofile/">
-            {% csrf_token %}
-            <input type="hidden" name="E1" value="{{d.email}}">
-            <button type="submit">Edit</button>
-        </form>
+                <!-- Top accent -->
+                <div style="position:absolute;top:0;left:0;right:0;height:4px;background:{% if item.has_attendance %}linear-gradient(90deg,#065f46,#16a34a){% else %}linear-gradient(90deg,var(--navy),var(--blue)){% endif %}"></div>
 
-        <!-- ✅ CHANGE PASSWORD -->
-        <form method="post" action="/teacher_pass_change/">
-            {% csrf_token %}
-            <input type="hidden" name="E1" value="{{d.email}}">
-            <button type="submit">Change Password</button>
-        </form>
+                <div style="padding-top:.35rem">
+                    <!-- Course name + status badge -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+                        <div style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;color:var(--tx-1)">
+                            {{ a.course.crname }}
+                        </div>
+                        {% if item.has_attendance %}
+                        <span class="badge badge-green" style="font-size:.68rem">✅ Done</span>
+                        {% else %}
+                        <span class="badge badge-navy" style="font-size:.68rem">Pending</span>
+                        {% endif %}
+                    </div>
 
-    {% endfor %}
+                    <!-- Details -->
+                    <div style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem">
+                        <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--tx-3)">
+                            <span>🏫</span><span>Section: <strong style="color:var(--tx-1)">{{ a.section }}</strong></span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--tx-3)">
+                            <span>🕐</span><span>Slot: <strong style="color:var(--tx-1)">
+                                {% for code, label in time_slots %}
+                                    {% if code == a.time_slot %}{{ label }}{% endif %}
+                                {% endfor %}
+                            </strong></span>
+                        </div>
+                        {% if a.subject %}
+                        <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem;color:var(--tx-3)">
+                            <span>📖</span><span>{{ a.subject }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
 
-{% elif result %}
-    <h2>DATA SAVED</h2>
-    <p><a href="/teacher_home/">Continue</a></p>
+                    <!-- Buttons -->
+                    <div style="display:flex;flex-direction:column;gap:.5rem">
+                        <a href="/mark_attendance/face/?section={{ a.section|urlencode }}&cid={{ a.course.cid }}&time_slot={{ a.time_slot|urlencode }}"
+                           class="btn {% if item.has_attendance %}btn-outline{% else %}btn-green{% endif %}" style="width:100%;justify-content:center">
+                            🧠 {% if item.has_attendance %}Re-take Attendance{% else %}Start Face Attendance{% endif %}
+                        </a>
+                        {% if item.has_attendance %}
+                        <a href="/download_attendance/?section={{ a.section|urlencode }}&cid={{ a.course.cid }}&time_slot={{ a.time_slot|urlencode }}&date={{ today }}"
+                           class="btn btn-outline" style="width:100%;justify-content:center">
+                            📥 Download Sheet
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
 
-{% elif msg %}
-    <h3>{{msg}}</h3>
+        {% else %}
+        <div class="card" style="text-align:center;padding:3rem">
+            <div style="font-size:2.5rem;margin-bottom:.75rem">📋</div>
+            <div style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.4rem">No Classes Assigned</div>
+            <div style="font-size:.88rem;color:var(--tx-3)">Ask your admin to assign classes to you from Teaching Assignments.</div>
+        </div>
+        {% endif %}
+    </div>
 
-{% endif %}
+    <!-- RIGHT — Profile Card -->
+    <div style="display:flex;flex-direction:column;gap:1.1rem">
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            <div class="profile-body">
+                <div class="profile-photo">
+                    {% if data1 %}{% for d in data1 %}<img src="/media/{{d.photo}}" alt="Photo"/>{% endfor %}
+                    {% else %}👤{% endif %}
+                </div>
+                {% if data %}{% for d in data %}
+                <div class="profile-name">{{ d.name }}</div>
+                <div class="profile-tag">Teacher</div>
+                <div class="profile-rows">
+                    <div class="profile-row"><span>📧</span>{{ d.email }}</div>
+                    <div class="profile-row"><span>📞</span>{{ d.phone }}</div>
+                </div>
+                {% endfor %}{% endif %}
+
+                {% if data1 %}{% for d in data1 %}
+                <div style="display:flex;gap:.5rem">
+                    <form method="post" action="/chngephoto/" style="margin:0">
+                        {% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/>
+                        <button class="btn btn-outline btn-sm">📷 Change</button>
+                    </form>
+                    <form method="post" action="/deletephoto/" style="margin:0">
+                        {% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/>
+                        <button class="btn btn-danger btn-sm">🗑️</button>
+                    </form>
+                </div>
+                {% endfor %}
+                {% else %}<a href="/uploadphoto/" class="btn btn-outline btn-sm">📷 Upload Photo</a>{% endif %}
+            </div>
+        </div>
+
+        <!-- Quick links -->
+        <div class="card">
+            <div class="card-title">⚙️ Account</div>
+            <div style="display:flex;flex-direction:column;gap:.5rem">
+                <a href="/editteacherprofile/" class="btn btn-outline" style="justify-content:center">✏️ Edit Profile</a>
+                <a href="/teacher_pass_change/" class="btn btn-outline" style="justify-content:center">🔒 Change Password</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

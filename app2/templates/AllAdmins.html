@@ -1,162 +1,58 @@
 {% extends "AdminDash.html" %}
 {% load static %}
 
+{% block active_admins %}active{% endblock %}
+{% block page_title %}All Admins{% endblock %}
+{% block page_sub %}System administrators{% endblock %}
+
 {% block m1 %}
-<style>
-    /* Page background and container */
-    .admin-display-section {
-        padding: 30px;
-        background: #f4f7f9;
-        border-radius: 20px;
-    }
 
-    .admin-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 25px;
-        justify-content: center;
-    }
-
-    /* Modern Admin Card Design */
-    .admin-card {
-        background: #ffffff;
-        border-radius: 15px;
-        padding: 25px;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-        border: 1px solid #edf2f7;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .admin-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 25px rgba(0,0,0,0.1);
-        border-color: #1a73e8;
-    }
-
-    /* Profile Image Styling */
-    .profile-wrapper {
-        width: 110px;
-        height: 110px;
-        margin: 0 auto 15px;
-        position: relative;
-    }
-
-    .admin-avatar {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 4px solid #fff;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        background: #f0f0f0;
-    }
-
-    .status-dot {
-        position: absolute;
-        bottom: 5px;
-        right: 5px;
-        width: 15px;
-        height: 15px;
-        background: #10b981; /* Green status */
-        border: 3px solid #fff;
-        border-radius: 50%;
-    }
-
-    /* Text Styling */
-    .admin-name {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #1a1a2e;
-        margin-bottom: 5px;
-    }
-
-    .admin-role {
-        font-size: 0.85rem;
-        color: #1a73e8;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 15px;
-        display: block;
-    }
-
-    .admin-details {
-        text-align: left;
-        background: #f8fafc;
-        padding: 12px;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        color: #4b5563;
-    }
-
-    .detail-item {
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .detail-item strong {
-        color: #1a1a2e;
-        min-width: 65px;
-    }
-
-    /* Message Styling */
-    .no-data-msg {
-        text-align: center;
-        padding: 50px;
-        color: #6b7280;
-    }
-</style>
-
-<div class="admin-display-section">
-    <h2 class="mb-4" style="font-weight: 800; color: #1a1a2e;">System Administrators</h2>
-    
-    {% if data %}
-    <div class="admin-grid">
-        {% for d in data %}
-            <div class="admin-card">
-                <div class="profile-wrapper">
-                    {% if photo %}
-                        {% for pic in photo %}
-                            {% if pic.email == d.email %}
-                                <img class="admin-avatar" src="../media/{{ pic.photo }}" alt="Admin">
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <div class="admin-avatar d-flex align-items-center justify-content-center text-muted">No Pic</div>
-                    {% endif %}
-                    <div class="status-dot"></div>
-                </div>
-
-                <span class="admin-name">{{ d.name }}</span>
-                <span class="admin-role">Administrator</span>
-
-                <div class="admin-details">
-                    <div class="detail-item">
-                        <strong>Email:</strong> <span>{{ d.email }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>Contact:</strong> <span>{{ d.contact }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <strong>Location:</strong> <span>{{ d.address }}</span>
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-    </div>
-    {% elif msg %}
-    <div class="no-data-msg">
-        <div style="font-size: 4rem;">📂</div>
-        <h3>{{ msg }}</h3>
-    </div>
-    {% endif %}
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+    <span class="badge badge-navy">{{ data|length }} Admin(s)</span>
+    <a href="/admin_reg/" class="btn btn-primary">➕ Add Admin</a>
 </div>
+
+{% if data %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem">
+    {% for d in data %}
+    <div class="card" style="text-align:center;transition:all .3s"
+         onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 30px rgba(0,0,0,.1)'"
+         onmouseout="this.style.transform='';this.style.boxShadow=''">
+
+        <!-- Avatar -->
+        <div style="width:80px;height:80px;border-radius:50%;margin:0 auto .85rem;overflow:hidden;background:var(--blue-pale);border:3px solid var(--surface);box-shadow:var(--sh-md);display:flex;align-items:center;justify-content:center;font-size:1.6rem;position:relative">
+            {% for pic in photo %}
+                {% if pic.email == d.email %}
+                    <img src="/media/{{ pic.photo }}" style="width:100%;height:100%;object-fit:cover" alt="Admin"/>
+                {% endif %}
+            {% endfor %}
+            {% if not photo %}👑{% endif %}
+            <div style="position:absolute;bottom:2px;right:2px;width:12px;height:12px;background:#22c55e;border:2px solid #fff;border-radius:50%"></div>
+        </div>
+
+        <div style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;color:var(--tx-1);margin-bottom:.25rem">{{ d.name }}</div>
+        <span class="badge badge-navy" style="margin-bottom:.9rem">Administrator</span>
+
+        <div style="text-align:left;background:var(--surface2);border-radius:10px;padding:.85rem;display:flex;flex-direction:column;gap:.45rem">
+            <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--tx-3)">
+                <span>📧</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ d.email }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--tx-3)">
+                <span>📞</span><span>{{ d.contact }}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--tx-3)">
+                <span>📍</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ d.address }}</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align:center;padding:4rem">
+    <div style="font-size:3rem;margin-bottom:1rem">👑</div>
+    <div style="font-family:'Poppins',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.5rem">No Admins Found</div>
+    <a href="/admin_reg/" class="btn btn-primary" style="display:inline-flex;margin-top:.5rem">➕ Add Admin</a>
+</div>
+{% endif %}
+
 {% endblock %}

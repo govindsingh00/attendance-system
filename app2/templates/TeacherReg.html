@@ -1,179 +1,183 @@
 {% extends "AdminDash.html" %}
 {% load static %}
+
+{% block active_teachreg %}active{% endblock %}
+{% block page_title %}Teacher Registration{% endblock %}
+{% block page_sub %}Add a new teacher to the system{% endblock %}
+
 {% block m1 %}
 
-<div>
-<h1> Teacher Registration Form </h1>
-<p> Fill out the form for registration </p>
-<hr><hr>
+{% if msg %}
+<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/admin_home/" style="color:var(--green);font-weight:700">Go to Dashboard</a></div>
+{% endif %}
 
-<form method="post" enctype="multipart/form-data" action="/teacher_reg/" onsubmit="return B()">
-    {% csrf_token %}
+<div style="max-width:860px">
+    <div class="card">
+        <div class="card-title">👨‍🏫 Teacher Registration Form</div>
+        <p style="font-size:.88rem;color:var(--tx-3);margin-bottom:1.5rem">Fill out all required fields to register a new teacher.</p>
 
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label>First Name</label><span id="er1"></span>
-        <input type="text" id="txt1" name="t1" class="form-control">
-      </div>
-      <div class="form-group col-md-6">
-        <label>Last Name</label><span id="er11"></span>
-        <input type="text" id="txt11" name="t2" class="form-control">
-      </div>
+        <form method="post" enctype="multipart/form-data" action="/teacher_reg/" id="teacherForm" onsubmit="return validateTeacher()">
+            {% csrf_token %}
+
+            <!-- Personal Info -->
+            <div style="margin-bottom:1.25rem">
+                <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-3);margin-bottom:.75rem">Personal Information</div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label>First Name <span style="color:var(--red)">*</span></label>
+                        <input type="text" name="t1" id="t1" placeholder="Enter first name"/>
+                        <span id="er1" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field">
+                        <label>Last Name</label>
+                        <input type="text" name="t2" placeholder="Enter last name"/>
+                    </div>
+                    <div class="field">
+                        <label>Date of Birth</label>
+                        <input type="date" name="t4"/>
+                    </div>
+                    <div class="field">
+                        <label>Gender</label>
+                        <div style="display:flex;gap:1.5rem;margin-top:.65rem">
+                            <label style="display:flex;align-items:center;gap:.4rem;font-size:.9rem;cursor:pointer">
+                                <input type="radio" name="R1" value="Male" style="accent-color:var(--navy)"/> Male
+                            </label>
+                            <label style="display:flex;align-items:center;gap:.4rem;font-size:.9rem;cursor:pointer">
+                                <input type="radio" name="R1" value="Female" style="accent-color:var(--navy)"/> Female
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course -->
+                <div class="field" style="margin-top:1rem">
+                    <label>Assigned Course</label>
+                    <select name="t3" style="max-width:400px">
+                        <option value="">— Select Course —</option>
+                        {% for c in courses %}
+                        <option value="{{ c.cid }}">{{ c.crname }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div style="height:1px;background:var(--border);margin:1.25rem 0"></div>
+
+            <!-- Address -->
+            <div style="margin-bottom:1.25rem">
+                <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-3);margin-bottom:.75rem">Address</div>
+                <div class="form-grid">
+                    <div class="field form-full">
+                        <label>Address Line 1 <span style="color:var(--red)">*</span></label>
+                        <input type="text" name="t5" id="t5" placeholder="Street address"/>
+                        <span id="er5" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field form-full">
+                        <label>Address Line 2</label>
+                        <input type="text" name="t6" placeholder="Apartment, suite, etc. (optional)"/>
+                    </div>
+                    <div class="field">
+                        <label>State <span style="color:var(--red)">*</span></label>
+                        <select name="t8" id="state_teacher" required>
+                            <option value="">— Select State —</option>
+                            {% for s in indian_states %}
+                            <option value="{{ s }}">{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                        <span id="er22" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field">
+                        <label>City <span style="color:var(--red)">*</span></label>
+                        <select name="t7" id="city_teacher" required>
+                            <option value="">— Select State First —</option>
+                        </select>
+                        <span id="er21" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field">
+                        <label>Pincode <span style="color:var(--red)">*</span></label>
+                        <input type="text" name="t9" id="txt23" maxlength="6" pattern="[0-9]{6}" placeholder="6-digit pincode" inputmode="numeric"/>
+                        <span id="er23" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height:1px;background:var(--border);margin:1.25rem 0"></div>
+
+            <!-- Contact & Account -->
+            <div style="margin-bottom:1.25rem">
+                <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-3);margin-bottom:.75rem">Contact & Account</div>
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Contact Number <span style="color:var(--red)">*</span></label>
+                        <input type="text" name="t10" id="txt3" placeholder="10-digit mobile number"/>
+                        <span id="er3" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field">
+                        <label>Email Address <span style="color:var(--red)">*</span></label>
+                        <input type="email" name="t11" id="txt4" placeholder="teacher@email.com"/>
+                        <span id="er4" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field">
+                        <label>Password <span style="color:var(--red)">*</span></label>
+                        <input type="password" name="t12" id="txt5" placeholder="Create password"/>
+                        <span id="er5p" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                    <div class="field">
+                        <label>Confirm Password <span style="color:var(--red)">*</span></label>
+                        <input type="password" name="t13" id="txt6" placeholder="Repeat password"/>
+                        <span id="er6" style="font-size:.75rem;color:var(--red)"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="height:1px;background:var(--border);margin:1.25rem 0"></div>
+
+            <!-- Photo -->
+            <div style="margin-bottom:1.5rem">
+                <div style="font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--tx-3);margin-bottom:.75rem">Profile Photo</div>
+                <div class="field" style="max-width:400px">
+                    <label>Upload Photo (optional)</label>
+                    <input type="file" name="photo" accept="image/*"
+                           style="padding:.6rem .9rem;background:var(--surface2);border:1.5px dashed var(--border-dark);border-radius:9px;font-size:.88rem;cursor:pointer"/>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div style="display:flex;gap:.75rem">
+                <button type="submit" class="btn btn-primary">👨‍🏫 Register Teacher</button>
+                <button type="reset" class="btn btn-outline">↺ Clear Fields</button>
+            </div>
+        </form>
     </div>
-
-    <!-- ✅ Course Dropdown -->
-    <div class="form-row">
-      <div class="form-group col-md-12">
-        <label>Course</label>
-        <select name="t3" class="form-control">
-            <option value="">-- Select Course --</option>
-            {% for c in courses %}
-                <option value="{{ c.cid }}">{{ c.crname }}</option>
-            {% endfor %}
-        </select>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label>DOB</label>
-        <input type="date" name="t4" class="form-control">
-      </div>
-
-      <div class="form-group col-md-6">
-        <label>Gender</label><br>
-        <input type="radio" name="R1" value="Male"> Male
-        <input type="radio" name="R1" value="Female"> Female
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group col-md-12">
-        <label>Address</label><span id="er2"></span>
-        <input type="text" name="t5" class="form-control" id="txt2" placeholder="Address line 1">
-        <input type="text" name="t6" class="form-control" placeholder="Address line 2">
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group col-md-4">
-        <label for="state_teacher">State</label><span id="er22"></span>
-        <select name="t8" class="form-control" id="state_teacher" required>
-          <option value="">— Select state —</option>
-          {% for s in indian_states %}
-          <option value="{{ s }}">{{ s }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="form-group col-md-4">
-        <label for="city_teacher">City</label><span id="er21"></span>
-        <select name="t7" class="form-control" id="city_teacher" required>
-          <option value="">— Select state first —</option>
-        </select>
-      </div>
-      <div class="form-group col-md-4">
-        <label for="txt23">Pincode</label><span id="er23"></span>
-        <input type="text" name="t9" class="form-control" id="txt23" maxlength="10" pattern="[0-9]{6}" placeholder="6 digits" inputmode="numeric">
-      </div>
-    </div>
-
-    <div class="form-row">
-        <div class="form-group col-md-6">
-          <label>Contact</label><span id="er3"></span>
-          <input type="text" name="t10" class="form-control" id="txt3">
-        </div>
-        <div class="form-group col-md-6">
-          <label>Email</label><span id="er4"></span>
-          <input type="email" name="t11" class="form-control" id="txt4">
-        </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label>Password</label><span id="er5"></span>
-        <input onkeyup="return A()" name="t12" type="password" class="form-control" id="txt5">
-      </div>
-      <div class="form-group col-md-6">
-        <label>Confirm Password</label><span id="er6"></span>
-        <input type="password" name="t13" class="form-control" id="txt6">
-      </div>
-    </div>
-
-    <!-- ✅ Photo Upload -->
-    <div class="form-row">
-        <div class="form-group col-md-12">
-            <label>Upload Photo</label>
-            <input type="file" name="photo" class="form-control">
-        </div>
-    </div>
-
-    <button type="reset" class="btn btn-primary">Reset</button>
-    <button type="submit" class="btn btn-success">Register</button>
-
-</form>
-
 </div>
-
-<!-- ✅ SAME JS (reuse your validation exactly) -->
-<script>
-    function B()
-    {
-        var t1,t2,t3,t4,t5,t6,e1,e2,e3,e4,e5,e6;
-
-        t1=document.getElementById("txt1");
-        t2=document.getElementById("txt2");
-        t3=document.getElementById("txt3");
-        t4=document.getElementById("txt4");
-        t5=document.getElementById("txt5");
-        t6=document.getElementById("txt6");
-
-        e1=document.getElementById("er1");
-        e2=document.getElementById("er2");
-        e3=document.getElementById("er3");
-        e4=document.getElementById("er4");
-        e5=document.getElementById("er5");
-        e6=document.getElementById("er6");
-
-        if(t1.value=="")
-        {
-            e1.innerHTML="Enter First Name";
-            return false;
-        }
-        if(t3.value=="")
-        {
-            e3.innerHTML="Enter Contact";
-            return false;
-        }
-        if(t4.value=="")
-        {
-            e4.innerHTML="Enter Email";
-            return false;
-        }
-        if(t5.value != t6.value)
-        {
-            e6.innerHTML="Password does not match";
-            return false;
-        }
-        var st = document.getElementById("state_teacher");
-        var ct = document.getElementById("city_teacher");
-        var er21 = document.getElementById("er21");
-        var er22 = document.getElementById("er22");
-        var er23 = document.getElementById("er23");
-        if (er21) er21.innerHTML = "";
-        if (er22) er22.innerHTML = "";
-        if (er23) er23.innerHTML = "";
-        if (!st.value) { if (er22) er22.innerHTML="Select state"; st.focus(); return false; }
-        if (!ct.value) { if (er21) er21.innerHTML="Select city"; ct.focus(); return false; }
-        var pc = document.getElementById("txt23");
-        if (!pc.value || pc.value.length < 6) { if (er23) er23.innerHTML="Enter pincode"; pc.focus(); return false; }
-    }
-</script>
 
 {% include "includes/state_city_cascade.html" with suffix="teacher" %}
 
-{% if msg %}
-<h3 style="color:green;">{{msg}}</h3>
-<p><a href="/admin_home/">Continue</a></p>
-{% endif %}
+<script>
+function validateTeacher() {
+    ['er1','er3','er4','er6','er21','er22','er23'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) el.innerHTML = '';
+    });
+
+    const t1 = document.getElementById('t1');
+    const t3 = document.getElementById('txt3');
+    const t4 = document.getElementById('txt4');
+    const t5 = document.getElementById('txt5');
+    const t6 = document.getElementById('txt6');
+    const state = document.getElementById('state_teacher');
+    const city = document.getElementById('city_teacher');
+    const pc = document.getElementById('txt23');
+
+    if(!t1.value.trim()) { document.getElementById('er1').innerHTML = '⚠ Required'; t1.focus(); return false; }
+    if(!t3.value.trim()) { document.getElementById('er3').innerHTML = '⚠ Required'; t3.focus(); return false; }
+    if(!t4.value.trim()) { document.getElementById('er4').innerHTML = '⚠ Required'; t4.focus(); return false; }
+    if(!state.value) { document.getElementById('er22').innerHTML = '⚠ Select state'; state.focus(); return false; }
+    if(!city.value) { document.getElementById('er21').innerHTML = '⚠ Select city'; city.focus(); return false; }
+    if(!pc.value || pc.value.length !== 6) { document.getElementById('er23').innerHTML = '⚠ Enter 6-digit pincode'; pc.focus(); return false; }
+    if(t5.value !== t6.value) { document.getElementById('er6').innerHTML = '⚠ Passwords do not match'; t6.focus(); return false; }
+    return true;
+}
+</script>
 
 {% endblock %}
