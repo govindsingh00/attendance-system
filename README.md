@@ -106,8 +106,6 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Opens at  `http://127.0.0.1:8000/`
-
 ---
 
 ## Face Recognition Setup
