@@ -1,0 +1,351 @@
+<!--
+  File: teacher-dashboard.html
+  Role: Teacher
+  Route: /teacher/dashboard
+  Purpose: Give teachers quick access to their classes, attendance tools, and weekly insights.
+  Features: Stat cards, Chart.js bar chart for weekly attendance, class cards with mark-attendance links, recent attendance summary table.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard — Smart Attend</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+  <!-- ============================================
+       NAVBAR
+       ============================================ -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="teacher-dashboard.html">
+        <i class="fas fa-graduation-cap"></i>
+        Smart Attend
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#teacherNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="teacherNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="teacher-dashboard.html">Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="mark-attendance.html">Mark Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="view-attendance.html">View Attendance</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a class="btn btn-outline-custom btn-sm" href="login.html">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero-section hero-small" style="background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&q=80');">
+    <div class="container">
+      <h1>Teacher Dashboard</h1>
+      <p>Manage your classes and track student attendance effortlessly.</p>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STATS SECTION
+       ============================================ -->
+  <section class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-blue">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <div class="stat-value">6</div>
+            <div class="stat-label">My Classes</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-navy">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">248</div>
+            <div class="stat-label">Total Students</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-blue">
+              <i class="fas fa-calendar-day"></i>
+            </div>
+            <div class="stat-value">4</div>
+            <div class="stat-label">Today's Sessions</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+          <div class="stat-card">
+            <div class="stat-icon bg-soft-navy">
+              <i class="fas fa-percent"></i>
+            </div>
+            <div class="stat-value">91.5%</div>
+            <div class="stat-label">Avg. Attendance Rate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CHART & CLASSES
+       ============================================ -->
+  <section class="section-padding">
+    <div class="container">
+      <div class="row g-4">
+        <!-- Weekly Attendance Chart -->
+        <div class="col-lg-7" data-aos="fade-up">
+          <div class="card-custom h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0 text-navy">Weekly Attendance</h5>
+              <select class="form-control-custom" style="width:auto;">
+                <option>CSE-A</option>
+                <option>CSE-B</option>
+                <option>ECE-A</option>
+              </select>
+            </div>
+            <div class="chart-container">
+              <canvas id="teacherBarChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Class Cards -->
+        <div class="col-lg-5" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-custom h-100">
+            <h5 class="mb-3 text-navy">My Classes</h5>
+            <div class="d-flex flex-column gap-3">
+              <a href="mark-attendance.html" class="d-flex align-items-center p-3 rounded-3 text-decoration-none" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="icon-box bg-soft-blue me-3 mb-0" style="width:44px;height:44px;font-size:1.1rem;">
+                  <i class="fas fa-laptop-code"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold text-dark">Data Structures — CSE-A</div>
+                  <div class="small text-muted">48 students | 09:00 AM</div>
+                </div>
+                <span class="badge-present">Mark</span>
+              </a>
+              <a href="mark-attendance.html" class="d-flex align-items-center p-3 rounded-3 text-decoration-none" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="icon-box bg-soft-navy me-3 mb-0" style="width:44px;height:44px;font-size:1.1rem;">
+                  <i class="fas fa-microchip"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold text-dark">Computer Networks — CSE-B</div>
+                  <div class="small text-muted">52 students | 11:00 AM</div>
+                </div>
+                <span class="badge-present">Mark</span>
+              </a>
+              <a href="mark-attendance.html" class="d-flex align-items-center p-3 rounded-3 text-decoration-none" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="icon-box bg-soft-blue me-3 mb-0" style="width:44px;height:44px;font-size:1.1rem;">
+                  <i class="fas fa-database"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold text-dark">DBMS — CSE-A</div>
+                  <div class="small text-muted">48 students | 02:00 PM</div>
+                </div>
+                <span class="badge-present">Mark</span>
+              </a>
+              <a href="mark-attendance.html" class="d-flex align-items-center p-3 rounded-3 text-decoration-none" style="background: var(--light-bg); border: 1px solid var(--border-color);">
+                <div class="icon-box bg-soft-navy me-3 mb-0" style="width:44px;height:44px;font-size:1.1rem;">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold text-dark">Machine Learning — ECE-A</div>
+                  <div class="small text-muted">45 students | 04:00 PM</div>
+                </div>
+                <span class="badge-present">Mark</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       RECENT ATTENDANCE SUMMARY
+       ============================================ -->
+  <section class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="card-custom" data-aos="fade-up">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0 text-navy">Recent Attendance Summary</h5>
+          <a href="view-attendance.html" class="small">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table-custom">
+            <thead>
+              <tr>
+                <th>Class</th>
+                <th>Date</th>
+                <th>Present</th>
+                <th>Absent</th>
+                <th>Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><i class="fas fa-laptop-code text-muted me-2"></i>Data Structures — CSE-A</td>
+                <td>Apr 23, 2026</td>
+                <td>45 / 48</td>
+                <td>3 / 48</td>
+                <td><span class="badge-present">93.8%</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-microchip text-muted me-2"></i>Computer Networks — CSE-B</td>
+                <td>Apr 23, 2026</td>
+                <td>49 / 52</td>
+                <td>3 / 52</td>
+                <td><span class="badge-present">94.2%</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-database text-muted me-2"></i>DBMS — CSE-A</td>
+                <td>Apr 22, 2026</td>
+                <td>44 / 48</td>
+                <td>4 / 48</td>
+                <td><span class="badge-present">91.7%</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-brain text-muted me-2"></i>Machine Learning — ECE-A</td>
+                <td>Apr 22, 2026</td>
+                <td>42 / 45</td>
+                <td>3 / 45</td>
+                <td><span class="badge-present">93.3%</span></td>
+              </tr>
+              <tr>
+                <td><i class="fas fa-laptop-code text-muted me-2"></i>Data Structures — CSE-A</td>
+                <td>Apr 21, 2026</td>
+                <td>46 / 48</td>
+                <td>2 / 48</td>
+                <td><span class="badge-present">95.8%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5><i class="fas fa-graduation-cap me-2"></i>Smart Attend</h5>
+          <p class="small opacity-75">Modernizing college attendance with face detection technology.</p>
+        </div>
+        <div class="col-md-2">
+          <h5>Quick Links</h5>
+          <a href="index.html">Home</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-md-2">
+          <h5>Teacher</h5>
+          <a href="teacher-dashboard.html">Dashboard</a>
+          <a href="mark-attendance.html">Mark Attendance</a>
+          <a href="view-attendance.html">View Attendance</a>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p class="small opacity-75 mb-1"><i class="fas fa-envelope me-2"></i>support@smartattend.edu</p>
+          <p class="small opacity-75 mb-1"><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Smart Attend. All rights reserved. College Project Demo.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Shared JS -->
+  <script src="js/main.js"></script>
+
+  <!-- Teacher Dashboard Charts -->
+  <script>
+    // Bar Chart — Weekly Attendance
+    const ctxBar = document.getElementById('teacherBarChart').getContext('2d');
+    new Chart(ctxBar, {
+      type: 'bar',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        datasets: [{
+          label: 'Present',
+          data: [45, 47, 44, 46, 43, 40],
+          backgroundColor: '#2196F3',
+          borderRadius: 6,
+          barPercentage: 0.6
+        }, {
+          label: 'Absent',
+          data: [3, 1, 4, 2, 5, 8],
+          backgroundColor: '#ef4444',
+          borderRadius: 6,
+          barPercentage: 0.6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: {
+              usePointStyle: true,
+              padding: 20,
+              font: { family: 'Inter', size: 12 }
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0,0,0,0.05)' },
+            ticks: { font: { family: 'Inter' } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { font: { family: 'Inter' } }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

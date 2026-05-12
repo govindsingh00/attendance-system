@@ -1,0 +1,357 @@
+<!--
+  File: index.html
+  Role: Public
+  Route: /
+  Purpose: Introduce the E-Attendance System to visitors and provide navigation to login/register.
+  Features: Hero with parallax, feature cards, statistics counters, how-it-works steps, call-to-action, footer.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Attend — E-Attendance System with Face Detection</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS CSS -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+  <!-- ============================================
+       NAVBAR
+       ============================================ -->
+  <nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        <i class="fas fa-graduation-cap"></i>
+        Smart Attend
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+          <li class="nav-item"><a class="nav-link" href="#how-it-works">How It Works</a></li>
+          <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+          <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+            <a class="btn btn-primary-custom" href="register.html">Get Started</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+       ============================================ -->
+  <section class="hero-smart-attend">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <!-- Left Content -->
+        <div class="col-lg-6">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="fas fa-graduation-cap text-white" style="font-size: 2rem;"></i>
+            <span class="text-white fw-bold" style="font-family: var(--font-heading); font-size: 1.5rem;">Smart Attend</span>
+          </div>
+          <h1>Smart Attendance for Modern Colleges</h1>
+          <p>A face-detection powered attendance system that makes tracking lectures effortless, accurate, and tamper-proof for administrators, teachers, and students.</p>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="register.html" class="btn btn-cta-primary">Get Started</a>
+            <a href="login.html" class="btn btn-cta-secondary">Sign In</a>
+          </div>
+        </div>
+
+        <!-- Right Mockup Card -->
+        <div class="col-lg-6">
+          <div class="mockup-card mx-auto" style="max-width: 520px;">
+            <!-- Header -->
+            <div class="mockup-header">
+              <span class="mockup-session"><i class="fas fa-circle text-accent me-1" style="font-size: 0.5rem; vertical-align: middle;"></i>CSE-A &middot; Data Structures &middot; 10:00 AM</span>
+              <span class="mockup-badge"><span class="pulse-dot"></span>Face Verified!</span>
+            </div>
+
+            <!-- Body -->
+            <div class="mockup-body">
+              <!-- Camera Feed -->
+              <div class="mockup-camera">
+                <i class="fas fa-video mockup-camera-icon"></i>
+                <div class="mockup-camera-overlay">
+                  <div class="mockup-face-box">
+                    <span class="mockup-face-label">MATCHED</span>
+                  </div>
+                  <div class="mockup-scan-line"></div>
+                </div>
+              </div>
+
+              <!-- Student List -->
+              <div class="mockup-list d-none d-sm-block">
+                <div class="mockup-list-title">Students</div>
+                <div class="mockup-student">
+                  <span class="mockup-student-name">Rahul S.</span>
+                  <span class="mockup-student-badge present">Present</span>
+                </div>
+                <div class="mockup-student">
+                  <span class="mockup-student-name">Priya D.</span>
+                  <span class="mockup-student-badge present">Present</span>
+                </div>
+                <div class="mockup-student">
+                  <span class="mockup-student-name">Arjun M.</span>
+                  <span class="mockup-student-badge absent">Absent</span>
+                </div>
+                <div class="mockup-student">
+                  <span class="mockup-student-name">Sneha N.</span>
+                  <span class="mockup-student-badge present">Present</span>
+                </div>
+                <div class="mockup-student">
+                  <span class="mockup-student-name">Vikram P.</span>
+                  <span class="mockup-student-badge present">Present</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="mockup-stats-bar">
+              <div class="mockup-stat">
+                <div class="mockup-stat-value">94%</div>
+                <div class="mockup-stat-label">Attendance</div>
+              </div>
+              <div class="mockup-stat">
+                <div class="mockup-stat-value">48</div>
+                <div class="mockup-stat-label">Total</div>
+              </div>
+              <div class="mockup-stat">
+                <div class="mockup-stat-value">45</div>
+                <div class="mockup-stat-label">Present</div>
+              </div>
+              <div class="mockup-stat">
+                <div class="mockup-stat-value">3</div>
+                <div class="mockup-stat-label">Absent</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FEATURES SECTION
+       ============================================ -->
+  <section id="features" class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>Powerful Features</h2>
+        <p>Everything your college needs to manage attendance efficiently and securely.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-custom">
+            <div class="icon-box bg-soft-blue">
+              <i class="fas fa-face-viewfinder"></i>
+            </div>
+            <h4>Face Detection</h4>
+            <p class="text-muted mb-0">Mark attendance automatically using advanced face recognition technology. No proxies, no manual errors.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card-custom">
+            <div class="icon-box bg-soft-navy">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h4>Real-time Analytics</h4>
+            <p class="text-muted mb-0">Visual dashboards and charts give instant insights into attendance trends across classes and departments.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="card-custom">
+            <div class="icon-box bg-soft-blue">
+              <i class="fas fa-file-export"></i>
+            </div>
+            <h4>Export Reports</h4>
+            <p class="text-muted mb-0">Generate and download attendance reports in multiple formats for easy record keeping and compliance.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-custom">
+            <div class="icon-box bg-soft-navy">
+              <i class="fas fa-shield-halved"></i>
+            </div>
+            <h4>Tamper-proof Records</h4>
+            <p class="text-muted mb-0">Every attendance entry is time-stamped and linked to a verified face capture, ensuring data integrity.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="card-custom">
+            <div class="icon-box bg-soft-blue">
+              <i class="fas fa-bell"></i>
+            </div>
+            <h4>Instant Notifications</h4>
+            <p class="text-muted mb-0">Students and parents receive automatic alerts for absences, low attendance, and important updates.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="300">
+          <div class="card-custom">
+            <div class="icon-box bg-soft-navy">
+              <i class="fas fa-mobile-screen"></i>
+            </div>
+            <h4>Mobile Friendly</h4>
+            <p class="text-muted mb-0">Access dashboards, mark attendance, and view reports seamlessly on any device, anywhere.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       STATISTICS SECTION
+       ============================================ -->
+  <section class="section-padding" style="background: linear-gradient(135deg, #1a3c6e 0%, #2196F3 100%);">
+    <div class="container">
+      <div class="row text-center text-white g-4">
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="100">
+          <div class="display-4 fw-bold">5,000+</div>
+          <div class="opacity-75">Students Enrolled</div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="200">
+          <div class="display-4 fw-bold">250+</div>
+          <div class="opacity-75">Teachers Active</div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="300">
+          <div class="display-4 fw-bold">99.8%</div>
+          <div class="opacity-75">Accuracy Rate</div>
+        </div>
+        <div class="col-6 col-md-3" data-aos="zoom-in" data-aos-delay="400">
+          <div class="display-4 fw-bold">50k+</div>
+          <div class="opacity-75">Attendances Marked</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       HOW IT WORKS SECTION
+       ============================================ -->
+  <section id="how-it-works" class="section-padding bg-light-custom">
+    <div class="container">
+      <div class="section-title" data-aos="fade-up">
+        <h2>How It Works</h2>
+        <p>Simple steps to modernize attendance in your college.</p>
+      </div>
+      <div class="row g-4 align-items-center">
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+          <div class="card-custom text-center h-100">
+            <div class="icon-box bg-soft-blue mx-auto">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h5>1. Register</h5>
+            <p class="text-muted mb-0">Admins add teachers and students. Users upload their photo for face enrollment.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+          <div class="card-custom text-center h-100">
+            <div class="icon-box bg-soft-navy mx-auto">
+              <i class="fas fa-camera"></i>
+            </div>
+            <h5>2. Capture</h5>
+            <p class="text-muted mb-0">Teachers open the attendance session and the system detects faces in real time.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+          <div class="card-custom text-center h-100">
+            <div class="icon-box bg-soft-blue mx-auto">
+              <i class="fas fa-check-double"></i>
+            </div>
+            <h5>3. Verify</h5>
+            <p class="text-muted mb-0">Each face is matched against enrolled profiles and attendance is marked instantly.</p>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
+          <div class="card-custom text-center h-100">
+            <div class="icon-box bg-soft-navy mx-auto">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <h5>4. Analyze</h5>
+            <p class="text-muted mb-0">View detailed reports, export data, and track attendance trends anytime.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       CALL TO ACTION SECTION
+       ============================================ -->
+  <section class="section-padding">
+    <div class="container">
+      <div class="card-custom text-center p-5" data-aos="zoom-in" style="background: linear-gradient(135deg, rgba(26,60,110,0.05) 0%, rgba(33,150,243,0.05) 100%); border: 1px dashed var(--accent-blue);">
+        <h2 class="mb-3">Ready to Go Paperless?</h2>
+        <p class="text-muted mb-4 mx-auto" style="max-width: 500px;">Join hundreds of colleges already saving time and improving accuracy with Smart Attend.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+          <a href="register.html" class="btn btn-primary-custom btn-lg">Create Free Account</a>
+          <a href="login.html" class="btn btn-outline-custom btn-lg">Already a Member? Sign In</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5><i class="fas fa-graduation-cap me-2"></i>Smart Attend</h5>
+          <p class="small opacity-75">Modernizing college attendance with face detection technology. Accurate, secure, and effortless.</p>
+        </div>
+        <div class="col-md-2">
+          <h5>Quick Links</h5>
+          <a href="index.html">Home</a>
+          <a href="login.html">Login</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div class="col-md-2">
+          <h5>Roles</h5>
+          <a href="admin-dashboard.html">Admin</a>
+          <a href="teacher-dashboard.html">Teacher</a>
+          <a href="student-dashboard.html">Student</a>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p class="small opacity-75 mb-1"><i class="fas fa-envelope me-2"></i>support@smartattend.edu</p>
+          <p class="small opacity-75 mb-1"><i class="fas fa-phone me-2"></i>+91 98765 43210</p>
+          <p class="small opacity-75"><i class="fas fa-location-dot me-2"></i>College Campus, Main Block</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 Smart Attend. All rights reserved. College Project Demo.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- AOS JS -->
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Shared JS -->
+  <script src="../../js/main.js"></script>
+</body>
+</html>
