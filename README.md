@@ -20,20 +20,22 @@ Atmos is a face recognition based attendance system built as an MCA final year p
 ---
 
 ## How It Works
-Teacher clicks "Start Attendance"
-↓
-Browser camera captures frame every 3 seconds
-↓
-Server checks for blink (liveness verification)
-↓
-Haar Cascade detects face region
-↓
-ArcFace generates 512-D embedding vector
-↓
-Cosine similarity vs stored encodings (threshold: 0.4)
-↓
-Match found → AttendanceRecord saved → Name shown in UI
 
+```
+Teacher clicks "Start Attendance"
+        ↓
+Browser camera captures frame every 3 seconds
+        ↓
+Server checks for blink (liveness / anti-spoofing)
+        ↓
+Haar Cascade detects face region
+        ↓
+ArcFace generates 512-D embedding vector
+        ↓
+Cosine similarity vs stored encodings (threshold: 0.4)
+        ↓
+Match found → AttendanceRecord saved → Name shown in UI
+```
 ---
 
 ## Tech Stack
