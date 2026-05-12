@@ -51,20 +51,24 @@ Match found → AttendanceRecord saved → Name shown in UI
 
 ---
 
+````markdown
 ## Project Structure
+
+```
 attendance-system/
+│
 ├── ML/
-│   ├── datasets/        # Student face images (folder per student ID)
-│   ├── models/          # encodings.json (trained embeddings)
+│   ├── datasets/            # Student face images (folder per student ID)
+│   ├── models/              # encodings.json (trained embeddings)
 │   └── src/
-│       ├── recognize.py # FaceRecognizer — detection + matching
-│       ├── liveness.py  # EAR blink detection
-│       └── train.py     # Training script (Kaggle)
+│       ├── recognize.py     # FaceRecognizer — detection + matching
+│       ├── liveness.py      # EAR blink detection
+│       └── train.py         # Training script (run on Kaggle)
 │
 ├── app2/
-│   ├── templates/       # All HTML templates
-│   ├── models.py        # Database models
-│   └── views.py         # Views + ML inference endpoint
+│   ├── templates/           # All HTML templates
+│   ├── models.py            # Database models
+│   └── views.py             # Views + ML inference endpoint
 │
 ├── student/
 │   ├── settings.py
@@ -73,6 +77,8 @@ attendance-system/
 ├── manage.py
 ├── requirements.txt
 └── .gitignore
+```
+````
 
 ---
 
@@ -98,18 +104,22 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Open `http://127.0.0.1:8000/`
+Opens at  `http://127.0.0.1:8000/`
 
 ---
 
 ## Face Recognition Setup
 
 ### Step 1 — Collect images
+````markdown
+```
 ML/datasets/
 ├── 1/   # 30-40 photos of Student ID 1
 ├── 2/
 ├── 3/
 └── 4/
+```
+````
 
 ### Step 2 — Train (on Kaggle for GPU)
 ```bash
@@ -186,7 +196,7 @@ System requires at least 1 confirmed blink before running face recognition.
 Published as IEEE-format conference paper:
 
 > **Atmos: An AI-Powered Face Recognition Attendance System with Anti-Spoofing Using ArcFace and Blink Detection**  
-> Sachin Gupta, Govind Singh Tanwar, Kashish Sharma, Komal Kumari, Navneet Kumar, Gagandeep Sethi  
+> Sachin Gupta, Govind Singh Tanwar, Kashish Sharma, Komal Kumari, Navneet Kumar  
 > Lovely Professional University, Jalandhar, Punjab, India
 
 ---
@@ -195,12 +205,11 @@ Published as IEEE-format conference paper:
 
 | Name | Role |
 |---|---|
-| Sachin Gupta | ML Module (ArcFace, Liveness, Django API) |
+| Sachin Gupta | ML Module (ArcFace, Liveness, Anti-Spoofing, Django API) |
 | Govind Singh Tanwar | Backend (Django views, models, DB) |
-| Kashish Sharma | Frontend (Templates, UI) |
+| Kashish Sharma | Security (Authentication) |
 | Komal Kumari | Frontend (Templates, UI) |
-| Navneet Kumar | Testing |
-| Gagandeep Sethi | Project Supervisor |
+| Navneet Kumar | Testing, System Design |
 
 **Lovely Professional University, Jalandhar, Punjab, India**  
 **Master of Computer Applications (MCA)**
