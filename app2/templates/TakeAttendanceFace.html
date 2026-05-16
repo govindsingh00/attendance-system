@@ -133,7 +133,6 @@
 </style>
 
 <script>
-// Session data from Django
 const SESSION = {
     section: "{{ section }}",
     cid: "{{ cid }}",
@@ -148,7 +147,6 @@ let processing = false;
 let sentIds = [];
 let scannedCount = 0;
 
-// Liveness state — reset per scanning session
 let blinkCount = 0;
 let eyesWereClosed = false;
 let isLive = false;
@@ -161,7 +159,6 @@ function setStatus(active, text, color) {
     txt.textContent = text;
     txt.style.color = active ? (color || 'var(--green)') : 'var(--tx-4)';
 
-    // Update liveness indicator
     const lDot = document.getElementById('livenessDot');
     const lStatus = document.getElementById('livenessStatus');
     const lDetail = document.getElementById('livenessDetail');
@@ -170,7 +167,7 @@ function setStatus(active, text, color) {
             lDot.style.background = '#22c55e';
             lDot.style.boxShadow = '0 0 6px rgba(34,197,94,.5)';
             lStatus.textContent = '✅ Liveness Confirmed';
-            lDetail.textContent = `Blink detected — real face verified`;
+            lDetail.textContent = 'Blink detected — real face verified';
         } else if(scanning) {
             lDot.style.background = '#f59e0b';
             lDot.style.boxShadow = '0 0 6px rgba(245,158,11,.5)';
@@ -219,7 +216,6 @@ function stopCamera() {
 
 function startScanning() {
     scanning = true;
-    // Reset liveness state for new session
     blinkCount = 0;
     eyesWereClosed = false;
     isLive = false;
@@ -256,6 +252,8 @@ function captureAndSend() {
     processing = true;
     document.getElementById('processingTxt').style.display = '';
 
+    console.log('[BLINK SEND] blink_count=' + blinkCount + ' eyes_were_closed=' + eyesWereClosed + ' is_live=' + isLive);
+
     fetch('/ml/recognize/frame/', {
         method: 'POST',
         headers: {'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken')},
@@ -275,7 +273,9 @@ function captureAndSend() {
         processing = false;
         document.getElementById('processingTxt').style.display = 'none';
 
-        // Always update liveness state from server response
+        console.log('[BLINK RECV] status=' + data.status + ' blink_count=' + data.blink_count + ' eyes_were_closed=' + data.eyes_were_closed);
+
+        // Update liveness state from server response
         if(data.blink_count !== undefined) blinkCount = data.blink_count;
         if(data.eyes_were_closed !== undefined) eyesWereClosed = data.eyes_were_closed;
         if(data.is_live !== undefined) isLive = data.is_live;
@@ -306,7 +306,6 @@ function captureAndSend() {
             document.getElementById('matchScore').style.background = 'rgba(22,163,74,.15)';
             document.getElementById('matchScore').style.color = '#4ade80';
             addToList(data.stid, data.stname, data.score);
-            // Reset liveness for next student
             blinkCount = 0;
             eyesWereClosed = false;
             isLive = false;

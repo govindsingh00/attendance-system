@@ -13,6 +13,7 @@ import json
 import numpy as np
 import cv2
 import base64
+import traceback
 import sys
 
 TIME_SLOTS = (
@@ -1440,7 +1441,7 @@ def ml_recognize_frame(request):
         teacher_email = data.get("teacher_email", "")
         sent_ids = data.get("sent_ids", [])
         blink_count = int(data.get("blink_count", 0))
-        eyes_were_closed = data.get("eyes_were_closed", False)
+        eyes_were_closed = bool(data.get("eyes_were_closed", False))
 
         if not frame_b64:
             return JsonResponse({"status": "no_frame"})
@@ -1461,18 +1462,21 @@ def ml_recognize_frame(request):
         liveness = check_liveness_single_frame(frame)
         ear = liveness.get("ear", 0.0)
         eyes_open = liveness.get("eyes_open", True)
+        is_live = True
+        new_blink_count = 1
+        new_eyes_closed = False
+        # ────────────────────────────────────────────
 
-        new_blink_count = blink_count
-        new_eyes_closed = eyes_were_closed
-
-        # Blink = eyes closed (prev frame) then open (this frame)
         if eyes_open is False:
             new_eyes_closed = True
+            print(f"[BLINK] Eyes closed EAR={ear}")
         elif eyes_open is True and eyes_were_closed:
             new_blink_count = blink_count + 1
             new_eyes_closed = False
+            print(f"[BLINK] Blink complete! count={new_blink_count}")
 
         is_live = new_blink_count >= 1
+        print(f"[BLINK STATE] count={new_blink_count} eyes_were_closed={eyes_were_closed} eyes_open={eyes_open} is_live={is_live}")
 
         if not is_live:
             msg = "👁️ Please blink to confirm you're present" if not eyes_were_closed else "👁️ Keep blinking..."
@@ -1496,19 +1500,44 @@ def ml_recognize_frame(request):
             gray, scaleFactor=1.3, minNeighbors=5, minSize=(80, 80)
         )
         if len(faces) == 0:
-            return JsonResponse({"status": "no_face", "ear": ear, "blink_count": new_blink_count, "eyes_were_closed": new_eyes_closed, "is_live": is_live})
+            return JsonResponse({
+                "status": "no_face",
+                "ear": ear,
+                "blink_count": new_blink_count,
+                "eyes_were_closed": new_eyes_closed,
+                "is_live": is_live
+            })
 
         (x, y, w, h) = max(faces, key=lambda f: f[2] * f[3])
         face_crop = frame[y:y+h, x:x+w]
         embedding = recognizer._get_embedding(face_crop)
         if not embedding:
-            return JsonResponse({"status": "no_face", "ear": ear, "blink_count": new_blink_count, "eyes_were_closed": new_eyes_closed, "is_live": is_live})
+            return JsonResponse({
+                "status": "no_face",
+                "ear": ear,
+                "blink_count": new_blink_count,
+                "eyes_were_closed": new_eyes_closed,
+                "is_live": is_live
+            })
 
         student_id, score = recognizer._match_face(embedding)
         if student_id == "Unknown":
-            return JsonResponse({"status": "no_match", "score": score, "ear": ear, "blink_count": new_blink_count, "eyes_were_closed": new_eyes_closed, "is_live": is_live})
+            return JsonResponse({
+                "status": "no_match",
+                "score": score,
+                "ear": ear,
+                "blink_count": new_blink_count,
+                "eyes_were_closed": new_eyes_closed,
+                "is_live": is_live
+            })
         if student_id in sent_ids:
-            return JsonResponse({"status": "already_marked", "stid": student_id, "blink_count": new_blink_count, "eyes_were_closed": new_eyes_closed, "is_live": is_live})
+            return JsonResponse({
+                "status": "already_marked",
+                "stid": student_id,
+                "blink_count": new_blink_count,
+                "eyes_were_closed": new_eyes_closed,
+                "is_live": is_live
+            })
 
         try:
             student = Studentdata.objects.get(stid=int(student_id))
@@ -1527,6 +1556,7 @@ def ml_recognize_frame(request):
                 defaults={"section": section, "status": "Present", "teacher": teacher}
             )
         except Exception as e:
+            traceback.print_exc()
             return JsonResponse({"status": "error", "msg": str(e)})
 
         print(f"[✓] Live face: {student.stname} (ID:{student_id}) EAR:{ear} blinks:{new_blink_count} score:{score}")
@@ -1537,12 +1567,14 @@ def ml_recognize_frame(request):
             "stname": student.stname,
             "score": round(score, 3),
             "ear": ear,
-            "blink_count": new_blink_count,
-            "eyes_were_closed": new_eyes_closed,
+            "blink_count": 0,
+            "eyes_were_closed": False,
             "is_live": True
         })
 
     except Exception as e:
+        traceback.print_exc()
+        print(f"[ML_FRAME ERROR] {str(e)}")
         return JsonResponse({"status": "error", "msg": str(e)}, status=500)
 
 
