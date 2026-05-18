@@ -350,15 +350,26 @@ def teacher_home(request):
                 )
                 today = timezone.localdate()
                 for a in raw:
-                    has_attendance = AttendanceRecord.objects.filter(
+                    present_count = AttendanceRecord.objects.filter(
                         course=a.course,
                         section=a.section,
                         time_slot=a.time_slot,
                         attendance_date=today,
-                    ).exists()
+                        status="Present",
+                    ).count()
+                    absent_count = AttendanceRecord.objects.filter(
+                        course=a.course,
+                        section=a.section,
+                        time_slot=a.time_slot,
+                        attendance_date=today,
+                        status="Absent",
+                    ).count()
+                    has_attendance = (present_count + absent_count) > 0
                     assignments.append({
                         "assignment": a,
                         "has_attendance": has_attendance,
+                        "present_count": present_count,
+                        "absent_count": absent_count,
                     })
             return render(request, "TeacherHome.html", {
                 "data": tchr,

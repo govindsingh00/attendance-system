@@ -67,6 +67,17 @@
                         {% endif %}
                     </div>
 
+                    <!-- Pie chart — only if attendance taken -->
+                    {% if item.has_attendance %}
+                    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding:.75rem;background:var(--surface2);border-radius:8px">
+                        <canvas id="tchart-{{ forloop.counter }}" width="70" height="70" style="max-width:70px;flex-shrink:0"></canvas>
+                        <div style="font-size:.82rem">
+                            <div style="margin-bottom:.3rem"><span style="color:#16a34a;font-weight:700">● {{ item.present_count }}</span> <span style="color:var(--tx-3)">Present</span></div>
+                            <div><span style="color:#dc2626;font-weight:700">● {{ item.absent_count }}</span> <span style="color:var(--tx-3)">Absent</span></div>
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <!-- Buttons -->
                     <div style="display:flex;flex-direction:column;gap:.5rem">
                         <a href="/mark_attendance/face/?section={{ a.section|urlencode }}&cid={{ a.course.cid }}&time_slot={{ a.time_slot|urlencode }}"
@@ -139,5 +150,34 @@
         </div>
     </div>
 </div>
+
+<!-- Chart.js for teacher attendance donuts -->
+{% if assignments %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+{% for item in assignments %}
+{% if item.has_attendance %}
+new Chart(document.getElementById('tchart-{{ forloop.counter }}'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Present', 'Absent'],
+        datasets: [{
+            data: [{{ item.present_count }}, {{ item.absent_count }}],
+            backgroundColor: ['#16a34a', '#dc2626'],
+            borderWidth: 0
+        }]
+    },
+    options: {
+        cutout: '65%',
+        plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+        }
+    }
+});
+{% endif %}
+{% endfor %}
+</script>
+{% endif %}
 
 {% endblock %}
