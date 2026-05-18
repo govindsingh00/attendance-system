@@ -18,7 +18,6 @@
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem">
     {% for item in data %}
     <div class="card" style="padding:0;overflow:hidden;transition:all .3s" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 30px rgba(0,0,0,.1)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <!-- Banner -->
         <div style="height:80px;background:linear-gradient(135deg,var(--navy-dark),var(--navy),var(--blue));position:relative">
             <div style="position:absolute;bottom:-30px;left:1.25rem">
                 <div style="width:60px;height:60px;border-radius:12px;background:var(--blue-pale);border:3px solid var(--surface);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:var(--sh-md)">
@@ -45,11 +44,7 @@
                 </div>
             </div>
             <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-                <form method="post" action="/editteacherprofile/" style="margin:0">
-                    {% csrf_token %}
-                    <input type="hidden" name="E1" value="{{ item.teacher.email }}"/>
-                    <button class="btn btn-outline btn-sm">✏️ Edit</button>
-                </form>
+                <a href="/editteacherprofile/?E1={{ item.teacher.email }}" class="btn btn-outline btn-sm">✏️ Edit</a>
             </div>
         </div>
     </div>

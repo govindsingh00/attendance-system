@@ -175,6 +175,20 @@ def admin_reg(request):
                 lgn.usertype = "admin"
                 adm.save()
                 lgn.save()
+                if request.FILES.get("photo"):
+                    file = request.FILES["photo"]
+                    safe_name = os.path.basename(file.name)
+                    name, ext = os.path.splitext(safe_name)
+                    filename = "%s_%s%s" % (int(time.time()), name[:40] or "photo", ext or ".jpg")
+                    filepath = os.path.join(settings.MEDIA_ROOT, filename)
+                    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+                    with open(filepath, "wb+") as destination:
+                        for chunk in file.chunks():
+                            destination.write(chunk)
+                    ph = Photodata()
+                    ph.email = em
+                    ph.photo = filename
+                    ph.save()
                 ctx = location_context()
                 ctx["msg"] = "Data Saved"
                 return render(request, "AdminReg.html", ctx)
@@ -223,6 +237,20 @@ def student_reg(request):
                 lgn.usertype = "student"
                 st.save()
                 lgn.save()
+                if request.FILES.get("photo"):
+                    file = request.FILES["photo"]
+                    safe_name = os.path.basename(file.name)
+                    name, ext = os.path.splitext(safe_name)
+                    filename = "%s_%s%s" % (int(time.time()), name[:40] or "photo", ext or ".jpg")
+                    filepath = os.path.join(settings.MEDIA_ROOT, filename)
+                    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+                    with open(filepath, "wb+") as destination:
+                        for chunk in file.chunks():
+                            destination.write(chunk)
+                    ph = Photodata()
+                    ph.email = em
+                    ph.photo = filename
+                    ph.save()
                 ctx = location_context()
                 ctx["msg"] = "Data Saved"
                 return render(request, "StudentReg.html", ctx)
@@ -773,7 +801,11 @@ def studentuploadphoto(request):
                 obj.email = em
                 obj.photo = filename
                 obj.save()
-                return HttpResponseRedirect("/allstudentsAD/")
+                try:
+                    st = Studentdata.objects.get(email=em)
+                    return HttpResponseRedirect(f"/ADviewstudent/?sid={st.stid}")
+                except:
+                    return HttpResponseRedirect("/allstudentsAD/")
             else:
                 return HttpResponseRedirect("/allstudentsAD/")
         else:
@@ -872,12 +904,21 @@ def ADviewstudent(request):
             if request.method == "POST":
                 sid = request.POST["S1"]
                 em = request.POST.get("S2", "")
-                pic = Photodata.objects.filter(email=em)
-                stprofile = Studentdata.objects.filter(stid=sid)
-                stcrse = StudentCoursedata.objects.filter(stid=sid)
-                return render(request, "ADviewstudent.html", {"data1": stprofile, "data2": stcrse, "data4": pic})
             else:
-                return HttpResponseRedirect("/admin_home/")
+                sid = request.GET.get("sid", "")
+                em = request.GET.get("em", "")
+            if not sid:
+                return HttpResponseRedirect("/allstudentsAD/")
+            if not em:
+                try:
+                    st = Studentdata.objects.get(stid=int(sid))
+                    em = st.email
+                except:
+                    return HttpResponseRedirect("/allstudentsAD/")
+            pic = Photodata.objects.filter(email=em)
+            stprofile = Studentdata.objects.filter(stid=sid)
+            stcrse = StudentCoursedata.objects.filter(stid=sid)
+            return render(request, "ADviewstudent.html", {"data1": stprofile, "data2": stcrse, "data4": pic})
         else:
             return HttpResponseRedirect("/autherror/")
     else:
@@ -1127,28 +1168,38 @@ def editstdata1(request):
 
 
 def editteacherprofile(request):
-    if request.session.has_key("email"):
-        ut = request.session["ut"]
-        em = request.session["email"]
-        if ut == "teacher":
-            rows = Teacherdata.objects.filter(email=em)
-            return render(request, "EditTeacher.html", {"data": rows})
+    if not request.session.has_key("email"):
         return HttpResponseRedirect("/autherror/")
+    ut = request.session["ut"]
+    em = request.session["email"]
+    if ut == "teacher":
+        rows = Teacherdata.objects.filter(email=em)
+        return render(request, "EditTeacher.html", {"data": rows})
+    elif ut == "admin":
+        target_email = request.GET.get("E1")  # ← was request.GET.get("tid")
+        if not target_email:
+            return HttpResponseRedirect("/allteachers/")
+        rows = Teacherdata.objects.filter(email=target_email)
+        return render(request, "EditTeacher.html", {"data": rows, "is_admin": True})
     return HttpResponseRedirect("/autherror/")
 
 
 def editteacherprofile1(request):
-    if request.session.has_key("email"):
-        ut = request.session["ut"]
-        if ut == "teacher" and request.method == "POST":
-            t = Teacherdata.objects.get(email=request.POST["E1"])
-            t.name = request.POST["t1"]
-            t.phone = request.POST["t2"]
-            t.address = request.POST["t3"]
-            t.save()
-            return render(request, "EditTeacher.html", {"msg": "Profile updated successfully"})
-        return HttpResponseRedirect("/teacher_home/")
-    return HttpResponseRedirect("/autherror/")
+    if not request.session.has_key("email"):
+        return HttpResponseRedirect("/autherror/")
+    ut = request.session["ut"]
+    if request.method != "POST":
+        return HttpResponseRedirect("/teacher_home/" if ut == "teacher" else "/allteachers/")
+    if ut not in ("teacher", "admin"):
+        return HttpResponseRedirect("/autherror/")
+    t = Teacherdata.objects.get(email=request.POST["E1"])
+    t.name = request.POST["t1"]
+    t.phone = request.POST["t2"]
+    t.address = request.POST["t3"]
+    t.save()
+    if ut == "admin":
+        return HttpResponseRedirect("/allteachers/")
+    return render(request, "EditTeacher.html", {"msg": "Profile updated successfully", "data": [t]})
 
 
 def teacher_pass_change(request):
@@ -1440,8 +1491,6 @@ def ml_recognize_frame(request):
         time_slot = data.get("time_slot", "")
         teacher_email = data.get("teacher_email", "")
         sent_ids = data.get("sent_ids", [])
-        blink_count = int(data.get("blink_count", 0))
-        eyes_were_closed = bool(data.get("eyes_were_closed", False))
 
         if not frame_b64:
             return JsonResponse({"status": "no_frame"})
@@ -1461,32 +1510,14 @@ def ml_recognize_frame(request):
         from liveness import check_liveness_single_frame
         liveness = check_liveness_single_frame(frame)
         ear = liveness.get("ear", 0.0)
-        eyes_open = liveness.get("eyes_open", True)
-        is_live = True
-        new_blink_count = 1
-        new_eyes_closed = False
-        # ────────────────────────────────────────────
-
-        if eyes_open is False:
-            new_eyes_closed = True
-            print(f"[BLINK] Eyes closed EAR={ear}")
-        elif eyes_open is True and eyes_were_closed:
-            new_blink_count = blink_count + 1
-            new_eyes_closed = False
-            print(f"[BLINK] Blink complete! count={new_blink_count}")
-
-        is_live = new_blink_count >= 1
-        print(f"[BLINK STATE] count={new_blink_count} eyes_were_closed={eyes_were_closed} eyes_open={eyes_open} is_live={is_live}")
+        is_live = bool(data.get("is_live", False))
 
         if not is_live:
-            msg = "👁️ Please blink to confirm you're present" if not eyes_were_closed else "👁️ Keep blinking..."
             return JsonResponse({
                 "status": "need_blink",
                 "ear": ear,
-                "blink_count": new_blink_count,
-                "eyes_were_closed": new_eyes_closed,
                 "is_live": False,
-                "msg": msg
+                "msg": "👁️ Please blink to confirm you're present"
             })
         # ────────────────────────────────────────────
 
@@ -1500,44 +1531,19 @@ def ml_recognize_frame(request):
             gray, scaleFactor=1.3, minNeighbors=5, minSize=(80, 80)
         )
         if len(faces) == 0:
-            return JsonResponse({
-                "status": "no_face",
-                "ear": ear,
-                "blink_count": new_blink_count,
-                "eyes_were_closed": new_eyes_closed,
-                "is_live": is_live
-            })
+            return JsonResponse({"status": "no_face", "ear": ear, "is_live": is_live})
 
         (x, y, w, h) = max(faces, key=lambda f: f[2] * f[3])
         face_crop = frame[y:y+h, x:x+w]
         embedding = recognizer._get_embedding(face_crop)
         if not embedding:
-            return JsonResponse({
-                "status": "no_face",
-                "ear": ear,
-                "blink_count": new_blink_count,
-                "eyes_were_closed": new_eyes_closed,
-                "is_live": is_live
-            })
+            return JsonResponse({"status": "no_face", "ear": ear, "is_live": is_live})
 
         student_id, score = recognizer._match_face(embedding)
         if student_id == "Unknown":
-            return JsonResponse({
-                "status": "no_match",
-                "score": score,
-                "ear": ear,
-                "blink_count": new_blink_count,
-                "eyes_were_closed": new_eyes_closed,
-                "is_live": is_live
-            })
+            return JsonResponse({"status": "no_match", "score": score, "ear": ear, "is_live": is_live})
         if student_id in sent_ids:
-            return JsonResponse({
-                "status": "already_marked",
-                "stid": student_id,
-                "blink_count": new_blink_count,
-                "eyes_were_closed": new_eyes_closed,
-                "is_live": is_live
-            })
+            return JsonResponse({"status": "already_marked", "stid": student_id, "is_live": is_live})
 
         try:
             student = Studentdata.objects.get(stid=int(student_id))
@@ -1546,6 +1552,25 @@ def ml_recognize_frame(request):
 
         try:
             course = Coursedata.objects.get(cid=int(cid))
+        except (Coursedata.DoesNotExist, ValueError):
+            return JsonResponse({"status": "error", "msg": "Invalid course"})
+
+        # ── ENROLLMENT CHECK ──────────────────────────
+        enrolled = StudentCoursedata.objects.filter(
+            stid=student.stid,
+            crname__iexact=course.crname.strip()
+        ).exists()
+        if not enrolled:
+            print(f"[✗] {student.stname} (ID:{student_id}) not enrolled in {course.crname}")
+            return JsonResponse({
+                "status": "not_enrolled",
+                "stid": str(student_id),
+                "stname": student.stname,
+                "msg": f"{student.stname} is not enrolled in {course.crname}"
+            })
+        # ─────────────────────────────────────────────
+
+        try:
             teacher = Teacherdata.objects.filter(email=teacher_email).first()
             today = timezone.localdate()
             AttendanceRecord.objects.update_or_create(
@@ -1559,7 +1584,7 @@ def ml_recognize_frame(request):
             traceback.print_exc()
             return JsonResponse({"status": "error", "msg": str(e)})
 
-        print(f"[✓] Live face: {student.stname} (ID:{student_id}) EAR:{ear} blinks:{new_blink_count} score:{score}")
+        print(f"[✓] Live face: {student.stname} (ID:{student_id}) EAR:{ear} score:{score}")
 
         return JsonResponse({
             "status": "recognized",
@@ -1567,8 +1592,6 @@ def ml_recognize_frame(request):
             "stname": student.stname,
             "score": round(score, 3),
             "ear": ear,
-            "blink_count": 0,
-            "eyes_were_closed": False,
             "is_live": True
         })
 

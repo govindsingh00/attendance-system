@@ -31,13 +31,6 @@
                     <div class="profile-row"><span>🏫</span>Section: {{ d.section|default:"—" }}</div>
                 </div>
                 {% endfor %}{% endif %}
-                {% if data1 %}{% for d in data1 %}
-                <div style="display:flex;gap:.5rem">
-                    <form method="post" action="/studentchngephoto/" style="margin:0">{% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/><button class="btn btn-outline btn-sm">📷 Change</button></form>
-                    <form method="post" action="/studentdeletephoto/" style="margin:0">{% csrf_token %}<input type="hidden" name="C1" value="{{d.photo}}"/><button class="btn btn-danger btn-sm">🗑️</button></form>
-                </div>
-                {% endfor %}
-                {% else %}<a href="/studentuploadphoto/" class="btn btn-outline btn-sm">📷 Upload Photo</a>{% endif %}
             </div>
         </div>
 
@@ -46,10 +39,9 @@
             <div class="card-title">🚀 Quick Actions</div>
             <div style="display:flex;flex-direction:column;gap:.5rem">
                 {% if data %}{% for d in data %}
-                <form method="post" action="/student_attendance/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-purple" style="width:100%;justify-content:center">📊 View Attendance</button></form>
-                <form method="post" action="/student_course_info/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-outline" style="width:100%;justify-content:center">📚 Course Details</button></form>
+                <a href="/student_attendance/" class="btn btn-purple" style="width:100%;justify-content:center">📊 View Attendance</a>
+                <a href="/student_course_info/" class="btn btn-outline" style="width:100%;justify-content:center">📚 Course Details</a>
                 {% endfor %}{% endif %}
-                <a href="/studentuploadphoto/" class="btn btn-outline" style="justify-content:center">📷 Upload Photo</a>
             </div>
         </div>
     </div>
@@ -73,15 +65,6 @@
                 <div><div class="detail-label">Section</div><div class="detail-val">{{ d.section|default:"—" }}</div></div>
                 <div><div class="detail-label">Last Qualification</div><div class="detail-val">{{ d.lastquali }}</div></div>
                 <div style="grid-column:1/-1"><div class="detail-label">Address</div><div class="detail-val">{{ d.address }}</div></div>
-            </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="card">
-            <div class="card-title">⚙️ Account Actions</div>
-            <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-                <form method="post" action="/editstprofile/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-primary">✏️ Edit Profile</button></form>
-                <form method="post" action="/student_pass_change/" style="margin:0">{% csrf_token %}<input type="hidden" name="S1" value="{{d.stid}}"/><button class="btn btn-outline">🔒 Change Password</button></form>
             </div>
         </div>
 

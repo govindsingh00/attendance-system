@@ -12,7 +12,7 @@ class FaceRecognizer:
         self,
         encodings_path: str = "models/encodings.json",
         model_name: str = "ArcFace",
-        threshold: float = 0.4,
+        threshold: float = 0.7,
         django_url: str = "http://127.0.0.1:8000/ml/recognize/",
         section: str = "",
         cid: str = "",

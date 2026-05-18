@@ -1,14 +1,20 @@
-{% extends "TeacherDash.html" %}
+{% extends is_admin|yesno:"AdminDash.html,TeacherDash.html" %}
 {% load static %}
 
 {% block active_profile %}active{% endblock %}
 {% block page_title %}Edit Profile{% endblock %}
-{% block page_sub %}Update your teacher profile{% endblock %}
+{% block page_sub %}Update teacher profile{% endblock %}
 
 {% block m1 %}
 
 {% if msg %}
-<div class="alert alert-success"><span>✅</span> {{ msg }} <a href="/teacher_home/" style="color:var(--green);font-weight:700">Back to Dashboard</a></div>
+<div class="alert alert-success"><span>✅</span> {{ msg }}
+    {% if request.session.ut == "admin" %}
+        <a href="/allteachers/" style="color:var(--green);font-weight:700">Back to Teachers</a>
+    {% else %}
+        <a href="/teacher_home/" style="color:var(--green);font-weight:700">Back to Dashboard</a>
+    {% endif %}
+</div>
 {% endif %}
 
 {% if data %}
@@ -39,7 +45,11 @@
                 </div>
                 <div style="display:flex;gap:.75rem">
                     <button type="submit" class="btn btn-green">💾 Save Changes</button>
-                    <a href="/teacher_home/" class="btn btn-outline">← Cancel</a>
+                    {% if request.session.ut == "admin" %}
+                        <a href="/allteachers/" class="btn btn-outline">← Cancel</a>
+                    {% else %}
+                        <a href="/teacher_home/" class="btn btn-outline">← Cancel</a>
+                    {% endif %}
                 </div>
             </div>
         </form>

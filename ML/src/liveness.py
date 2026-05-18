@@ -20,7 +20,7 @@ except ImportError as e:
 
 LEFT_EYE = [362, 385, 387, 263, 373, 380]
 RIGHT_EYE = [33, 160, 158, 133, 153, 144]
-EAR_THRESHOLD = 0.18
+EAR_THRESHOLD = 0.15
 BLINK_FRAMES = 2
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "face_landmarker.task")

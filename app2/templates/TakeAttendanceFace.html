@@ -147,8 +147,11 @@ let processing = false;
 let sentIds = [];
 let scannedCount = 0;
 
+const EAR_THRESHOLD = 0.15;
+const MIN_CLOSED_FRAMES = 1;
 let blinkCount = 0;
 let eyesWereClosed = false;
+let closedFrames = 0;
 let isLive = false;
 
 function setStatus(active, text, color) {
@@ -172,7 +175,7 @@ function setStatus(active, text, color) {
             lDot.style.background = '#f59e0b';
             lDot.style.boxShadow = '0 0 6px rgba(245,158,11,.5)';
             lStatus.textContent = '👁️ Waiting for Blink';
-            lDetail.textContent = 'Student must blink to pass anti-spoofing';
+            lDetail.textContent = 'Student must blink 3 times to pass anti-spoofing';
         } else {
             lDot.style.background = '#94a3b8';
             lDot.style.boxShadow = 'none';
@@ -218,24 +221,36 @@ function startScanning() {
     scanning = true;
     blinkCount = 0;
     eyesWereClosed = false;
+    closedFrames = 0;
     isLive = false;
     document.getElementById('btnScan').style.display = 'none';
     document.getElementById('btnPause').style.display = '';
     document.getElementById('matchPopup').style.display = 'flex';
-    document.getElementById('matchName').textContent = 'Please blink to confirm presence...';
-    setStatus(true, 'Waiting for blink...', '#f59e0b');
-    scanInterval = setInterval(captureAndSend, 3000);
+    document.getElementById('matchName').textContent = 'Please blink 3 times to confirm presence...';
+    setStatus(true, 'Please blink 3 times...', '#f59e0b');
+    scanInterval = setInterval(captureAndSend, 500);
     captureAndSend();
 }
 
 function pauseScanning() {
     scanning = false;
     clearInterval(scanInterval);
+    scanInterval = null;
     document.getElementById('btnScan').style.display = '';
     document.getElementById('btnPause').style.display = 'none';
     document.getElementById('matchPopup').style.display = 'none';
     document.getElementById('processingTxt').style.display = 'none';
     setStatus(true, 'Paused');
+}
+
+function resetLiveness() {
+    blinkCount = 0;
+    eyesWereClosed = false;
+    closedFrames = 0;
+    isLive = false;
+    if(scanning && !scanInterval) {
+        scanInterval = setInterval(captureAndSend, 500);
+    }
 }
 
 function captureAndSend() {
@@ -252,7 +267,7 @@ function captureAndSend() {
     processing = true;
     document.getElementById('processingTxt').style.display = '';
 
-    console.log('[BLINK SEND] blink_count=' + blinkCount + ' eyes_were_closed=' + eyesWereClosed + ' is_live=' + isLive);
+    console.log('[FETCH] Sending is_live=' + isLive);
 
     fetch('/ml/recognize/frame/', {
         method: 'POST',
@@ -264,37 +279,60 @@ function captureAndSend() {
             time_slot: SESSION.time_slot,
             teacher_email: SESSION.teacher_email,
             sent_ids: sentIds,
-            blink_count: blinkCount,
-            eyes_were_closed: eyesWereClosed
+            is_live: isLive
         })
     })
     .then(r => r.json())
     .then(data => {
         processing = false;
         document.getElementById('processingTxt').style.display = 'none';
+        console.log('[SERVER RESP]', JSON.stringify(data));
 
-        console.log('[BLINK RECV] status=' + data.status + ' blink_count=' + data.blink_count + ' eyes_were_closed=' + data.eyes_were_closed);
+        // ── CLIENT-SIDE BLINK DETECTION ──
+        if(!isLive && data.ear !== undefined && data.ear > 0) {
+            const eyesClosed = data.ear < EAR_THRESHOLD;
+            if(eyesClosed) {
+                closedFrames++;
+                if(closedFrames >= MIN_CLOSED_FRAMES && !eyesWereClosed) {
+                    eyesWereClosed = true;
+                    console.log('[BLINK] Eyes closed confirmed, EAR=' + data.ear);
+                }
+            } else {
+                if(eyesWereClosed) {
+                    blinkCount++;
+                    eyesWereClosed = false;
+                    isLive = blinkCount >= 3;
+                    console.log('[BLINK] Blink complete! count=' + blinkCount + ' isLive=' + isLive);
+                    if(isLive) {
+                        clearInterval(scanInterval);
+                        scanInterval = null;
+                        processing = false;
+                        setStatus(true, '✅ Blink confirmed! Recognizing...', '#22c55e');
+                        setTimeout(captureAndSend, 50);
+                    } else {
+                        // Show progress to user
+                        const remaining = 3 - blinkCount;
+                        document.getElementById('matchName').textContent = `👁️ ${blinkCount}/3 blinks — ${remaining} more needed`;
+                    }
+                }
+                closedFrames = 0;
+            }
+        }
+        // ─────────────────────────────────
 
-        // Update liveness state from server response
-        if(data.blink_count !== undefined) blinkCount = data.blink_count;
-        if(data.eyes_were_closed !== undefined) eyesWereClosed = data.eyes_were_closed;
-        if(data.is_live !== undefined) isLive = data.is_live;
-
-        if(data.status === 'need_blink') {
-            setStatus(true, data.msg || '👁️ Please blink', '#f59e0b');
-            document.getElementById('matchName').textContent = '👁️ Please blink to confirm presence';
-            document.getElementById('matchId').textContent = `EAR: ${data.ear || '—'}`;
-            document.getElementById('matchScore').textContent = '⚡ Liveness';
+        if(!isLive) {
+            if(blinkCount === 0) {
+                document.getElementById('matchName').textContent = '👁️ Please blink 3 times to confirm presence';
+            }
+            document.getElementById('matchId').textContent = `EAR: ${data.ear !== undefined ? data.ear : '—'}`;
+            document.getElementById('matchScore').textContent = `⚡ ${blinkCount}/3`;
             document.getElementById('matchScore').style.background = 'rgba(245,158,11,.15)';
             document.getElementById('matchScore').style.color = '#fbbf24';
+            return;
+        }
 
-        } else if(data.status === 'blinking') {
-            setStatus(true, '👁️ Blink detected...', '#22c55e');
-            document.getElementById('matchName').textContent = '👁️ Blink detected!';
-
-        } else if(data.status === 'recognized') {
-            setStatus(true, '✅ Liveness confirmed — Scanning...');
-            isLive = true;
+        if(data.status === 'recognized') {
+            setStatus(true, '✅ Recognized — scanning next...');
             sentIds.push(data.stid);
             scannedCount++;
             document.getElementById('countPresent').textContent = sentIds.length;
@@ -306,20 +344,48 @@ function captureAndSend() {
             document.getElementById('matchScore').style.background = 'rgba(22,163,74,.15)';
             document.getElementById('matchScore').style.color = '#4ade80';
             addToList(data.stid, data.stname, data.score);
-            blinkCount = 0;
-            eyesWereClosed = false;
-            isLive = false;
+            resetLiveness();
+
+        } else if(data.status === 'not_enrolled') {
+            setStatus(true, `⚠️ Not enrolled in this course`, '#dc2626');
+            document.getElementById('matchAvatar').textContent = data.stname ? data.stname.charAt(0) : '?';
+            document.getElementById('matchName').textContent = `⚠️ ${data.stname} not enrolled`;
+            document.getElementById('matchId').textContent = `ID: ${data.stid}`;
+            document.getElementById('matchScore').textContent = '✗ Skip';
+            document.getElementById('matchScore').style.background = 'rgba(220,38,38,.15)';
+            document.getElementById('matchScore').style.color = '#f87171';
+            scannedCount++;
+            document.getElementById('countScanned').textContent = scannedCount;
+            resetLiveness();
 
         } else if(data.status === 'no_face') {
             setStatus(true, 'No face detected', '#94a3b8');
+            document.getElementById('matchName').textContent = 'No face detected';
+            if(scanning && !scanInterval) {
+                scanInterval = setInterval(captureAndSend, 500);
+            }
+
         } else if(data.status === 'no_match') {
             setStatus(true, 'Face not recognized', '#f59e0b');
             scannedCount++;
             document.getElementById('countScanned').textContent = scannedCount;
+            resetLiveness();
+
         } else if(data.status === 'already_marked') {
             setStatus(true, 'Already marked ✓', '#22c55e');
+            document.getElementById('matchName').textContent = `Already marked — next student`;
+            resetLiveness();
+
+        } else if(data.status === 'need_blink') {
+            if(!isLive && scanning && !scanInterval) {
+                scanInterval = setInterval(captureAndSend, 500);
+            }
+
         } else {
             setStatus(true, 'Scanning...');
+            if(scanning && !scanInterval) {
+                scanInterval = setInterval(captureAndSend, 500);
+            }
         }
     })
     .catch(err => {
@@ -327,6 +393,9 @@ function captureAndSend() {
         document.getElementById('processingTxt').style.display = 'none';
         setStatus(true, 'Error — retrying...', '#dc2626');
         console.error('Recognition error:', err);
+        if(scanning && !scanInterval) {
+            scanInterval = setInterval(captureAndSend, 500);
+        }
     });
 }
 
@@ -359,5 +428,4 @@ function getCookie(name) {
     return value;
 }
 </script>
-
 {% endblock %}
